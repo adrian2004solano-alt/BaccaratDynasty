@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baccarat Dynasty VIP — Plataforma Oficial de Señales en Vivo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #090d16;
+      color: #f1f5f9;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .gold-glow {
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.15);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- MODAL DE EXPULSIÓN POR CUENTA COMPARTIDA ("LA VIEJA CONFIABLE") -->
+  <div id="kicked-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-slate-900 border-2 border-red-500 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-3xl">🚨</div>
+      <h2 class="text-xl font-extrabold text-red-400">SESIÓN CERRADA POR SEGURIDAD</h2>
+      <p id="kicked-reason" class="text-sm text-slate-300">
+        Tu cuenta acaba de abrirse en otro dispositivo simultáneamente. Nuestro sistema Anti-Sharing solo permite 1 conexión activa en vivo.
+      </p>
+      <button onclick="closeKickedModal()" class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm transition">
+        Volver a Iniciar Sesión Aquí
+      </button>
+    </div>
+  </div>
+
+  <!-- BARRA SUPERIOR -->
+  <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-30 backdrop-blur">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-black font-extrabold text-xl shadow">
+          👑
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-lg tracking-tight text-white">BACCARAT DYNASTY</span>
+            <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">● EN VIVO</span>
+          </div>
+          <p class="text-xs text-slate-400">Señales Automatizadas · Protección por Huella Digital · Supabase Sync</p>
+        </div>
+      </div>
+
+      <!-- Navegación y Estado de Usuario -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button onclick="showSection('dashboard')" id="nav-dashboard" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-black transition">
+          📡 Sala de Señales
+        </button>
+        <button onclick="showSection('usdt')" id="nav-usdt" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition">
+          💎 Membresía VIP (USDT)
+        </button>
+        <button onclick="showSection('admin')" id="nav-admin" class="hidden px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-600 text-white hover:bg-purple-500 transition">
+          🛡️ Panel Admin
+        </button>
+
+        <div id="user-badge-area" class="flex items-center gap-2 pl-2 border-l border-slate-800">
+          <button onclick="showSection('auth')" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition">
+            🔐 Entrar / Registrarse
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="max-w-7xl w-full mx-auto px-4 py-6 flex-1 space-y-6">
+
+    <!-- ==================== SECCIÓN 1: SALA DE SEÑALES Y RESULTADOS ==================== -->
+    <section id="sec-dashboard" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- COLUMNA IZQUIERDA (7 cols): SEÑAL EN VIVO (VIP O BLOQUEADA PARA GRATIS) -->
+      <div class="lg:col-span-7 space-y-4">
+        <div class="glass-card gold-glow rounded-2xl p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span id="sig-status-pill" class="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-extrabold">
+                📡 MONITOREO ACTIVO
+              </span>
+              <h2 id="sig-table-title" class="text-lg font-extrabold text-white">Esperando señal del Bot...</h2>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-slate-400">Ventana de Apuesta:</span>
+              <span id="sig-countdown" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-mono font-extrabold text-sm">
+                15s
+              </span>
+            </div>
+          </div>
+
+          <!-- VISTA CUANDO EL USUARIO ES GRATIS / NO VIP (BLOQUEO CON EMBUDO DE VENTAS) -->
+          <div id="sig-locked-overlay" class="hidden bg-slate-900/95 border border-amber-500/40 rounded-xl p-6 text-center space-y-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-extrabold border border-amber-500/40">
+              🔒 SEÑAL VIP EN CURSO AHORA MISMO
+            </div>
+            <h3 class="text-xl font-extrabold text-white">
+              ¡Señal Detectada con <span id="locked-prob" class="text-emerald-400">93%</span> de Probabilidad!
+            </h3>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Los resultados finales son <b>100% gratuitos</b> en el panel derecho, pero el nombre de la mesa, la captura de referencia previa y la secuencia de 6 tiros son exclusivos para miembros con <b>Membresía VIP Activa</b>.
+            </p>
+            <div class="grid grid-cols-6 gap-2 max-w-md mx-auto opacity-50 select-none">
+              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 1<br>🔒 VIP</div>
+              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 2<br>🔒 VIP</div>
+              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 3<br>🔒 VIP</div>
+              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 4<br>🔒 VIP</div>
+              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 5<br>🔒 VIP</div>
+              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 6<br>🔒 VIP</div>
+            </div>
+            <div class="pt-2">
+              <button onclick="showSection('usdt')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-extrabold text-xs shadow-lg transition">
+                💎 DESBLOQUEAR SEÑALES VIP CON USDT
+              </button>
+            </div>
+          </div>
+
+          <!-- VISTA EXCLUSIVA PARA MIEMBROS VIP / ADMIN -->
+          <div id="sig-vip-content" class="space-y-4">
+            <!-- Captura de Referencia (Resultado Anterior) -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-2.5">
+              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                <span class="font-semibold text-slate-300">
+                  📷 Captura de Referencia Previa (Para ubicar la mesa — <b class="text-amber-400">No cuenta como Tiro 1</b>):
+                </span>
+                <span id="sig-hand-info" class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-xs">
+                  El Tiro 1 inicia en la mano siguiente
+                </span>
+              </div>
+
+              <div id="sig-image-box" class="w-full rounded-lg overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center min-h-[190px]">
+                <img id="sig-ref-img" src="" alt="Captura de Referencia" class="hidden w-full max-h-[280px] object-contain" />
+                <div id="sig-placeholder-card" class="p-4 text-center space-y-2 w-full">
+                  <p class="text-xs text-slate-400">Cuando tu Bot de PC dispare una señal, aquí aparecerá en vivo la captura de la jugada anterior (ej. 4 a 6 Banca) y sonará una alerta.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Plan de 6 Tiros -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-slate-200">🎯 SECUENCIA OFICIAL DE 6 TIROS:</span>
+                <span id="sig-prob-badge" class="font-extrabold text-emerald-400">Probabilidad: --%</span>
+              </div>
+              <div id="sig-sequence-boxes" class="grid grid-cols-6 gap-2 text-center">
+                <!-- Rellenado dinámicamente -->
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 1<br>-</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 2<br>-</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 3<br>-</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 4<br>-</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 5<br>-</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 6<br>-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Seguridad del Dispositivo Actual -->
+        <div class="glass-card rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="text-xl">🛡️</span>
+            <div>
+              <p class="text-xs font-bold text-emerald-400">Sistema Anti-Cuentas Compartidas Activo ("La Vieja Confiable")</p>
+              <p class="text-xs text-slate-400">Huella de Hardware Reconocida: <code id="fp-display" class="text-amber-400 font-mono">Calculando...</code> · 1 Sesión Simultánea.</p>
+            </div>
+          </div>
+          <span class="px-2.5 py-1 rounded bg-slate-800 text-xs text-slate-300 font-mono">Supabase Conectado</span>
+        </div>
+      </div>
+
+      <!-- COLUMNA DERECHA (5 cols): RESULTADOS GRATUITOS EN VIVO -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="glass-card rounded-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div>
+              <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">🏆 Resultados en Vivo (Acceso Gratis)</h3>
+              <p class="text-xs text-slate-400">Historial público verificado directamente desde las mesas</p>
+            </div>
+            <div class="text-right">
+              <span id="stat-winrate" class="text-lg font-extrabold text-emerald-400">94.5%</span>
+              <p class="text-xs text-slate-400">Efectividad</p>
+            </div>
+          </div>
+
+          <div id="public-results-list" class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
+            <!-- Rellenado dinámicamente -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECCIÓN 2: AUTENTICACIÓN Y VERIFICACIÓN DE CORREO ==================== -->
+    <section id="sec-auth" class="hidden max-w-md mx-auto">
+      <div class="glass-card rounded-2xl p-6 space-y-5">
+        <div class="flex border-b border-slate-800 pb-3 gap-2">
+          <button onclick="switchAuthMode('login')" id="btn-mode-login" class="flex-1 py-2 rounded-lg text-xs font-extrabold bg-amber-500 text-black">
+            Iniciar Sesión
+          </button>
+          <button onclick="switchAuthMode('register')" id="btn-mode-register" class="flex-1 py-2 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300">
+            Crear Cuenta Verificada
+          </button>
+        </div>
+
+        <!-- Formulario Login -->
+        <div id="form-login" class="space-y-3">
+          <div>
+            <label class="text-xs text-slate-400 font-semibold">Correo Electrónico</label>
+            <input type="email" id="login-email" placeholder="tu@correo.com" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 font-semibold">Contraseña</label>
+            <input type="password" id="login-password" placeholder="••••••••" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white" />
+          </div>
+          <button onclick="doLogin()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition">
+            🔐 Entrar con Verificación de Dispositivo
+          </button>
+          <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
+            <span class="text-xs text-slate-400">¿Eres el dueño del bot?</span>
+            <button onclick="quickAdminLogin()" class="text-xs text-amber-400 hover:underline font-bold">
+              👑 Autocompletar Admin
+            </button>
+          </div>
+        </div>
+
+        <!-- Formulario Registro -->
+        <div id="form-register" class="hidden space-y-3">
+          <div>
+            <label class="text-xs text-slate-400 font-semibold">Tu Correo Electrónico Real</label>
+            <input type="email" id="reg-email" placeholder="ejemplo@gmail.com" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 font-semibold">Crea tu Contraseña</label>
+            <input type="password" id="reg-password" placeholder="Mínimo 4 caracteres" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white" />
+          </div>
+          <button onclick="doRegister()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs transition">
+            📧 Registrar en Base de Datos y Recibir Código
+          </button>
+        </div>
+
+        <!-- Paso Verificación OTP 6 dígitos -->
+        <div id="form-verify" class="hidden space-y-3 bg-slate-900/90 p-4 rounded-xl border border-amber-500/40">
+          <p class="text-xs font-bold text-amber-400">📩 Verificación de Correo Electrónico</p>
+          <p id="otp-hint" class="text-xs text-slate-300">Ingresa el código de 6 dígitos enviado a tu correo:</p>
+          <input type="text" id="verify-code" maxlength="6" placeholder="123456" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-center font-mono text-base font-extrabold tracking-widest text-amber-400" />
+          <button onclick="doVerifyOtp()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition">
+            ✅ Verificar Correo y Activar Cuenta
+          </button>
+        </div>
+
+        <p id="auth-msg" class="text-xs text-center font-semibold text-amber-400"></p>
+      </div>
+    </section>
+
+    <!-- ==================== SECCIÓN 3: COMPRAR MEMBRESÍA VIP CON USDT ==================== -->
+    <section id="sec-usdt" class="hidden max-w-3xl mx-auto">
+      <div class="glass-card rounded-2xl p-6 space-y-5">
+        <div class="border-b border-slate-800 pb-3">
+          <h2 class="text-lg font-extrabold text-white">💎 Adquirir Membresía VIP con USDT</h2>
+          <p class="text-xs text-slate-400">Realiza el pago en USDT y registra tu comprobante para que el Administrador active tus señales en tiempo real.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div onclick="selectPlan('VIP_30_DIAS', 50)" id="plan-30" class="cursor-pointer p-4 rounded-xl bg-slate-900 border-2 border-amber-500 space-y-1">
+            <span class="px-2 py-0.5 rounded bg-amber-500 text-black font-extrabold text-xs">MÁS POPULAR</span>
+            <h3 class="font-extrabold text-base text-white pt-1">Membresía Mensual (30 Días)</h3>
+            <p class="text-2xl font-extrabold text-amber-400">50 USDT</p>
+            <p class="text-xs text-slate-400">Acceso 24/7 a todas las señales en vivo + Capturas previas + Sonido</p>
+          </div>
+          <div onclick="selectPlan('VIP_7_DIAS', 20)" id="plan-7" class="cursor-pointer p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-1">
+            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold text-xs">ACCESO SEMANAL</span>
+            <h3 class="font-extrabold text-base text-white pt-1">Membresía Semanal (7 Días)</h3>
+            <p class="text-2xl font-extrabold text-white">20 USDT</p>
+            <p class="text-xs text-slate-400">Ideal para probar la precisión del bot en vivo durante 1 semana</p>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+          <p class="text-xs text-slate-400 font-semibold">1. Envía el monto en USDT (Red TRC20 / Tron) a la siguiente dirección:</p>
+          <div class="flex items-center justify-between gap-2 bg-slate-950 p-3 rounded-lg border border-slate-800">
+            <code id="usdt-wallet-text" class="text-xs font-mono text-amber-400 break-all">TX9kP7d2vBaccaratDynastyVIP9982LmN</code>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('usdt-wallet-text').innerText); this.innerText='¡Copiado!'" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white">
+              Copiar
+            </button>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <p class="text-xs text-slate-400 font-semibold">2. Pega el Hash de Transacción (TXID) o referencia de tu pago:</p>
+          <input type="text" id="usdt-txid" placeholder="Ej: 8f94c2b1a09e... o tu ID de Binance" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white" />
+          <button onclick="sendUsdtPayment()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition">
+            ✅ Enviar Comprobante al Administrador para Activación VIP
+          </button>
+          <p id="usdt-msg" class="text-xs text-center font-bold text-emerald-400"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== SECCIÓN 4: PANEL DE ADMINISTRADOR ==================== -->
+    <section id="sec-admin" class="hidden space-y-6">
+      <!-- Simulador de Señal en Vivo para Pruebas del Admin -->
+      <div class="glass-card rounded-2xl p-5 border border-purple-500/40 space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 class="font-extrabold text-sm text-purple-300">⚡ Panel de Pruebas en Tiempo Real (Solo Admin)</h3>
+            <p class="text-xs text-slate-400">Puedes disparar una señal de prueba o un resultado ahora mismo para ver cómo se actualiza en vivo.</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="adminTestSignal()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs">
+              🚀 Disparar Señal de Prueba (Baccarat 2)
+            </button>
+            <button onclick="adminTestResult('win')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs">
+              🏆 Publicar WIN Tiro 1
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagos USDT Pendientes -->
+      <div class="glass-card rounded-2xl p-5 space-y-3">
+        <h3 class="font-extrabold text-sm text-amber-400">💎 Pagos en USDT Recibidos (Aprobar con 1 Clic)</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2 px-2">Correo Usuario</th>
+                <th class="py-2 px-2">Plan</th>
+                <th class="py-2 px-2">Monto</th>
+                <th class="py-2 px-2">TXID / Referencia</th>
+                <th class="py-2 px-2">Estado</th>
+                <th class="py-2 px-2 text-right">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="admin-payments-body" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Gestión de Usuarios y Dispositivos -->
+      <div class="glass-card rounded-2xl p-5 space-y-3">
+        <h3 class="font-extrabold text-sm text-white">👥 Usuarios Registrados y Control Anti-Sharing</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-800 text-slate-400">
+                <th class="py-2 px-2">Correo Electrónico</th>
+                <th class="py-2 px-2">Verificado</th>
+                <th class="py-2 px-2">Membresía</th>
+                <th class="py-2 px-2">Equipos Vinculados</th>
+                <th class="py-2 px-2 text-right">Controles Admin</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-body" class="divide-y divide-slate-800/60"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    let sessionToken = localStorage.getItem('dynasty_token') || '';
+    let userEmail = localStorage.getItem('dynasty_email') || '';
+    let userRole = localStorage.getItem('dynasty_role') || 'guest';
+    let deviceFp = '';
+    let lastSignalId = null;
+    let selectedPlan = 'VIP_30_DIAS';
+    let selectedAmount = 50;
+    let pendingVerifyEmail = '';
+
+    // 1. Generar Huella Digital Firme del Dispositivo (Device Fingerprint)
+    function computeDeviceFingerprint() {
+      let savedDeviceId = localStorage.getItem('dynasty_hw_id');
+      if (!savedDeviceId) {
+        const nav = window.navigator;
+        const scr = window.screen;
+        const raw = [
+          nav.platform,
+          nav.language,
+          scr.width + 'x' + scr.height,
+          scr.colorDepth,
+          Intl.DateTimeFormat().resolvedOptions().timeZone,
+          nav.hardwareConcurrency || 4
+        ].join('|');
+        let hash = 0;
+        for (let i = 0; i < raw.length; i++) {
+          hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+          hash |= 0;
+        }
+        savedDeviceId = 'FP-' + Math.abs(hash).toString(16).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+        localStorage.setItem('dynasty_hw_id', savedDeviceId);
+      }
+      deviceFp = savedDeviceId;
+      document.getElementById('fp-display').innerText = deviceFp;
+    }
+
+    // Sonido de Alerta al entrar nueva señal
+    function playSignalSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12); // A5
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.45);
+      } catch (e) {}
+    }
+
+    function showSection(sec) {
+      ['dashboard', 'auth', 'usdt', 'admin'].forEach(s => {
+        document.getElementById('sec-' + s).classList.add('hidden');
+      });
+      document.getElementById('sec-' + sec).classList.remove('hidden');
+      if (sec === 'admin') loadAdminData();
+    }
+
+    function switchAuthMode(mode) {
+      document.getElementById('form-login').classList.toggle('hidden', mode !== 'login');
+      document.getElementById('form-register').classList.toggle('hidden', mode !== 'register');
+      document.getElementById('form-verify').classList.add('hidden');
+      document.getElementById('btn-mode-login').className = mode === 'login'
+        ? 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-amber-500 text-black'
+        : 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300';
+      document.getElementById('btn-mode-register').className = mode === 'register'
+        ? 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-amber-500 text-black'
+        : 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300';
+    }
+
+    function quickAdminLogin() {
+      document.getElementById('login-email').value = 'admin@baccaratdynasty.com';
+      document.getElementById('login-password').value = 'admin1234';
+      doLogin();
+    }
+
+    async function doRegister() {
+      const email = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value.trim();
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      document.getElementById('auth-msg').innerText = data.msg || '';
+      if (data.ok) {
+        pendingVerifyEmail = email;
+        document.getElementById('form-register').classList.add('hidden');
+        document.getElementById('form-verify').classList.remove('hidden');
+        if (data.demo_otp) {
+          document.getElementById('otp-hint').innerHTML = `Código generado en base de datos para <b>${email}</b>: <span class="text-amber-400 font-mono font-bold">${data.demo_otp}</span>`;
+          document.getElementById('verify-code').value = data.demo_otp;
+        }
+      }
+    }
+
+    async function doVerifyOtp() {
+      const code = document.getElementById('verify-code').value.trim();
+      const res = await fetch('/api/auth/verify', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ email: pendingVerifyEmail, code })
+      });
+      const data = await res.json();
+      document.getElementById('auth-msg').innerText = data.msg || '';
+      if (data.ok) {
+        switchAuthMode('login');
+        document.getElementById('login-email').value = pendingVerifyEmail;
+      }
+    }
+
+    async function doLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          email,
+          password,
+          device_fp: deviceFp,
+          device_label: navigator.platform + ' (' + navigator.language + ')'
+        })
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        document.getElementById('auth-msg').innerText = data.msg || 'Error al entrar';
+        if (data.needs_verification) {
+          pendingVerifyEmail = email;
+          document.getElementById('form-login').classList.add('hidden');
+          document.getElementById('form-verify').classList.remove('hidden');
+          if (data.demo_otp) {
+            document.getElementById('otp-hint').innerHTML = `Tu código de verificación es: <b class="text-amber-400">${data.demo_otp}</b>`;
+          }
+        }
+        return;
+      }
+
+      sessionToken = data.session_token;
+      userEmail = data.email;
+      userRole = data.role;
+      localStorage.setItem('dynasty_token', sessionToken);
+      localStorage.setItem('dynasty_email', userEmail);
+      localStorage.setItem('dynasty_role', userRole);
+      document.getElementById('auth-msg').innerText = '';
+      updateHeaderUI();
+      showSection('dashboard');
+      pollLiveState();
+    }
+
+    function logoutUser() {
+      sessionToken = '';
+      userEmail = '';
+      userRole = 'guest';
+      localStorage.removeItem('dynasty_token');
+      localStorage.removeItem('dynasty_email');
+      localStorage.removeItem('dynasty_role');
+      updateHeaderUI();
+    }
+
+    function closeKickedModal() {
+      document.getElementById('kicked-modal').classList.add('hidden');
+      showSection('auth');
+    }
+
+    function updateHeaderUI() {
+      const badgeArea = document.getElementById('user-badge-area');
+      const adminBtn = document.getElementById('nav-admin');
+      if (userRole === 'admin') {
+        adminBtn.classList.remove('hidden');
+      } else {
+        adminBtn.classList.add('hidden');
+      }
+
+      if (sessionToken && userEmail) {
+        const roleBadge = userRole === 'admin'
+          ? '<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold text-xs">👑 ADMIN</span>'
+          : (userRole === 'vip'
+            ? '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold text-xs">💎 VIP ACTIVO</span>'
+            : '<span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold text-xs">🔓 GRATIS</span>');
+
+        badgeArea.innerHTML = `
+          <div class="flex items-center gap-2">
+            ${roleBadge}
+            <span class="text-xs text-slate-300 font-medium hidden sm:inline">${userEmail}</span>
+            <button onclick="logoutUser()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-red-300 font-semibold">Salir</button>
+          </div>
+        `;
+      } else {
+        badgeArea.innerHTML = `
+          <button onclick="showSection('auth')" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition">
+            🔐 Entrar / Registrarse
+          </button>
+        `;
+      }
+    }
+
+    function selectPlan(plan, amount) {
+      selectedPlan = plan;
+      selectedAmount = amount;
+      document.getElementById('plan-30').className = plan === 'VIP_30_DIAS'
+        ? 'cursor-pointer p-4 rounded-xl bg-slate-900 border-2 border-amber-500 space-y-1'
+        : 'cursor-pointer p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-1';
+      document.getElementById('plan-7').className = plan === 'VIP_7_DIAS'
+        ? 'cursor-pointer p-4 rounded-xl bg-slate-900 border-2 border-amber-500 space-y-1'
+        : 'cursor-pointer p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-1';
+    }
+
+    async function sendUsdtPayment() {
+      if (!sessionToken) {
+        alert('Primero inicia sesión o regístrate con tu correo para asociar tu membresía VIP.');
+        showSection('auth');
+        return;
+      }
+      const txid = document.getElementById('usdt-txid').value.trim();
+      const res = await fetch('/api/payments/usdt', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          token: sessionToken,
+          plan_name: selectedPlan,
+          amount_usdt: selectedAmount,
+          txid
+        })
+      });
+      const data = await res.json();
+      document.getElementById('usdt-msg').innerText = data.msg || '';
+      if (data.ok) document.getElementById('usdt-txid').value = '';
+    }
+
+    // 2. Polling en Tiempo Real (Cada 1 segundo)
+    async function pollLiveState() {
+      try {
+        const res = await fetch(`/api/state?token=${encodeURIComponent(sessionToken)}&fp=${encodeURIComponent(deviceFp)}`);
+        const data = await res.json();
+
+        if (data.status === 'kicked') {
+          logoutUser();
+          document.getElementById('kicked-reason').innerText = data.reason;
+          document.getElementById('kicked-modal').classList.remove('hidden');
+          return;
+        }
+
+        if (data.user && data.user.email) {
+          if (data.user.role !== userRole) {
+            userRole = data.user.role;
+            localStorage.setItem('dynasty_role', userRole);
+            updateHeaderUI();
+          }
+        }
+
+        if (data.stats) {
+          document.getElementById('stat-winrate').innerText = data.stats.win_rate + '%';
+        }
+
+        // Renderizar Resultados Gratuitos
+        if (data.results) {
+          const container = document.getElementById('public-results-list');
+          container.innerHTML = data.results.map(r => {
+            const isWin = r.result_type === 'win';
+            return `
+              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/90 border ${isWin ? 'border-emerald-500/30' : 'border-rose-500/30'} text-xs">
+                <div>
+                  <p class="font-extrabold ${isWin ? 'text-emerald-400' : 'text-rose-400'}">
+                    ${isWin ? '✅ WIN — ' : '💔 LOSS — '} ${r.table_name}
+                  </p>
+                  <p class="text-slate-400">Estrategia: ${r.strategy_name} · Hora: ${r.created_at}</p>
+                </div>
+                <span class="px-2.5 py-1 rounded-lg font-extrabold ${isWin ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                  Tiro ${r.attempt_number}/6
+                </span>
+              </div>
+            `;
+          }).join('');
+        }
+
+        // Renderizar Señal Activa
+        const sig = data.active_signal;
+        const lockedOverlay = document.getElementById('sig-locked-overlay');
+        const vipContent = document.getElementById('sig-vip-content');
+
+        if (!sig) {
+          lockedOverlay.classList.add('hidden');
+          vipContent.classList.remove('hidden');
+          document.getElementById('sig-table-title').innerText = 'Analizando mesas en Stake Multiplay...';
+          document.getElementById('sig-countdown').innerText = 'Escaneando';
+          return;
+        }
+
+        if (sig.id !== lastSignalId) {
+          lastSignalId = sig.id;
+          playSignalSound();
+        }
+
+        document.getElementById('sig-countdown').innerText = sig.countdown > 0 ? `${sig.countdown}s (Apostar)` : `Tiro ${sig.current_attempt}/6 en juego 🃏`;
+
+        if (sig.is_locked) {
+          lockedOverlay.classList.remove('hidden');
+          vipContent.classList.add('hidden');
+          document.getElementById('sig-table-title').innerText = '🔒 Mesa Activa (Exclusivo VIP)';
+          document.getElementById('locked-prob').innerText = sig.probability + '%';
+        } else {
+          lockedOverlay.classList.add('hidden');
+          vipContent.classList.remove('hidden');
+          document.getElementById('sig-table-title').innerText = `Mesa: ${sig.table_name}`;
+          document.getElementById('sig-prob-badge').innerText = `Probabilidad: ${sig.probability}% · [${sig.strategy_name}]`;
+          document.getElementById('sig-hand-info').innerText = sig.base_hand_count > 0
+            ? `Ref. Mano #${sig.base_hand_count} -> Jugar Tiro 1 en Mano #${sig.base_hand_count + 1}`
+            : `Tiro Activo: ${sig.current_attempt}/6`;
+
+          const imgEl = document.getElementById('sig-ref-img');
+          const phEl = document.getElementById('sig-placeholder-card');
+          if (sig.reference_image_b64) {
+            imgEl.src = sig.reference_image_b64.startsWith('data:')
+              ? sig.reference_image_b64
+              : 'data:image/png;base64,' + sig.reference_image_b64;
+            imgEl.classList.remove('hidden');
+            phEl.classList.add('hidden');
+          } else {
+            imgEl.classList.add('hidden');
+            phEl.classList.remove('hidden');
+            phEl.innerHTML = `<p class="text-sm font-bold text-amber-400">🎯 Señal Activa en [${sig.table_name}] — Captura de referencia confirmada</p><p class="text-xs text-slate-400">Tienes los 15 segundos completos para colocar el Tiro ${sig.current_attempt}.</p>`;
+          }
+
+          // Renderizar los 6 tiros
+          const seqBoxes = document.getElementById('sig-sequence-boxes');
+          seqBoxes.innerHTML = (sig.sequence || []).slice(0, 6).map((item, idx) => {
+            const isPlayer = item === 'P';
+            const isCurrent = (idx + 1) === sig.current_attempt;
+            const bgClass = isPlayer
+              ? 'bg-blue-600/30 border-blue-500 text-blue-200'
+              : 'bg-red-600/30 border-red-500 text-red-200';
+            const ringClass = isCurrent ? 'ring-2 ring-amber-400 scale-105 shadow-lg' : 'opacity-80';
+            return `
+              <div class="p-2.5 rounded-xl border ${bgClass} ${ringClass} transition">
+                <p class="text-xs font-semibold">Tiro ${idx + 1}</p>
+                <p class="text-xs font-extrabold mt-0.5">${isPlayer ? '🔵 JUG' : '🔴 BAN'}</p>
+              </div>
+            `;
+          }).join('');
+        }
+      } catch (e) {}
+    }
+
+    // 3. Funciones del Panel de Administrador
+    async function loadAdminData() {
+      const res = await fetch(`/api/admin/data?token=${encodeURIComponent(sessionToken)}`);
+      const data = await res.json();
+      if (!data.ok) return;
+
+      const payBody = document.getElementById('admin-payments-body');
+      payBody.innerHTML = (data.payments || []).map(p => `
+        <tr>
+          <td class="py-2.5 px-2 font-semibold">${p.user_email}</td>
+          <td class="py-2.5 px-2">${p.plan_name}</td>
+          <td class="py-2.5 px-2 font-bold text-amber-400">${p.amount_usdt} USDT</td>
+          <td class="py-2.5 px-2 font-mono text-slate-300">${p.txid}</td>
+          <td class="py-2.5 px-2">
+            <span class="px-2 py-0.5 rounded text-xs font-bold ${p.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">
+              ${p.status.toUpperCase()}
+            </span>
+          </td>
+          <td class="py-2.5 px-2 text-right">
+            ${p.status === 'pending'
+              ? `<button onclick="adminAction('approve_payment', '${p.user_email}', ${p.id})" class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs">✓ Aprobar y Dar VIP</button>`
+              : `<span class="text-slate-500 text-xs">Aprobado</span>`}
+          </td>
+        </tr>
+      `).join('') || '<tr><td colspan="6" class="py-3 text-center text-slate-500">Sin pagos pendientes</td></tr>';
+
+      const usrBody = document.getElementById('admin-users-body');
+      usrBody.innerHTML = (data.users || []).map(u => `
+        <tr>
+          <td class="py-2.5 px-2 font-semibold">${u.email}</td>
+          <td class="py-2.5 px-2">${u.is_verified ? '<span class="text-emerald-400 font-bold">✓ Sí</span>' : '<span class="text-amber-400">Pendiente</span>'}</td>
+          <td class="py-2.5 px-2"><span class="px-2 py-0.5 rounded bg-slate-800 font-bold text-xs uppercase">${u.role}</span></td>
+          <td class="py-2.5 px-2 text-slate-300">${u.device_count}/2 equipos</td>
+          <td class="py-2.5 px-2 text-right space-x-1">
+            <button onclick="adminAction('grant_vip', '${u.email}')" class="px-2.5 py-1 rounded bg-amber-500 text-black font-bold text-xs">+30d VIP</button>
+            <button onclick="adminAction('reset_devices', '${u.email}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs">Limpiar Equipos</button>
+            ${u.role === 'vip' ? `<button onclick="adminAction('revoke_vip', '${u.email}')" class="px-2 py-1 rounded bg-rose-600/30 text-rose-300 text-xs">Quitar VIP</button>` : ''}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function adminAction(action, email, payment_id = null) {
+      await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ token: sessionToken, action, email, payment_id, days: 30 })
+      });
+      loadAdminData();
+      pollLiveState();
+    }
+
+    async function adminTestSignal() {
+      await fetch('/api/bot/signal', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          bot_secret: 'dynasty_bot_secret_2026',
+          table_name: 'Baccarat 2',
+          sequence: ['P', 'B', 'B', 'B', 'B', 'P'],
+          probability: 93,
+          strategy_name: 'DISRUPTIVA_4TEND',
+          base_hand_count: 51
+        })
+      });
+      showSection('dashboard');
+      pollLiveState();
+    }
+
+    async function adminTestResult(type) {
+      await fetch('/api/bot/result', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          bot_secret: 'dynasty_bot_secret_2026',
+          table_name: 'Baccarat 2',
+          result_type: type,
+          attempt_number: 1,
+          strategy_name: 'DISRUPTIVA_4TEND'
+        })
+      });
+      showSection('dashboard');
+      pollLiveState();
+    }
+
+    // Inicializar
+    computeDeviceFingerprint();
+    updateHeaderUI();
+    pollLiveState();
+    setInterval(pollLiveState, 1000);
+  </script>
+</body>
+</html>
