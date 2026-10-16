@@ -15,8 +15,20 @@ server.py — Baccarat Dynasty VIP Web Platform (Backend + Conector Supabase + A
 """
 
 import os
+import sys
 import json
 import time
+
+if sys.stdout and hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if sys.stderr and hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
 import uuid
 import hmac
 import hashlib
