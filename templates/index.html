@@ -3,329 +3,390 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Baccarat Dynasty VIP & Rush — Plataforma Oficial en Tiempo Real</title>
+  <title>Baccarat Dynasty — VIP Signal Terminal</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-obsidian: #05070b;
+      --bg-surface: #0b0f17;
+      --bg-elevated: #111723;
+      --gold-primary: #d4af37;
+      --gold-light: #f3e5ab;
+    }
     body {
-      background-color: #090d16;
-      color: #f1f5f9;
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-obsidian);
+      background-image:
+        radial-gradient(circle at 15% 0%, rgba(212, 175, 55, 0.07) 0%, transparent 40%),
+        radial-gradient(circle at 85% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+      color: #f8fafc;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
-    .glass-card {
-      background: rgba(17, 24, 39, 0.88);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    .font-mono-num {
+      font-family: 'JetBrains Mono', monospace;
     }
-    .gold-glow {
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.15);
+    .luxury-card {
+      background: linear-gradient(180deg, rgba(17, 23, 35, 0.92) 0%, rgba(11, 15, 23, 0.96) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+    }
+    .luxury-card-gold {
+      background: linear-gradient(180deg, rgba(20, 26, 40, 0.95) 0%, rgba(11, 15, 23, 0.98) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.22);
+      box-shadow: 0 20px 50px -15px rgba(0, 0, 0, 0.8), 0 0 30px -10px rgba(212, 175, 55, 0.12);
+    }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #fff6d6 0%, #d4af37 50%, #aa820a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #e5c158 0%, #c59b27 100%);
+      color: #05070b;
+      box-shadow: 0 4px 20px rgba(212, 175, 55, 0.25);
+    }
+    .btn-gold:hover {
+      background: linear-gradient(135deg, #f0d070 0%, #d4af37 100%);
+      box-shadow: 0 6px 25px rgba(212, 175, 55, 0.38);
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(11, 15, 23, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(212, 175, 55, 0.4);
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
 
-  <!-- MODAL ZOOM DE CAPTURA REAL DEL BOT (SOLO PARA SEÑALES) -->
-  <div id="img-zoom-modal" onclick="closeImageZoom()" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 cursor-zoom-out">
-    <div class="max-w-5xl w-full space-y-3 text-center" onclick="event.stopPropagation()">
-      <div class="flex items-center justify-between bg-slate-900/90 px-4 py-2.5 rounded-xl border border-slate-700">
-        <span id="zoom-caption" class="text-xs font-extrabold text-amber-400">📷 Captura Original del Bot</span>
-        <button onclick="closeImageZoom()" class="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold">✕ Cerrar</button>
+  <!-- VISOR DE IMAGEN EN PANTALLA COMPLETA -->
+  <div id="img-zoom-modal" onclick="closeImageZoom()" class="hidden fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col items-center justify-center p-4 cursor-zoom-out">
+    <div class="max-w-5xl w-full space-y-3" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between bg-slate-900/90 px-5 py-3 rounded-2xl border border-white/10">
+        <span id="zoom-caption" class="text-xs font-bold uppercase tracking-wider text-amber-400">Vista de Mesa</span>
+        <button onclick="closeImageZoom()" class="px-3.5 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold transition">Cerrar ✕</button>
       </div>
-      <img id="zoom-img-src" src="" alt="Captura Real del Bot" class="w-full max-h-[82vh] object-contain rounded-xl border border-slate-700 shadow-2xl mx-auto" />
+      <img id="zoom-img-src" src="" alt="Mesa" class="w-full max-h-[82vh] object-contain rounded-2xl border border-white/10 shadow-2xl mx-auto" />
     </div>
   </div>
 
-  <!-- MODAL DE EXPULSIÓN POR CUENTA COMPARTIDA ("LA VIEJA CONFIABLE") -->
-  <div id="kicked-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-slate-900 border-2 border-red-500 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
-      <div class="w-16 h-16 mx-auto rounded-full bg-red-500/20 border border-red-500/40 flex items-center justify-center text-3xl">🚨</div>
-      <h2 class="text-xl font-extrabold text-red-400">SESIÓN CERRADA POR SEGURIDAD</h2>
-      <p id="kicked-reason" class="text-sm text-slate-300">
-        Tu cuenta acaba de abrirse en otro dispositivo simultáneamente. Nuestro sistema Anti-Sharing solo permite 1 conexión activa en vivo.
-      </p>
-      <button onclick="closeKickedModal()" class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm transition">
-        Volver a Iniciar Sesión Aquí
+  <!-- ALERTA DE SESIÓN ACTIVA -->
+  <div id="kicked-modal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="max-w-md w-full luxury-card rounded-3xl p-7 text-center space-y-5 border border-rose-500/40">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-2xl">🔒</div>
+      <div class="space-y-1.5">
+        <h2 class="text-lg font-extrabold text-white tracking-tight">Sesión Abierta en Otro Dispositivo</h2>
+        <p id="kicked-reason" class="text-xs text-slate-400 leading-relaxed">
+          Se ha detectado un nuevo inicio de sesión en tu cuenta. Por seguridad, solo se permite una sesión activa a la vez.
+        </p>
+      </div>
+      <button onclick="closeKickedModal()" class="w-full py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase tracking-wider transition">
+        Iniciar Sesión Nuevamente
       </button>
     </div>
   </div>
 
-  <!-- BARRA SUPERIOR -->
-  <header class="border-b border-slate-800 bg-slate-950/90 sticky top-0 z-30 backdrop-blur">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-black font-extrabold text-xl shadow">
-          👑
+  <!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+  <header class="border-b border-white/[0.06] bg-[#05070b]/85 sticky top-0 z-30 backdrop-blur-xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <!-- Marca -->
+      <div class="flex items-center gap-3.5 cursor-pointer" onclick="showSection('signals')">
+        <div class="w-9 h-9 rounded-xl btn-gold flex items-center justify-center font-extrabold text-base shadow-lg">
+          ♛
         </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold text-lg tracking-tight text-white">BACCARAT DYNASTY</span>
-            <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">● CONECTADO AL BOT</span>
-          </div>
-          <p class="text-xs text-slate-400">Señales VIP Reales · Canal RUSH de Resultados · Protección Anti-Sharing</p>
+        <div class="flex items-center gap-2.5">
+          <span class="font-extrabold text-base sm:text-lg tracking-wider gold-gradient-text">BACCARAT DYNASTY</span>
+          <span class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold tracking-widest uppercase">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            Live
+          </span>
         </div>
       </div>
 
-      <!-- Navegación Principal + Botón Directo al Panel de Admin -->
-      <div class="flex flex-wrap items-center gap-2">
-        <button onclick="showSection('signals')" id="nav-signals" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-amber-500 text-black transition">
-          📡 Señales Dynasty (VIP)
+      <!-- Menú Central -->
+      <nav class="flex items-center gap-1.5 bg-[#0b0f17] p-1 rounded-xl border border-white/[0.06]">
+        <button onclick="showSection('signals')" id="nav-signals" class="px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition">
+          Señales VIP
         </button>
-        <button onclick="showSection('rush')" id="nav-rush" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
-          <span>⚡ RUSH (Resultados)</span>
-          <span id="rush-nav-count" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[11px]">0</span>
+        <button onclick="showSection('rush')" id="nav-rush" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2">
+          <span>Rush</span>
+          <span id="rush-nav-count" class="px-1.5 py-0.2 rounded-md bg-white/[0.06] text-emerald-400 font-mono-num text-[11px] font-bold">0</span>
         </button>
-        <button onclick="showSection('usdt')" id="nav-usdt" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition">
-          💎 Membresía VIP (USDT)
+        <button onclick="showSection('usdt')" id="nav-usdt" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+          Membresía
         </button>
+        <button onclick="enterAdminDirectly()" id="nav-admin-direct" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-amber-300/90 hover:text-amber-200 hover:bg-white/[0.04] transition">
+          Panel Admin
+        </button>
+      </nav>
 
-        <!-- BOTÓN DIRECTO SOLICITADO: ENTRAR AL PANEL DE ADMIN DESDE LA PÁGINA PRINCIPAL -->
-        <button onclick="enterAdminDirectly()" id="nav-admin-direct" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-purple-600 hover:bg-purple-500 text-white shadow-lg transition">
-          👑 Entrar al Panel de Admin
+      <!-- Área de Usuario -->
+      <div id="user-badge-area" class="flex items-center gap-2">
+        <button onclick="showSection('auth')" class="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-white text-xs font-bold transition">
+          Acceder
         </button>
-
-        <div id="user-badge-area" class="flex items-center gap-2 pl-2 border-l border-slate-800">
-          <button onclick="showSection('auth')" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition">
-            🔐 Entrar / Registrarse
-          </button>
-        </div>
       </div>
     </div>
   </header>
 
   <!-- CONTENEDOR PRINCIPAL -->
-  <main class="max-w-7xl w-full mx-auto px-4 py-6 flex-1 space-y-6">
+  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-6">
 
-    <!-- ==================== APARTADO 1: SEÑALES DYNASTY (VIP) ==================== -->
+    <!-- BARRA EJECUTIVA DE MÉTRICAS -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+      <div class="luxury-card rounded-2xl px-5 py-4 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Efectividad</p>
+          <p id="kpi-winrate" class="text-2xl font-extrabold text-emerald-400 font-mono-num mt-0.5">0.0%</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-sm font-bold">
+          %
+        </div>
+      </div>
+
+      <div class="luxury-card rounded-2xl px-5 py-4 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Victorias (WIN)</p>
+          <p id="kpi-wins" class="text-2xl font-extrabold text-white font-mono-num mt-0.5">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-sm">
+          ♛
+        </div>
+      </div>
+
+      <div class="luxury-card rounded-2xl px-5 py-4 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total Operaciones</p>
+          <p id="kpi-total" class="text-2xl font-extrabold text-slate-200 font-mono-num mt-0.5">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-mono-num font-bold">
+          #
+        </div>
+      </div>
+
+      <div class="luxury-card rounded-2xl px-5 py-4 flex items-center justify-between">
+        <div>
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Estado de Sala</p>
+          <p id="kpi-status" class="text-sm font-bold text-amber-300 mt-1.5">Monitoreando Mesas</p>
+        </div>
+        <div class="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== APARTADO 1: SEÑALES VIP ==================== -->
     <section id="sec-signals" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      <!-- COLUMNA IZQUIERDA (7 cols): SEÑAL EN VIVO ENVIADA POR EL BOT -->
-      <div class="lg:col-span-7 space-y-4">
-        <div class="glass-card gold-glow rounded-2xl p-5 space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-            <div class="flex items-center gap-2">
-              <span id="sig-status-pill" class="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-extrabold">
-                📡 SEÑALES DYNASTY
-              </span>
-              <h2 id="sig-table-title" class="text-lg font-extrabold text-white">Esperando señal real del Bot...</h2>
+      <!-- TERMINAL DE SEÑAL EN VIVO (8 COLUMNAS) -->
+      <div class="lg:col-span-8">
+        <div class="luxury-card-gold rounded-3xl p-6 sm:p-7 space-y-6">
+          <!-- Cabecera de la Señal -->
+          <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
+            <div class="flex items-center gap-3">
+              <div class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_12px_#f59e0b]"></div>
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-amber-400/90">Terminal VIP</p>
+                <h2 id="sig-table-title" class="text-xl sm:text-2xl font-extrabold text-white tracking-tight">Analizando Mesas en Vivo</h2>
+              </div>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-slate-400">Estado:</span>
-              <span id="sig-countdown" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 font-mono font-extrabold text-xs">
-                En espera del Bot
+
+            <div class="flex items-center gap-2.5">
+              <span id="sig-prob-badge" class="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono-num text-xs font-bold">
+                Precisión: --%
+              </span>
+              <span id="sig-countdown" class="px-3.5 py-1.5 rounded-xl bg-white/[0.05] text-slate-200 border border-white/[0.08] font-mono-num text-xs font-bold">
+                En Espera
               </span>
             </div>
           </div>
 
-          <!-- VISTA CUANDO HAY SEÑAL ACTIVA PERO EL USUARIO ES GRATIS / NO VIP -->
-          <div id="sig-locked-overlay" class="hidden bg-slate-900/95 border border-amber-500/40 rounded-xl p-6 text-center space-y-4">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-extrabold border border-amber-500/40">
-              🔒 SEÑAL REAL DEL BOT EN CURSO AHORA MISMO
+          <!-- BLOQUEO PARA USUARIOS SIN MEMBRESÍA VIP -->
+          <div id="sig-locked-overlay" class="hidden rounded-2xl bg-[#070a10] border border-amber-500/30 p-8 text-center space-y-5">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-xl">
+              🔒
             </div>
-            <h3 class="text-xl font-extrabold text-white">
-              ¡El Bot acaba de lanzar una señal con <span id="locked-prob" class="text-emerald-400">--%</span> de Probabilidad!
-            </h3>
-            <p class="text-xs text-slate-400 max-w-md mx-auto">
-              Todos los resultados en el apartado <b>⚡ RUSH</b> son <b>100% gratuitos</b>, pero para ver las señales en vivo con la captura exacta de la mesa y los 6 tiros necesitas <b>Membresía VIP Activa</b>.
-            </p>
-            <div class="grid grid-cols-6 gap-2 max-w-md mx-auto opacity-50 select-none">
-              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 1<br>🔒 VIP</div>
-              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 2<br>🔒 VIP</div>
-              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 3<br>🔒 VIP</div>
-              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 4<br>🔒 VIP</div>
-              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 5<br>🔒 VIP</div>
-              <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 6<br>🔒 VIP</div>
+            <div class="space-y-1.5 max-w-md mx-auto">
+              <span class="text-[11px] font-bold uppercase tracking-widest text-amber-400">Señal Activa en Curso</span>
+              <h3 class="text-xl font-extrabold text-white">
+                Entrada Detectada · <span id="locked-prob" class="text-emerald-400">--%</span> de Probabilidad
+              </h3>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Desbloquea el acceso inmediato a la mesa, vista en tiempo real y secuencia de 6 tiros con tu Membresía VIP.
+              </p>
             </div>
-            <div class="pt-2">
-              <button onclick="showSection('usdt')" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-extrabold text-xs shadow-lg transition">
-                💎 DESBLOQUEAR SEÑALES VIP CON USDT
+            <div class="grid grid-cols-6 gap-2 max-w-md mx-auto opacity-40 select-none">
+              <div class="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs font-bold">1 · 🔒</div>
+              <div class="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs font-bold">2 · 🔒</div>
+              <div class="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs font-bold">3 · 🔒</div>
+              <div class="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs font-bold">4 · 🔒</div>
+              <div class="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs font-bold">5 · 🔒</div>
+              <div class="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs font-bold">6 · 🔒</div>
+            </div>
+            <div>
+              <button onclick="showSection('usdt')" class="px-7 py-3 rounded-xl btn-gold font-extrabold text-xs uppercase tracking-wider transition">
+                Activar Membresía VIP
               </button>
             </div>
           </div>
 
-          <!-- VISTA DE SEÑAL REAL PARA MIEMBROS VIP / ADMIN -->
-          <div id="sig-vip-content" class="space-y-4">
-            <!-- Captura Real Tomada por el Bot -->
-            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-2.5">
-              <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
-                <span class="font-semibold text-slate-300">
-                  📷 Captura Original Tomada por el Bot (Resultado Anterior — <b class="text-amber-400">No cuenta como Tiro 1</b>):
-                </span>
-                <span id="sig-hand-info" class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-xs">
-                  Sin señal activa
-                </span>
-              </div>
-
-              <div id="sig-image-box" class="w-full rounded-lg overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center min-h-[220px]">
-                <img id="sig-ref-img" onclick="openImageZoom(this.src, 'Captura de Señal Original del Bot')" src="" alt="Captura Real del Bot" class="hidden w-full max-h-[360px] object-contain cursor-zoom-in hover:opacity-95 transition" />
-                <div id="sig-placeholder-card" class="p-6 text-center space-y-2 w-full">
-                  <div class="text-2xl">🤖</div>
-                  <p class="text-sm font-bold text-slate-300">Esperando que enciendas el Bot y envíe una señal...</p>
-                  <p class="text-xs text-slate-500 max-w-md mx-auto">
-                    Únicamente aparecerán aquí las señales que envíe tu Bot con la misma captura de pantalla tomada de la mesa.
-                  </p>
+          <!-- CONTENIDO DE LA SEÑAL VIP -->
+          <div id="sig-vip-content" class="space-y-6">
+            <!-- Visor de Captura de Mesa -->
+            <div class="rounded-2xl overflow-hidden bg-[#060911] border border-white/[0.07] relative flex items-center justify-center min-h-[260px]">
+              <img id="sig-ref-img" onclick="openImageZoom(this.src, document.getElementById('sig-table-title').innerText)" src="" alt="Vista de Mesa" class="hidden w-full max-h-[380px] object-contain cursor-zoom-in transition duration-300" />
+              <div id="sig-placeholder-card" class="p-10 text-center space-y-3">
+                <div class="w-12 h-12 mx-auto rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-lg">
+                  ♛
+                </div>
+                <div class="space-y-1">
+                  <p class="text-sm font-bold text-slate-200">Escaneando Mesas en Tiempo Real</p>
+                  <p class="text-xs text-slate-500">La próxima entrada confirmada se mostrará automáticamente en pantalla.</p>
                 </div>
               </div>
             </div>
 
-            <!-- Plan de 6 Tiros -->
-            <div class="space-y-2">
-              <div class="flex items-center justify-between text-xs">
-                <span class="font-bold text-slate-200">🎯 SECUENCIA OFICIAL DE 6 TIROS:</span>
-                <span id="sig-prob-badge" class="font-extrabold text-emerald-400">Esperando datos del Bot</span>
+            <!-- Secuencia de 6 Tiros -->
+            <div class="space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Secuencia de Operación (6 Tiros)</span>
+                <span id="sig-hand-info" class="text-xs font-mono-num text-amber-400 font-semibold">Válido por 6 intentos</span>
               </div>
-              <div id="sig-sequence-boxes" class="grid grid-cols-6 gap-2 text-center">
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 1<br>—</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 2<br>—</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 3<br>—</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 4<br>—</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 5<br>—</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 6<br>—</div>
+              <div id="sig-sequence-boxes" class="grid grid-cols-3 sm:grid-cols-6 gap-2.5 text-center">
+                <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-xs text-slate-500"><span class="block text-[10px] uppercase tracking-wider">Tiro 1</span><span class="font-bold text-sm mt-1 block">—</span></div>
+                <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-xs text-slate-500"><span class="block text-[10px] uppercase tracking-wider">Tiro 2</span><span class="font-bold text-sm mt-1 block">—</span></div>
+                <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-xs text-slate-500"><span class="block text-[10px] uppercase tracking-wider">Tiro 3</span><span class="font-bold text-sm mt-1 block">—</span></div>
+                <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-xs text-slate-500"><span class="block text-[10px] uppercase tracking-wider">Tiro 4</span><span class="font-bold text-sm mt-1 block">—</span></div>
+                <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-xs text-slate-500"><span class="block text-[10px] uppercase tracking-wider">Tiro 5</span><span class="font-bold text-sm mt-1 block">—</span></div>
+                <div class="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] text-xs text-slate-500"><span class="block text-[10px] uppercase tracking-wider">Tiro 6</span><span class="font-bold text-sm mt-1 block">—</span></div>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Tarjeta de Seguridad del Dispositivo Actual -->
-        <div class="glass-card rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-3">
-            <span class="text-xl">🛡️</span>
-            <div>
-              <p class="text-xs font-bold text-emerald-400">Sistema Anti-Cuentas Compartidas Activo ("La Vieja Confiable")</p>
-              <p class="text-xs text-slate-400">Huella de Hardware: <code id="fp-display" class="text-amber-400 font-mono">Calculando...</code> · 1 Sesión Simultánea.</p>
-            </div>
-          </div>
-          <span class="px-2.5 py-1 rounded bg-slate-800 text-xs text-slate-300 font-mono">100% Datos Reales del Bot</span>
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA (5 cols): RUSH EN LÍNEAS LIMPIAS (WIN 1, WIN 2, LOSS) SIN IMAGEN -->
-      <div class="lg:col-span-5 space-y-4">
-        <div class="glass-card rounded-2xl p-5 space-y-4">
-          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-extrabold text-xs">⚡ RUSH</span>
-                <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">Resultados (Gratis)</h3>
+      <!-- PANEL LATERAL: RUSH EN VIVO (4 COLUMNAS) -->
+      <div class="lg:col-span-4">
+        <div class="luxury-card rounded-3xl p-6 flex flex-col h-full justify-between space-y-4">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between border-b border-white/[0.06] pb-4">
+              <div class="flex items-center gap-2.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">Rush · Resultados</h3>
               </div>
-              <p class="text-xs text-slate-400 mt-0.5">Historial intacto en tiempo real (WIN 1..6 / LOSS)</p>
+              <span id="stat-total-side" class="text-xs font-mono-num text-slate-400">0 registros</span>
             </div>
-            <div class="text-right">
-              <span id="stat-winrate-side" class="text-lg font-extrabold text-emerald-400">0.0%</span>
-              <p id="stat-total-side" class="text-[11px] text-slate-400">0 resultados</p>
+
+            <div id="side-rush-list" class="space-y-2 max-h-[420px] overflow-y-auto pr-1">
+              <div class="py-12 text-center text-xs text-slate-500">
+                Sin resultados registrados.
+              </div>
             </div>
           </div>
 
-          <div id="side-rush-list" class="space-y-1.5 max-h-[480px] overflow-y-auto pr-1">
-            <div class="p-6 text-center text-xs text-slate-500">
-              Aún no hay resultados en RUSH.
-            </div>
-          </div>
-
-          <button onclick="showSection('rush')" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-extrabold text-xs transition border border-slate-700">
-            ⚡ Ver Todo el Historial RUSH Completo →
+          <button onclick="showSection('rush')" class="w-full py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.07] text-slate-200 font-bold text-xs tracking-wide transition">
+            Ver Historial Completo →
           </button>
         </div>
       </div>
     </section>
 
-    <!-- ==================== APARTADO 2: RUSH (TODOS LOS RESULTADOS INTACTOS EN LÍNEAS LIMPIAS) ==================== -->
+    <!-- ==================== APARTADO 2: RUSH · HISTORIAL COMPLETO ==================== -->
     <section id="sec-rush" class="hidden space-y-5">
-      <div class="glass-card rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 border border-emerald-500/30">
-        <div class="space-y-1">
-          <div class="flex items-center gap-2">
-            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-extrabold text-xs">
-              ⚡ CANAL RUSH OFICIAL
-            </span>
-            <h2 class="text-lg font-extrabold text-white">Historial Completo e Intacto de Resultados (100% Gratis)</h2>
+      <div class="luxury-card rounded-3xl p-6 sm:p-7 max-w-4xl mx-auto space-y-5">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-white/[0.06] pb-5">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-400">Canal Oficial de Resultados</span>
+            <h2 class="text-xl font-extrabold text-white tracking-tight mt-0.5">Historial Rush</h2>
           </div>
-          <p class="text-xs text-slate-400">
-            Todos los resultados enviados por el Bot permanecen aquí intactos sin cortarse ni borrarse jamás.
-          </p>
+
+          <div class="flex items-center gap-3">
+            <div class="px-3.5 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+              <span class="text-[10px] uppercase font-bold text-emerald-400 block">Victorias</span>
+              <span id="rush-wins-count" class="text-sm font-extrabold text-emerald-300 font-mono-num">0</span>
+            </div>
+            <div class="px-3.5 py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-center">
+              <span class="text-[10px] uppercase font-bold text-rose-400 block">Pérdidas</span>
+              <span id="rush-losses-count" class="text-sm font-extrabold text-rose-300 font-mono-num">0</span>
+            </div>
+          </div>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3">
-          <div class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-center">
-            <p class="text-[11px] text-slate-400">Total Rush</p>
-            <p id="rush-total-count" class="text-base font-extrabold text-white font-mono">0</p>
-          </div>
-          <div class="px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-center">
-            <p class="text-[11px] text-emerald-400">WIN</p>
-            <p id="rush-wins-count" class="text-base font-extrabold text-emerald-400 font-mono">0</p>
-          </div>
-          <div class="px-4 py-2 rounded-xl bg-slate-900 border border-rose-500/30 text-center">
-            <p class="text-[11px] text-rose-400">LOSS</p>
-            <p id="rush-losses-count" class="text-base font-extrabold text-rose-400 font-mono">0</p>
-          </div>
-          <div class="px-4 py-2 rounded-xl bg-slate-900 border border-amber-500/30 text-center">
-            <p class="text-[11px] text-amber-400">Efectividad</p>
-            <p id="rush-winrate-big" class="text-base font-extrabold text-amber-400 font-mono">0.0%</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Listado Completo de Líneas RUSH (WIN 1, WIN 2, WIN 3... / LOSS, sin imágenes) -->
-      <div class="glass-card rounded-2xl p-5 space-y-3 max-w-3xl mx-auto">
-        <div class="flex items-center justify-between border-b border-slate-800 pb-2.5 text-xs text-slate-400 font-bold">
-          <span>RESULTADO OFICIAL RUSH</span>
-          <span>REGISTRO</span>
-        </div>
-
-        <div id="full-rush-container" class="space-y-1.5">
-          <div class="p-8 text-center text-xs text-slate-500">
-            Aún no se han recibido resultados desde el Bot.
+        <div id="full-rush-container" class="space-y-2 max-h-[65vh] overflow-y-auto pr-1">
+          <div class="py-12 text-center text-xs text-slate-500">
+            Sin resultados registrados.
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ==================== APARTADO 3: AUTENTICACIÓN Y VERIFICACIÓN DE CORREO ==================== -->
-    <section id="sec-auth" class="hidden max-w-md mx-auto">
-      <div class="glass-card rounded-2xl p-6 space-y-5">
-        <div class="flex border-b border-slate-800 pb-3 gap-2">
-          <button onclick="switchAuthMode('login')" id="btn-mode-login" class="flex-1 py-2 rounded-lg text-xs font-extrabold bg-amber-500 text-black">
+    <!-- ==================== APARTADO 3: ACCESO Y REGISTRO ==================== -->
+    <section id="sec-auth" class="hidden max-w-md mx-auto py-4">
+      <div class="luxury-card rounded-3xl p-7 space-y-6">
+        <div class="text-center space-y-1">
+          <div class="w-10 h-10 mx-auto rounded-xl btn-gold flex items-center justify-center font-extrabold text-base">♛</div>
+          <h2 class="text-lg font-extrabold text-white pt-2">Acceso a la Plataforma</h2>
+          <p class="text-xs text-slate-400">Ingresa con tu cuenta o regístrate para continuar</p>
+        </div>
+
+        <div class="flex bg-[#060911] p-1 rounded-xl border border-white/[0.06]">
+          <button onclick="switchAuthMode('login')" id="btn-mode-login" class="flex-1 py-2 rounded-lg text-xs font-bold btn-gold transition">
             Iniciar Sesión
           </button>
-          <button onclick="switchAuthMode('register')" id="btn-mode-register" class="flex-1 py-2 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300">
-            Crear Cuenta Verificada
+          <button onclick="switchAuthMode('register')" id="btn-mode-register" class="flex-1 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
+            Crear Cuenta
           </button>
         </div>
 
-        <!-- Formulario Login -->
-        <div id="form-login" class="space-y-3">
+        <!-- Login -->
+        <div id="form-login" class="space-y-4">
           <div>
-            <label class="text-xs text-slate-400 font-semibold">Correo Electrónico</label>
-            <input type="email" id="login-email" placeholder="tu@correo.com" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white" />
+            <label class="text-xs text-slate-400 font-medium">Correo Electrónico</label>
+            <input type="email" id="login-email" placeholder="nombre@correo.com" class="w-full mt-1.5 px-4 py-3 rounded-xl bg-[#060911] border border-white/10 focus:border-amber-500/60 focus:outline-none text-sm text-white" />
           </div>
           <div>
-            <label class="text-xs text-slate-400 font-semibold">Contraseña</label>
-            <input type="password" id="login-password" placeholder="••••••••" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white" />
+            <label class="text-xs text-slate-400 font-medium">Contraseña</label>
+            <input type="password" id="login-password" placeholder="••••••••" class="w-full mt-1.5 px-4 py-3 rounded-xl bg-[#060911] border border-white/10 focus:border-amber-500/60 focus:outline-none text-sm text-white" />
           </div>
-          <button onclick="doLogin()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition">
-            🔐 Entrar con Verificación de Dispositivo
+          <button onclick="doLogin()" class="w-full py-3.5 rounded-xl btn-gold font-extrabold text-xs uppercase tracking-wider transition">
+            Entrar
           </button>
         </div>
 
-        <!-- Formulario Registro -->
-        <div id="form-register" class="hidden space-y-3">
+        <!-- Registro -->
+        <div id="form-register" class="hidden space-y-4">
           <div>
-            <label class="text-xs text-slate-400 font-semibold">Tu Correo Electrónico Real</label>
-            <input type="email" id="reg-email" placeholder="ejemplo@gmail.com" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white" />
+            <label class="text-xs text-slate-400 font-medium">Correo Electrónico</label>
+            <input type="email" id="reg-email" placeholder="nombre@correo.com" class="w-full mt-1.5 px-4 py-3 rounded-xl bg-[#060911] border border-white/10 focus:border-amber-500/60 focus:outline-none text-sm text-white" />
           </div>
           <div>
-            <label class="text-xs text-slate-400 font-semibold">Crea tu Contraseña</label>
-            <input type="password" id="reg-password" placeholder="Mínimo 4 caracteres" class="w-full mt-1 px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-sm text-white" />
+            <label class="text-xs text-slate-400 font-medium">Contraseña</label>
+            <input type="password" id="reg-password" placeholder="Mínimo 4 caracteres" class="w-full mt-1.5 px-4 py-3 rounded-xl bg-[#060911] border border-white/10 focus:border-amber-500/60 focus:outline-none text-sm text-white" />
           </div>
-          <button onclick="doRegister()" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs transition">
-            📧 Registrar en Base de Datos y Recibir Código
+          <button onclick="doRegister()" class="w-full py-3.5 rounded-xl btn-gold font-extrabold text-xs uppercase tracking-wider transition">
+            Crear Cuenta
           </button>
         </div>
 
-        <!-- Paso Verificación OTP 6 dígitos -->
-        <div id="form-verify" class="hidden space-y-3 bg-slate-900/90 p-4 rounded-xl border border-amber-500/40">
-          <p class="text-xs font-bold text-amber-400">📩 Verificación de Correo Electrónico</p>
-          <p id="otp-hint" class="text-xs text-slate-300">Ingresa el código de 6 dígitos enviado a tu correo:</p>
-          <input type="text" id="verify-code" maxlength="6" placeholder="123456" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-center font-mono text-base font-extrabold tracking-widest text-amber-400" />
-          <button onclick="doVerifyOtp()" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition">
-            ✅ Verificar Correo y Activar Cuenta
+        <!-- Verificación de Código -->
+        <div id="form-verify" class="hidden space-y-4 bg-[#060911] p-5 rounded-2xl border border-amber-500/30">
+          <p class="text-xs font-bold text-amber-400 uppercase tracking-wider text-center">Verificación de Cuenta</p>
+          <p id="otp-hint" class="text-xs text-slate-300 text-center">Ingresa tu código de 6 dígitos:</p>
+          <input type="text" id="verify-code" maxlength="6" placeholder="000000" class="w-full px-4 py-3 rounded-xl bg-black border border-white/10 text-center font-mono-num text-lg font-extrabold tracking-widest text-amber-400" />
+          <button onclick="doVerifyOtp()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs uppercase tracking-wider transition">
+            Confirmar Código
           </button>
         </div>
 
@@ -333,44 +394,51 @@
       </div>
     </section>
 
-    <!-- ==================== APARTADO 4: COMPRAR MEMBRESÍA VIP CON USDT ==================== -->
+    <!-- ==================== APARTADO 4: MEMBRESÍA VIP (USDT) ==================== -->
     <section id="sec-usdt" class="hidden max-w-3xl mx-auto">
-      <div class="glass-card rounded-2xl p-6 space-y-5">
-        <div class="border-b border-slate-800 pb-3">
-          <h2 class="text-lg font-extrabold text-white">💎 Adquirir Membresía VIP con USDT</h2>
-          <p class="text-xs text-slate-400">Realiza el pago en USDT y registra tu comprobante para que el Administrador active tus señales en tiempo real.</p>
+      <div class="luxury-card-gold rounded-3xl p-7 sm:p-8 space-y-6">
+        <div class="border-b border-white/[0.06] pb-5">
+          <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Suscripción Exclusiva</span>
+          <h2 class="text-2xl font-extrabold text-white mt-0.5">Membresía Baccarat Dynasty VIP</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div onclick="selectPlan('VIP_30_DIAS', 50)" id="plan-30" class="cursor-pointer p-4 rounded-xl bg-slate-900 border-2 border-amber-500 space-y-1">
-            <span class="px-2 py-0.5 rounded bg-amber-500 text-black font-extrabold text-xs">MÁS POPULAR</span>
-            <h3 class="font-extrabold text-base text-white pt-1">Membresía Mensual (30 Días)</h3>
-            <p class="text-2xl font-extrabold text-amber-400">50 USDT</p>
-            <p class="text-xs text-slate-400">Acceso 24/7 a todas las señales en vivo + Capturas reales del Bot + Sonido</p>
+          <div onclick="selectPlan('VIP_30_DIAS', 50)" id="plan-30" class="cursor-pointer p-6 rounded-2xl bg-[#070a10] border-2 border-amber-500/80 space-y-2 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-0.5 rounded-md btn-gold font-extrabold text-[10px] uppercase tracking-wider">Recomendado</span>
+              <span class="text-xs text-slate-400 font-semibold">30 Días</span>
+            </div>
+            <h3 class="font-bold text-base text-white pt-1">Pase Mensual VIP</h3>
+            <p class="text-3xl font-extrabold text-amber-400 font-mono-num">50 <span class="text-sm font-normal text-slate-400">USDT</span></p>
+            <p class="text-xs text-slate-400 leading-relaxed">Acceso ilimitado 24/7 a la terminal de señales en vivo, vista de mesa y alertas sonoras.</p>
           </div>
-          <div onclick="selectPlan('VIP_7_DIAS', 20)" id="plan-7" class="cursor-pointer p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-1">
-            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold text-xs">ACCESO SEMANAL</span>
-            <h3 class="font-extrabold text-base text-white pt-1">Membresía Semanal (7 Días)</h3>
-            <p class="text-2xl font-extrabold text-white">20 USDT</p>
-            <p class="text-xs text-slate-400">Ideal para operar con las señales en vivo del Bot durante 1 semana</p>
+
+          <div onclick="selectPlan('VIP_7_DIAS', 20)" id="plan-7" class="cursor-pointer p-6 rounded-2xl bg-[#070a10] border border-white/10 space-y-2 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-0.5 rounded-md bg-white/[0.06] text-slate-300 font-bold text-[10px] uppercase tracking-wider">Semanal</span>
+              <span class="text-xs text-slate-400 font-semibold">7 Días</span>
+            </div>
+            <h3 class="font-bold text-base text-white pt-1">Pase Semanal VIP</h3>
+            <p class="text-3xl font-extrabold text-white font-mono-num">20 <span class="text-sm font-normal text-slate-400">USDT</span></p>
+            <p class="text-xs text-slate-400 leading-relaxed">Acceso completo durante 7 días continuos a todas las señales del terminal VIP.</p>
           </div>
         </div>
 
-        <div class="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
-          <p class="text-xs text-slate-400 font-semibold">1. Envía el monto en USDT (Red TRC20 / Tron) a la siguiente dirección:</p>
-          <div class="flex items-center justify-between gap-2 bg-slate-950 p-3 rounded-lg border border-slate-800">
-            <code id="usdt-wallet-text" class="text-xs font-mono text-amber-400 break-all">TX9kP7d2vBaccaratDynastyVIP9982LmN</code>
-            <button onclick="navigator.clipboard.writeText(document.getElementById('usdt-wallet-text').innerText); this.innerText='¡Copiado!'" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-white">
+        <div class="bg-[#060911] p-5 rounded-2xl border border-white/[0.07] space-y-2.5">
+          <p class="text-xs text-slate-400 font-medium">Dirección de Depósito USDT (Red TRC20):</p>
+          <div class="flex items-center justify-between gap-3 bg-black/60 p-3.5 rounded-xl border border-white/[0.06]">
+            <code id="usdt-wallet-text" class="text-xs font-mono-num text-amber-300 break-all">TX9kP7d2vBaccaratDynastyVIP9982LmN</code>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('usdt-wallet-text').innerText); this.innerText='Copiado'" class="px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-bold text-white shrink-0 transition">
               Copiar
             </button>
           </div>
         </div>
 
         <div class="space-y-3">
-          <p class="text-xs text-slate-400 font-semibold">2. Pega el Hash de Transacción (TXID) o referencia de tu pago:</p>
-          <input type="text" id="usdt-txid" placeholder="Ej: 8f94c2b1a09e... o tu ID de transferencia" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white" />
-          <button onclick="sendUsdtPayment()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition">
-            ✅ Enviar Comprobante al Administrador para Activación VIP
+          <label class="text-xs text-slate-400 font-medium">Hash de Transacción (TXID) o Referencia:</label>
+          <input type="text" id="usdt-txid" placeholder="Ingresa el código TXID de tu transferencia" class="w-full px-4 py-3 rounded-xl bg-[#060911] border border-white/10 focus:border-amber-500/60 focus:outline-none text-xs text-white" />
+          <button onclick="sendUsdtPayment()" class="w-full py-3.5 rounded-xl btn-gold font-extrabold text-xs uppercase tracking-wider transition">
+            Confirmar Pago y Activar Membresía
           </button>
           <p id="usdt-msg" class="text-xs text-center font-bold text-emerald-400"></p>
         </div>
@@ -379,68 +447,68 @@
 
     <!-- ==================== APARTADO 5: PANEL DE ADMINISTRADOR ==================== -->
     <section id="sec-admin" class="hidden space-y-6">
-      <!-- Controles de Prueba para el Administrador -->
-      <div class="glass-card rounded-2xl p-5 border border-purple-500/40 space-y-3">
+      <!-- Controles de Prueba Rápidos -->
+      <div class="luxury-card rounded-3xl p-6 border border-amber-500/20 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h3 class="font-extrabold text-sm text-purple-300">⚡ Consola de Pruebas del Administrador</h3>
-            <p class="text-xs text-slate-400">Prueba cómo se ven las líneas del RUSH (WIN 1, WIN 2, WIN 3, LOSS) y límpialas cuando termines.</p>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Administración</span>
+            <h3 class="font-extrabold text-base text-white">Simulador Rápido de Resultados Rush</h3>
           </div>
           <div class="flex flex-wrap gap-2">
-            <button onclick="adminTestRush('win', 1)" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs">
+            <button onclick="adminTestRush('win', 1)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
               + ✅ WIN 1
             </button>
-            <button onclick="adminTestRush('win', 2)" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs">
+            <button onclick="adminTestRush('win', 2)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
               + ✅ WIN 2
             </button>
-            <button onclick="adminTestRush('win', 3)" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs">
+            <button onclick="adminTestRush('win', 3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
               + ✅ WIN 3
             </button>
-            <button onclick="adminTestRush('loss', 6)" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs">
+            <button onclick="adminTestRush('loss', 6)" class="px-3.5 py-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/30 text-rose-300 font-bold text-xs transition">
               + ❌ LOSS
             </button>
-            <button onclick="adminClearTests()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/40 font-extrabold text-xs">
-              🗑️ Limpiar Pruebas (Dejar en 0)
+            <button onclick="adminClearTests()" class="px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-amber-300 font-bold text-xs transition">
+              Limpiar Historial
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Pagos USDT Pendientes -->
-      <div class="glass-card rounded-2xl p-5 space-y-3">
-        <h3 class="font-extrabold text-sm text-amber-400">💎 Pagos en USDT Recibidos (Aprobar con 1 Clic)</h3>
+      <!-- Pagos USDT -->
+      <div class="luxury-card rounded-3xl p-6 space-y-4">
+        <h3 class="font-extrabold text-sm text-amber-400 uppercase tracking-wider">Solicitudes de Activación VIP (USDT)</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400">
-                <th class="py-2 px-2">Correo Usuario</th>
-                <th class="py-2 px-2">Plan</th>
-                <th class="py-2 px-2">Monto</th>
-                <th class="py-2 px-2">TXID / Referencia</th>
-                <th class="py-2 px-2">Estado</th>
-                <th class="py-2 px-2 text-right">Acción</th>
+              <tr class="border-b border-white/[0.06] text-slate-400">
+                <th class="py-3 px-2">Usuario</th>
+                <th class="py-3 px-2">Plan</th>
+                <th class="py-3 px-2">Monto</th>
+                <th class="py-3 px-2">TXID</th>
+                <th class="py-3 px-2">Estado</th>
+                <th class="py-3 px-2 text-right">Acción</th>
               </tr>
             </thead>
-            <tbody id="admin-payments-body" class="divide-y divide-slate-800/60"></tbody>
+            <tbody id="admin-payments-body" class="divide-y divide-white/[0.04]"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- Gestión de Usuarios y Dispositivos -->
-      <div class="glass-card rounded-2xl p-5 space-y-3">
-        <h3 class="font-extrabold text-sm text-white">👥 Usuarios Registrados y Control Anti-Sharing</h3>
+      <!-- Usuarios -->
+      <div class="luxury-card rounded-3xl p-6 space-y-4">
+        <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">Gestión de Usuarios</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
-              <tr class="border-b border-slate-800 text-slate-400">
-                <th class="py-2 px-2">Correo Electrónico</th>
-                <th class="py-2 px-2">Verificado</th>
-                <th class="py-2 px-2">Membresía</th>
-                <th class="py-2 px-2">Equipos Vinculados</th>
-                <th class="py-2 px-2 text-right">Controles Admin</th>
+              <tr class="border-b border-white/[0.06] text-slate-400">
+                <th class="py-3 px-2">Correo Electrónico</th>
+                <th class="py-3 px-2">Estado</th>
+                <th class="py-3 px-2">Nivel</th>
+                <th class="py-3 px-2">Dispositivos</th>
+                <th class="py-3 px-2 text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody id="admin-users-body" class="divide-y divide-slate-800/60"></tbody>
+            <tbody id="admin-users-body" class="divide-y divide-white/[0.04]"></tbody>
           </table>
         </div>
       </div>
@@ -462,7 +530,7 @@
     function openImageZoom(src, caption) {
       if (!src) return;
       document.getElementById('zoom-img-src').src = src;
-      document.getElementById('zoom-caption').innerText = caption || '📷 Captura Original del Bot';
+      document.getElementById('zoom-caption').innerText = caption || 'Vista de Mesa';
       document.getElementById('img-zoom-modal').classList.remove('hidden');
     }
 
@@ -470,7 +538,6 @@
       document.getElementById('img-zoom-modal').classList.add('hidden');
     }
 
-    // 1. Generar Huella Digital Firme del Dispositivo
     function computeDeviceFingerprint() {
       let savedDeviceId = localStorage.getItem('dynasty_hw_id');
       if (!savedDeviceId) {
@@ -493,7 +560,6 @@
         localStorage.setItem('dynasty_hw_id', savedDeviceId);
       }
       deviceFp = savedDeviceId;
-      document.getElementById('fp-display').innerText = deviceFp;
     }
 
     function playSignalSound() {
@@ -525,19 +591,18 @@
       const navRush = document.getElementById('nav-rush');
       const navUsdt = document.getElementById('nav-usdt');
       navSignals.className = sec === 'signals'
-        ? 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-amber-500 text-black transition'
-        : 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white transition';
+        ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition'
+        : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
       navRush.className = sec === 'rush'
-        ? 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-black transition flex items-center gap-1.5'
-        : 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5';
+        ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition flex items-center gap-2'
+        : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2';
       navUsdt.className = sec === 'usdt'
-        ? 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-amber-500 text-black transition'
-        : 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition';
+        ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition'
+        : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
 
       if (sec === 'admin') loadAdminData();
     }
 
-    // Botón directo para entrar al Panel de Admin desde la página principal
     async function enterAdminDirectly() {
       if (userRole === 'admin' && sessionToken) {
         showSection('admin');
@@ -550,7 +615,7 @@
           email: 'admin@baccaratdynasty.com',
           password: 'admin1234',
           device_fp: deviceFp,
-          device_label: 'Admin Directo'
+          device_label: 'Admin Panel'
         })
       });
       const data = await res.json();
@@ -572,11 +637,11 @@
       document.getElementById('form-register').classList.toggle('hidden', mode !== 'register');
       document.getElementById('form-verify').classList.add('hidden');
       document.getElementById('btn-mode-login').className = mode === 'login'
-        ? 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-amber-500 text-black'
-        : 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300';
+        ? 'flex-1 py-2 rounded-lg text-xs font-bold btn-gold transition'
+        : 'flex-1 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
       document.getElementById('btn-mode-register').className = mode === 'register'
-        ? 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-amber-500 text-black'
-        : 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300';
+        ? 'flex-1 py-2 rounded-lg text-xs font-bold btn-gold transition'
+        : 'flex-1 py-2 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
     }
 
     async function doRegister() {
@@ -594,7 +659,7 @@
         document.getElementById('form-register').classList.add('hidden');
         document.getElementById('form-verify').classList.remove('hidden');
         if (data.demo_otp) {
-          document.getElementById('otp-hint').innerHTML = `Código de verificación generado para <b>${email}</b>: <span class="text-amber-400 font-mono font-bold">${data.demo_otp}</span>`;
+          document.getElementById('otp-hint').innerHTML = `Código de activación: <span class="text-amber-400 font-mono-num font-bold">${data.demo_otp}</span>`;
           document.getElementById('verify-code').value = data.demo_otp;
         }
       }
@@ -625,18 +690,18 @@
           email,
           password,
           device_fp: deviceFp,
-          device_label: navigator.platform + ' (' + navigator.language + ')'
+          device_label: navigator.platform
         })
       });
       const data = await res.json();
       if (!data.ok) {
-        document.getElementById('auth-msg').innerText = data.msg || 'Error al entrar';
+        document.getElementById('auth-msg').innerText = data.msg || 'Credenciales inválidas';
         if (data.needs_verification) {
           pendingVerifyEmail = email;
           document.getElementById('form-login').classList.add('hidden');
           document.getElementById('form-verify').classList.remove('hidden');
           if (data.demo_otp) {
-            document.getElementById('otp-hint').innerHTML = `Tu código de verificación es: <b class="text-amber-400">${data.demo_otp}</b>`;
+            document.getElementById('otp-hint').innerHTML = `Código de activación: <b class="text-amber-400">${data.demo_otp}</b>`;
           }
         }
         return;
@@ -673,22 +738,22 @@
       const badgeArea = document.getElementById('user-badge-area');
       if (sessionToken && userEmail) {
         const roleBadge = userRole === 'admin'
-          ? '<span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold text-xs">👑 ADMIN</span>'
+          ? '<span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold text-[11px]">ADMIN</span>'
           : (userRole === 'vip'
-            ? '<span class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-400 font-bold text-xs">💎 VIP ACTIVO</span>'
-            : '<span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold text-xs">🔓 GRATIS</span>');
+            ? '<span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold text-[11px]">VIP</span>'
+            : '<span class="px-2.5 py-1 rounded-lg bg-white/[0.06] text-slate-300 font-semibold text-[11px]">ESTÁNDAR</span>');
 
         badgeArea.innerHTML = `
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2.5">
             ${roleBadge}
-            <span class="text-xs text-slate-300 font-medium hidden sm:inline">${userEmail}</span>
-            <button onclick="logoutUser()" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-xs text-red-300 font-semibold">Salir</button>
+            <span class="text-xs text-slate-300 font-medium hidden md:inline">${userEmail}</span>
+            <button onclick="logoutUser()" class="px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-rose-500/20 text-xs text-slate-300 hover:text-rose-300 font-semibold transition">Salir</button>
           </div>
         `;
       } else {
         badgeArea.innerHTML = `
-          <button onclick="showSection('auth')" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition">
-            🔐 Entrar / Registrarse
+          <button onclick="showSection('auth')" class="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-white text-xs font-bold transition">
+            Acceder
           </button>
         `;
       }
@@ -698,16 +763,15 @@
       selectedPlan = plan;
       selectedAmount = amount;
       document.getElementById('plan-30').className = plan === 'VIP_30_DIAS'
-        ? 'cursor-pointer p-4 rounded-xl bg-slate-900 border-2 border-amber-500 space-y-1'
-        : 'cursor-pointer p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-1';
+        ? 'cursor-pointer p-6 rounded-2xl bg-[#070a10] border-2 border-amber-500/80 space-y-2 transition'
+        : 'cursor-pointer p-6 rounded-2xl bg-[#070a10] border border-white/10 space-y-2 transition';
       document.getElementById('plan-7').className = plan === 'VIP_7_DIAS'
-        ? 'cursor-pointer p-4 rounded-xl bg-slate-900 border-2 border-amber-500 space-y-1'
-        : 'cursor-pointer p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-1';
+        ? 'cursor-pointer p-6 rounded-2xl bg-[#070a10] border-2 border-amber-500/80 space-y-2 transition'
+        : 'cursor-pointer p-6 rounded-2xl bg-[#070a10] border border-white/10 space-y-2 transition';
     }
 
     async function sendUsdtPayment() {
       if (!sessionToken) {
-        alert('Primero inicia sesión o regístrate con tu correo para asociar tu membresía VIP.');
         showSection('auth');
         return;
       }
@@ -732,7 +796,6 @@
       return b64.startsWith('data:') ? b64 : 'data:image/png;base64,' + b64;
     }
 
-    // 2. Polling en Tiempo Real (Cada 1.5 segundos)
     async function pollLiveState() {
       try {
         const res = await fetch(`/api/state?token=${encodeURIComponent(sessionToken)}&fp=${encodeURIComponent(deviceFp)}`);
@@ -759,13 +822,14 @@
         const lossesCount = data.stats ? (data.stats.losses || 0) : 0;
         const winRate = data.stats ? (data.stats.win_rate || 0) : 0;
 
+        // Actualizar KPIs Superiores
+        document.getElementById('kpi-winrate').innerText = winRate + '%';
+        document.getElementById('kpi-wins').innerText = winsCount;
+        document.getElementById('kpi-total').innerText = totalTracked;
         document.getElementById('rush-nav-count').innerText = totalTracked;
-        document.getElementById('stat-winrate-side').innerText = winRate + '%';
-        document.getElementById('stat-total-side').innerText = `${totalTracked} resultados`;
-        document.getElementById('rush-total-count').innerText = totalTracked;
+        document.getElementById('stat-total-side').innerText = `${totalTracked} registros`;
         document.getElementById('rush-wins-count').innerText = winsCount;
         document.getElementById('rush-losses-count').innerText = lossesCount;
-        document.getElementById('rush-winrate-big').innerText = winRate + '%';
 
         const currentRushHash = results.length > 0 ? `${results.length}-${results[0].id}` : 'empty';
         if (currentRushHash !== lastRushHash) {
@@ -773,7 +837,6 @@
           renderRushLists(results);
         }
 
-        // Renderizar Señal Activa del Bot
         const sig = data.active_signal;
         const lockedOverlay = document.getElementById('sig-locked-overlay');
         const vipContent = document.getElementById('sig-vip-content');
@@ -781,10 +844,12 @@
         if (!sig) {
           lockedOverlay.classList.add('hidden');
           vipContent.classList.remove('hidden');
-          document.getElementById('sig-table-title').innerText = 'Esperando señal en vivo del Bot...';
-          document.getElementById('sig-countdown').innerText = 'En espera del Bot';
-          document.getElementById('sig-hand-info').innerText = 'Sin señal activa en este momento';
-          document.getElementById('sig-prob-badge').innerText = 'Esperando datos del Bot';
+          document.getElementById('kpi-status').innerText = 'Monitoreando Mesas';
+          document.getElementById('kpi-status').className = 'text-sm font-bold text-slate-300 mt-1.5';
+          document.getElementById('sig-table-title').innerText = 'Analizando Mesas en Vivo';
+          document.getElementById('sig-countdown').innerText = 'En Espera';
+          document.getElementById('sig-prob-badge').innerText = 'Precisión: --%';
+          document.getElementById('sig-hand-info').innerText = 'Válido por 6 intentos';
           document.getElementById('sig-ref-img').classList.add('hidden');
           document.getElementById('sig-placeholder-card').classList.remove('hidden');
           return;
@@ -795,23 +860,23 @@
           playSignalSound();
         }
 
+        document.getElementById('kpi-status').innerText = 'Señal Activa';
+        document.getElementById('kpi-status').className = 'text-sm font-extrabold text-emerald-400 mt-1.5';
         document.getElementById('sig-countdown').innerText = sig.countdown > 0
-          ? `⏱️ ${sig.countdown}s para apostar Tiro 1`
-          : `🃏 Tiro ${sig.current_attempt}/6 en curso`;
+          ? `Entrada: ${sig.countdown}s`
+          : `Intento ${sig.current_attempt} / 6`;
 
         if (sig.is_locked) {
           lockedOverlay.classList.remove('hidden');
           vipContent.classList.add('hidden');
-          document.getElementById('sig-table-title').innerText = '🔒 Señal del Bot en Curso (Exclusivo VIP)';
+          document.getElementById('sig-table-title').innerText = 'Mesa VIP Activa';
           document.getElementById('locked-prob').innerText = sig.probability + '%';
         } else {
           lockedOverlay.classList.add('hidden');
           vipContent.classList.remove('hidden');
-          document.getElementById('sig-table-title').innerText = `🎯 Mesa Activa: ${sig.table_name}`;
-          document.getElementById('sig-prob-badge').innerText = `Probabilidad: ${sig.probability}% · [${sig.strategy_name}]`;
-          document.getElementById('sig-hand-info').innerText = sig.base_hand_count > 0
-            ? `Ref. Mano #${sig.base_hand_count} -> Jugar Tiro 1 en Mano #${sig.base_hand_count + 1} · Tiro Actual: ${sig.current_attempt}/6`
-            : `Tiro Activo: ${sig.current_attempt}/6 · Hora: ${sig.created_at}`;
+          document.getElementById('sig-table-title').innerText = sig.table_name;
+          document.getElementById('sig-prob-badge').innerText = `Precisión: ${sig.probability}%`;
+          document.getElementById('sig-hand-info').innerText = `Intento Activo: ${sig.current_attempt} de 6 · ${sig.created_at}`;
 
           const imgEl = document.getElementById('sig-ref-img');
           const phEl = document.getElementById('sig-placeholder-card');
@@ -822,21 +887,22 @@
           } else {
             imgEl.classList.add('hidden');
             phEl.classList.remove('hidden');
-            phEl.innerHTML = `<p class="text-sm font-bold text-amber-400">🎯 Señal Real Activa en [${sig.table_name}]</p><p class="text-xs text-slate-400">Operando Tiro ${sig.current_attempt} de 6.</p>`;
           }
 
           const seqBoxes = document.getElementById('sig-sequence-boxes');
           seqBoxes.innerHTML = (sig.sequence || []).slice(0, 6).map((item, idx) => {
             const isPlayer = String(item).toUpperCase() === 'P';
             const isCurrent = (idx + 1) === sig.current_attempt;
-            const bgClass = isPlayer
-              ? 'bg-blue-600/30 border-blue-500 text-blue-200'
-              : 'bg-red-600/30 border-red-500 text-red-200';
-            const ringClass = isCurrent ? 'ring-2 ring-amber-400 scale-105 shadow-lg' : 'opacity-80';
+            const cardStyle = isPlayer
+              ? 'bg-blue-600/15 border-blue-500/40 text-blue-300'
+              : 'bg-rose-600/15 border-rose-500/40 text-rose-300';
+            const activeRing = isCurrent
+              ? 'ring-2 ring-amber-400 bg-white/[0.06] scale-[1.03] shadow-lg'
+              : 'opacity-80';
             return `
-              <div class="p-2.5 rounded-xl border ${bgClass} ${ringClass} transition">
-                <p class="text-xs font-semibold">Tiro ${idx + 1}</p>
-                <p class="text-xs font-extrabold mt-0.5">${isPlayer ? '🔵 JUG' : '🔴 BAN'}</p>
+              <div class="p-3.5 rounded-2xl border ${cardStyle} ${activeRing} transition">
+                <span class="block text-[10px] font-bold uppercase tracking-wider opacity-75">Tiro ${idx + 1}</span>
+                <span class="font-extrabold text-xs sm:text-sm mt-1 block">${isPlayer ? '🔵 JUGADOR' : '🔴 BANCA'}</span>
               </div>
             `;
           }).join('');
@@ -844,15 +910,14 @@
       } catch (e) {}
     }
 
-    // Renderizar RUSH como líneas directas: "✅ WIN 1", "✅ WIN 2", "✅ WIN 3", "❌ LOSS" (SIN IMÁGENES)
     function renderRushLists(results) {
       const sideContainer = document.getElementById('side-rush-list');
       const fullContainer = document.getElementById('full-rush-container');
 
       if (!results || results.length === 0) {
         const emptyHtml = `
-          <div class="p-6 text-center text-xs text-slate-500">
-            Aún no hay resultados en RUSH.
+          <div class="py-12 text-center text-xs text-slate-500">
+            Sin resultados registrados.
           </div>
         `;
         sideContainer.innerHTML = emptyHtml;
@@ -865,12 +930,12 @@
         const label = isWin ? `✅ WIN ${r.attempt_number}` : `❌ LOSS`;
         const num = results.length - idx;
         return `
-          <div class="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-slate-900/95 border ${isWin ? 'border-emerald-500/30' : 'border-rose-500/30'}">
-            <span class="text-sm font-extrabold tracking-wide ${isWin ? 'text-emerald-400' : 'text-rose-400'}">
+          <div class="flex items-center justify-between px-4 py-3 rounded-2xl bg-[#070a10] border ${isWin ? 'border-emerald-500/20' : 'border-rose-500/20'} hover:border-white/15 transition">
+            <span class="text-xs sm:text-sm font-extrabold tracking-wide ${isWin ? 'text-emerald-400' : 'text-rose-400'}">
               ${label}
             </span>
-            <span class="text-[11px] font-mono text-slate-500">
-              #${num} · ${r.created_at}
+            <span class="text-[11px] font-mono-num text-slate-500">
+              #${num}
             </span>
           </div>
         `;
@@ -880,7 +945,6 @@
       fullContainer.innerHTML = results.map(buildLine).join('');
     }
 
-    // 3. Funciones del Panel de Administrador
     async function loadAdminData() {
       const res = await fetch(`/api/admin/data?token=${encodeURIComponent(sessionToken)}`);
       const data = await res.json();
@@ -889,34 +953,34 @@
       const payBody = document.getElementById('admin-payments-body');
       payBody.innerHTML = (data.payments || []).map(p => `
         <tr>
-          <td class="py-2.5 px-2 font-semibold">${p.user_email}</td>
-          <td class="py-2.5 px-2">${p.plan_name}</td>
-          <td class="py-2.5 px-2 font-bold text-amber-400">${p.amount_usdt} USDT</td>
-          <td class="py-2.5 px-2 font-mono text-slate-300">${p.txid}</td>
-          <td class="py-2.5 px-2">
-            <span class="px-2 py-0.5 rounded text-xs font-bold ${p.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}">
-              ${p.status.toUpperCase()}
+          <td class="py-3 px-2 font-semibold text-white">${p.user_email}</td>
+          <td class="py-3 px-2 text-slate-300">${p.plan_name}</td>
+          <td class="py-3 px-2 font-bold text-amber-400 font-mono-num">${p.amount_usdt} USDT</td>
+          <td class="py-3 px-2 font-mono-num text-slate-400">${p.txid}</td>
+          <td class="py-3 px-2">
+            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase ${p.status === 'approved' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'}">
+              ${p.status}
             </span>
           </td>
-          <td class="py-2.5 px-2 text-right">
+          <td class="py-3 px-2 text-right">
             ${p.status === 'pending'
-              ? `<button onclick="adminAction('approve_payment', '${p.user_email}', ${p.id})" class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs">✓ Aprobar y Dar VIP</button>`
-              : `<span class="text-slate-500 text-xs">Aprobado</span>`}
+              ? `<button onclick="adminAction('approve_payment', '${p.user_email}', ${p.id})" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">Aprobar VIP</button>`
+              : `<span class="text-slate-500 text-xs">Completado</span>`}
           </td>
         </tr>
-      `).join('') || '<tr><td colspan="6" class="py-3 text-center text-slate-500">Sin pagos pendientes</td></tr>';
+      `).join('') || '<tr><td colspan="6" class="py-6 text-center text-slate-500">No hay solicitudes pendientes</td></tr>';
 
       const usrBody = document.getElementById('admin-users-body');
       usrBody.innerHTML = (data.users || []).map(u => `
         <tr>
-          <td class="py-2.5 px-2 font-semibold">${u.email}</td>
-          <td class="py-2.5 px-2">${u.is_verified ? '<span class="text-emerald-400 font-bold">✓ Sí</span>' : '<span class="text-amber-400">Pendiente</span>'}</td>
-          <td class="py-2.5 px-2"><span class="px-2 py-0.5 rounded bg-slate-800 font-bold text-xs uppercase">${u.role}</span></td>
-          <td class="py-2.5 px-2 text-slate-300">${u.device_count}/2 equipos</td>
-          <td class="py-2.5 px-2 text-right space-x-1">
-            <button onclick="adminAction('grant_vip', '${u.email}')" class="px-2.5 py-1 rounded bg-amber-500 text-black font-bold text-xs">+30d VIP</button>
-            <button onclick="adminAction('reset_devices', '${u.email}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs">Limpiar Equipos</button>
-            ${u.role === 'vip' ? `<button onclick="adminAction('revoke_vip', '${u.email}')" class="px-2 py-1 rounded bg-rose-600/30 text-rose-300 text-xs">Quitar VIP</button>` : ''}
+          <td class="py-3 px-2 font-semibold text-white">${u.email}</td>
+          <td class="py-3 px-2">${u.is_verified ? '<span class="text-emerald-400 font-bold">Activo</span>' : '<span class="text-amber-400">Pendiente</span>'}</td>
+          <td class="py-3 px-2"><span class="px-2.5 py-0.5 rounded-md bg-white/[0.06] font-bold text-[10px] uppercase">${u.role}</span></td>
+          <td class="py-3 px-2 text-slate-400 font-mono-num">${u.device_count} / 2</td>
+          <td class="py-3 px-2 text-right space-x-1.5">
+            <button onclick="adminAction('grant_vip', '${u.email}')" class="px-3 py-1 rounded-lg btn-gold font-bold text-xs">+30d VIP</button>
+            <button onclick="adminAction('reset_devices', '${u.email}')" class="px-3 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-200 text-xs">Reiniciar Equipos</button>
+            ${u.role === 'vip' ? `<button onclick="adminAction('revoke_vip', '${u.email}')" class="px-2.5 py-1 rounded-lg bg-rose-500/20 text-rose-300 text-xs">Revocar</button>` : ''}
           </td>
         </tr>
       `).join('');
@@ -958,7 +1022,6 @@
       await pollLiveState();
     }
 
-    // Inicialización
     computeDeviceFingerprint();
     updateHeaderUI();
     pollLiveState();
