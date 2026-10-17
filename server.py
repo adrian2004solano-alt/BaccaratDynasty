@@ -628,32 +628,17 @@ class handler(BaseHTTPRequestHandler):
                 sig_rows = [dict(r) for r in cur.fetchall()]
                 conn.close()
 
-        # 3.3 Obtener TODOS los resultados del RUSH sin cortar ni borrar ninguno (10,000+ intactos)
-        #     Las columnas ligeras se traen de todo el historial, y las imágenes de los últimos 15
+        # 3.3 Obtener TODOS los resultados del RUSH sin cortar ni borrar ninguno (10,000+ intactos, solo líneas WIN N / LOSS sin imágenes)
         res_rows = supabase.select(
             "dynasty_results",
             "select=id,table_name,result_type,attempt_number,strategy_name,created_at&order=id.desc&limit=10000"
         )
-        img_map = {}
-        if res_rows is not None:
-            recent_imgs = supabase.select(
-                "dynasty_results",
-                f"select=id,screenshot_b64&screenshot_b64=not.is.null&order=id.desc&limit={MAX_STORED_IMAGES}"
-            ) or []
-            for item in recent_imgs:
-                if item.get("screenshot_b64"):
-                    img_map[item["id"]] = item["screenshot_b64"]
-        else:
+        if res_rows is None:
             with db_lock:
                 conn = get_db()
                 cur = conn.cursor()
-                cur.execute("SELECT id, table_name, result_type, attempt_number, strategy_name, screenshot_b64, created_at FROM dynasty_results ORDER BY id DESC")
-                res_rows = []
-                for idx, r in enumerate(cur.fetchall()):
-                    d = dict(r)
-                    if idx < MAX_STORED_IMAGES and d.get("screenshot_b64"):
-                        img_map[d["id"]] = d["screenshot_b64"]
-                    res_rows.append(d)
+                cur.execute("SELECT id, table_name, result_type, attempt_number, strategy_name, created_at FROM dynasty_results ORDER BY id DESC")
+                res_rows = [dict(r) for r in cur.fetchall()]
                 conn.close()
 
         results_list = []
@@ -669,7 +654,6 @@ class handler(BaseHTTPRequestHandler):
                 "result_type": rtype,
                 "attempt_number": r.get("attempt_number") or 1,
                 "strategy_name": r.get("strategy_name") or "DYNASTY_VIP",
-                "screenshot_b64": img_map.get(rid),
                 "created_at": r.get("created_at") or "",
             })
 
@@ -912,6 +896,18 @@ class handler(BaseHTTPRequestHandler):
                 conn.close()
                 supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"registered_devices": [], "active_session_token": None, "active_device_fp": None})
                 return self._send_json({"ok": True, "msg": f"Dispositivos y sesiones reiniciados para {target_email}."})
+
+            if action == "clear_test_data":
+                cur.execute("DELETE FROM dynasty_signals")
+                cur.execute("DELETE FROM dynasty_results")
+                conn.commit()
+                conn.close()
+                try:
+                    requests.delete(f"{supabase.url}/rest/v1/dynasty_signals?id=gt.0", headers=supabase.headers, timeout=4)
+                    requests.delete(f"{supabase.url}/rest/v1/dynasty_results?id=gt.0", headers=supabase.headers, timeout=4)
+                except Exception:
+                    pass
+                return self._send_json({"ok": True, "msg": "Señales y resultados de prueba limpiados."})
 
             conn.close()
         self._send_json({"ok": False, "msg": "Acción no reconocida."}, 400)
