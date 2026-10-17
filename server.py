@@ -61,7 +61,8 @@ USDT_WALLET_TRC20 = os.getenv("USDT_WALLET_TRC20", "TX9kP7d2vBaccaratDynastyVIP9
 PORT = int(os.getenv("PORT", "5000"))
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "dynasty_local.db")
+IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("VERCEL_ENV") or not os.access(BASE_DIR, os.W_OK))
+DB_PATH = "/tmp/dynasty_local.db" if IS_VERCEL else os.path.join(BASE_DIR, "dynasty_local.db")
 TEMPLATES_DIR = os.path.join(BASE_DIR, "templates")
 
 
@@ -87,7 +88,7 @@ class SupabaseBridge:
 
     def _check_connection(self):
         try:
-            r = requests.get(f"{self.url}/rest/v1/", headers=self.headers, timeout=4)
+            r = requests.get(f"{self.url}/rest/v1/", headers=self.headers, timeout=3)
             if r.status_code in (200, 404):
                 logger.info(f"✅ Conectado al endpoint de Supabase: {self.url}")
                 self.remote_ready = True
@@ -101,11 +102,14 @@ class SupabaseBridge:
                     f"{self.url}/rest/v1/{table}",
                     headers=self.headers,
                     json=payload,
-                    timeout=5,
+                    timeout=3,
                 )
             except Exception:
                 pass
-        threading.Thread(target=_worker, daemon=True).start()
+        if IS_VERCEL:
+            _worker()
+        else:
+            threading.Thread(target=_worker, daemon=True).start()
 
     def update_async(self, table: str, match_col: str, match_val: str, payload: dict):
         def _worker():
@@ -114,11 +118,14 @@ class SupabaseBridge:
                     f"{self.url}/rest/v1/{table}?{match_col}=eq.{match_val}",
                     headers=self.headers,
                     json=payload,
-                    timeout=5,
+                    timeout=3,
                 )
             except Exception:
                 pass
-        threading.Thread(target=_worker, daemon=True).start()
+        if IS_VERCEL:
+            _worker()
+        else:
+            threading.Thread(target=_worker, daemon=True).start()
 
 
 supabase = SupabaseBridge(SUPABASE_URL, SUPABASE_KEY)
@@ -228,7 +235,7 @@ class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
 
 
-class DynastyRequestHandler(BaseHTTPRequestHandler):
+class handler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         pass
 
@@ -809,9 +816,16 @@ class DynastyRequestHandler(BaseHTTPRequestHandler):
         self._send_json({"ok": True})
 
 
-if __name__ == "__main__":
+DynastyRequestHandler = handler
+
+try:
     init_db()
-    server = ThreadedHTTPServer(("0.0.0.0", PORT), DynastyRequestHandler)
+except Exception as _db_err:
+    logger.warning(f"Aviso inicializando DB: {_db_err}")
+
+
+if __name__ == "__main__":
+    server = ThreadedHTTPServer(("0.0.0.0", PORT), handler)
     print("=" * 68)
     print("  👑 BACCARAT DYNASTY VIP — PLATAFORMA WEB ACTIVA 👑")
     print("=" * 68)
