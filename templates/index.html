@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Baccarat Dynasty VIP — Plataforma Oficial de Señales en Vivo</title>
+  <title>Baccarat Dynasty VIP & Rush — Plataforma Oficial en Tiempo Real</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -12,7 +12,7 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
     .glass-card {
-      background: rgba(17, 24, 39, 0.85);
+      background: rgba(17, 24, 39, 0.88);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
@@ -22,6 +22,17 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col">
+
+  <!-- MODAL ZOOM DE CAPTURA REAL DEL BOT -->
+  <div id="img-zoom-modal" onclick="closeImageZoom()" class="hidden fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 cursor-zoom-out">
+    <div class="max-w-5xl w-full space-y-3 text-center" onclick="event.stopPropagation()">
+      <div class="flex items-center justify-between bg-slate-900/90 px-4 py-2.5 rounded-xl border border-slate-700">
+        <span id="zoom-caption" class="text-xs font-extrabold text-amber-400">📷 Captura Original del Bot</span>
+        <button onclick="closeImageZoom()" class="px-3 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold">✕ Cerrar</button>
+      </div>
+      <img id="zoom-img-src" src="" alt="Captura Real del Bot" class="w-full max-h-[82vh] object-contain rounded-xl border border-slate-700 shadow-2xl mx-auto" />
+    </div>
+  </div>
 
   <!-- MODAL DE EXPULSIÓN POR CUENTA COMPARTIDA ("LA VIEJA CONFIABLE") -->
   <div id="kicked-modal" class="hidden fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
@@ -38,7 +49,7 @@
   </div>
 
   <!-- BARRA SUPERIOR -->
-  <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-30 backdrop-blur">
+  <header class="border-b border-slate-800 bg-slate-950/90 sticky top-0 z-30 backdrop-blur">
     <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-black font-extrabold text-xl shadow">
@@ -47,21 +58,25 @@
         <div>
           <div class="flex items-center gap-2">
             <span class="font-extrabold text-lg tracking-tight text-white">BACCARAT DYNASTY</span>
-            <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">● EN VIVO</span>
+            <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">● CONECTADO AL BOT</span>
           </div>
-          <p class="text-xs text-slate-400">Señales Automatizadas · Protección por Huella Digital · Supabase Sync</p>
+          <p class="text-xs text-slate-400">Señales VIP Reales · Canal RUSH de Resultados Intactos · Protección Anti-Sharing</p>
         </div>
       </div>
 
-      <!-- Navegación y Estado de Usuario -->
+      <!-- Navegación Principal: Apartado de Señales y Apartado de RUSH -->
       <div class="flex flex-wrap items-center gap-2">
-        <button onclick="showSection('dashboard')" id="nav-dashboard" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500 text-black transition">
-          📡 Sala de Señales
+        <button onclick="showSection('signals')" id="nav-signals" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-amber-500 text-black transition">
+          📡 Señales Dynasty (VIP)
         </button>
-        <button onclick="showSection('usdt')" id="nav-usdt" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition">
+        <button onclick="showSection('rush')" id="nav-rush" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5">
+          <span>⚡ RUSH (Resultados)</span>
+          <span id="rush-nav-count" class="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono text-[11px]">0</span>
+        </button>
+        <button onclick="showSection('usdt')" id="nav-usdt" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition">
           💎 Membresía VIP (USDT)
         </button>
-        <button onclick="showSection('admin')" id="nav-admin" class="hidden px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-600 text-white hover:bg-purple-500 transition">
+        <button onclick="showSection('admin')" id="nav-admin" class="hidden px-3.5 py-1.5 rounded-lg text-xs font-bold bg-purple-600 text-white hover:bg-purple-500 transition">
           🛡️ Panel Admin
         </button>
 
@@ -77,37 +92,37 @@
   <!-- CONTENEDOR PRINCIPAL -->
   <main class="max-w-7xl w-full mx-auto px-4 py-6 flex-1 space-y-6">
 
-    <!-- ==================== SECCIÓN 1: SALA DE SEÑALES Y RESULTADOS ==================== -->
-    <section id="sec-dashboard" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- ==================== APARTADO 1: SEÑALES DYNASTY (VIP) ==================== -->
+    <section id="sec-signals" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-      <!-- COLUMNA IZQUIERDA (7 cols): SEÑAL EN VIVO (VIP O BLOQUEADA PARA GRATIS) -->
+      <!-- COLUMNA IZQUIERDA (7 cols): SEÑAL EN VIVO ENVIADA POR EL BOT -->
       <div class="lg:col-span-7 space-y-4">
         <div class="glass-card gold-glow rounded-2xl p-5 space-y-4">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
             <div class="flex items-center gap-2">
               <span id="sig-status-pill" class="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-extrabold">
-                📡 MONITOREO ACTIVO
+                📡 SEÑALES DYNASTY
               </span>
-              <h2 id="sig-table-title" class="text-lg font-extrabold text-white">Esperando señal del Bot...</h2>
+              <h2 id="sig-table-title" class="text-lg font-extrabold text-white">Esperando señal real del Bot...</h2>
             </div>
             <div class="flex items-center gap-2">
-              <span class="text-xs text-slate-400">Ventana de Apuesta:</span>
-              <span id="sig-countdown" class="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-mono font-extrabold text-sm">
-                15s
+              <span class="text-xs text-slate-400">Estado:</span>
+              <span id="sig-countdown" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 font-mono font-extrabold text-xs">
+                En espera del Bot
               </span>
             </div>
           </div>
 
-          <!-- VISTA CUANDO EL USUARIO ES GRATIS / NO VIP (BLOQUEO CON EMBUDO DE VENTAS) -->
+          <!-- VISTA CUANDO HAY SEÑAL ACTIVA PERO EL USUARIO ES GRATIS / NO VIP -->
           <div id="sig-locked-overlay" class="hidden bg-slate-900/95 border border-amber-500/40 rounded-xl p-6 text-center space-y-4">
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-extrabold border border-amber-500/40">
-              🔒 SEÑAL VIP EN CURSO AHORA MISMO
+              🔒 SEÑAL REAL DEL BOT EN CURSO AHORA MISMO
             </div>
             <h3 class="text-xl font-extrabold text-white">
-              ¡Señal Detectada con <span id="locked-prob" class="text-emerald-400">93%</span> de Probabilidad!
+              ¡El Bot acaba de lanzar una señal con <span id="locked-prob" class="text-emerald-400">--%</span> de Probabilidad!
             </h3>
             <p class="text-xs text-slate-400 max-w-md mx-auto">
-              Los resultados finales son <b>100% gratuitos</b> en el panel derecho, pero el nombre de la mesa, la captura de referencia previa y la secuencia de 6 tiros son exclusivos para miembros con <b>Membresía VIP Activa</b>.
+              Todos los resultados en el apartado <b>⚡ RUSH</b> son <b>100% gratuitos</b>, pero para ver las señales en vivo con la captura exacta de la mesa y los 6 tiros necesitas <b>Membresía VIP Activa</b>.
             </p>
             <div class="grid grid-cols-6 gap-2 max-w-md mx-auto opacity-50 select-none">
               <div class="p-2.5 rounded-lg bg-slate-800 border border-slate-700 text-xs font-bold">Tiro 1<br>🔒 VIP</div>
@@ -124,23 +139,27 @@
             </div>
           </div>
 
-          <!-- VISTA EXCLUSIVA PARA MIEMBROS VIP / ADMIN -->
+          <!-- VISTA DE SEÑAL REAL PARA MIEMBROS VIP / ADMIN (O ESTADO EN ESPERA) -->
           <div id="sig-vip-content" class="space-y-4">
-            <!-- Captura de Referencia (Resultado Anterior) -->
+            <!-- Captura Real Tomada por el Bot -->
             <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-2.5">
               <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
                 <span class="font-semibold text-slate-300">
-                  📷 Captura de Referencia Previa (Para ubicar la mesa — <b class="text-amber-400">No cuenta como Tiro 1</b>):
+                  📷 Captura Original Tomada por el Bot (Resultado Anterior — <b class="text-amber-400">No cuenta como Tiro 1</b>):
                 </span>
                 <span id="sig-hand-info" class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono text-xs">
-                  El Tiro 1 inicia en la mano siguiente
+                  Sin señal activa
                 </span>
               </div>
 
-              <div id="sig-image-box" class="w-full rounded-lg overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center min-h-[190px]">
-                <img id="sig-ref-img" src="" alt="Captura de Referencia" class="hidden w-full max-h-[280px] object-contain" />
-                <div id="sig-placeholder-card" class="p-4 text-center space-y-2 w-full">
-                  <p class="text-xs text-slate-400">Cuando tu Bot de PC dispare una señal, aquí aparecerá en vivo la captura de la jugada anterior (ej. 4 a 6 Banca) y sonará una alerta.</p>
+              <div id="sig-image-box" class="w-full rounded-lg overflow-hidden bg-slate-950 border border-slate-800 flex items-center justify-center min-h-[220px]">
+                <img id="sig-ref-img" onclick="openImageZoom(this.src, 'Captura de Señal Original del Bot')" src="" alt="Captura Real del Bot" class="hidden w-full max-h-[360px] object-contain cursor-zoom-in hover:opacity-95 transition" />
+                <div id="sig-placeholder-card" class="p-6 text-center space-y-2 w-full">
+                  <div class="text-2xl">🤖</div>
+                  <p class="text-sm font-bold text-slate-300">Esperando que enciendas el Bot y envíe una señal...</p>
+                  <p class="text-xs text-slate-500 max-w-md mx-auto">
+                    Esta plataforma no muestra datos simulados. Únicamente aparecerán aquí las señales reales con la captura exacta que tome tu Bot en PC.
+                  </p>
                 </div>
               </div>
             </div>
@@ -149,16 +168,15 @@
             <div class="space-y-2">
               <div class="flex items-center justify-between text-xs">
                 <span class="font-bold text-slate-200">🎯 SECUENCIA OFICIAL DE 6 TIROS:</span>
-                <span id="sig-prob-badge" class="font-extrabold text-emerald-400">Probabilidad: --%</span>
+                <span id="sig-prob-badge" class="font-extrabold text-emerald-400">Esperando datos del Bot</span>
               </div>
               <div id="sig-sequence-boxes" class="grid grid-cols-6 gap-2 text-center">
-                <!-- Rellenado dinámicamente -->
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 1<br>-</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 2<br>-</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 3<br>-</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 4<br>-</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 5<br>-</div>
-                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-400">Tiro 6<br>-</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 1<br>—</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 2<br>—</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 3<br>—</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 4<br>—</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 5<br>—</div>
+                <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700 text-xs text-slate-500">Tiro 6<br>—</div>
               </div>
             </div>
           </div>
@@ -170,35 +188,99 @@
             <span class="text-xl">🛡️</span>
             <div>
               <p class="text-xs font-bold text-emerald-400">Sistema Anti-Cuentas Compartidas Activo ("La Vieja Confiable")</p>
-              <p class="text-xs text-slate-400">Huella de Hardware Reconocida: <code id="fp-display" class="text-amber-400 font-mono">Calculando...</code> · 1 Sesión Simultánea.</p>
+              <p class="text-xs text-slate-400">Huella de Hardware: <code id="fp-display" class="text-amber-400 font-mono">Calculando...</code> · 1 Sesión Simultánea.</p>
             </div>
           </div>
-          <span class="px-2.5 py-1 rounded bg-slate-800 text-xs text-slate-300 font-mono">Supabase Conectado</span>
+          <span class="px-2.5 py-1 rounded bg-slate-800 text-xs text-slate-300 font-mono">100% Datos Reales del Bot</span>
         </div>
       </div>
 
-      <!-- COLUMNA DERECHA (5 cols): RESULTADOS GRATUITOS EN VIVO -->
+      <!-- COLUMNA DERECHA (5 cols): VISTA RÁPIDA DE RUSH (RESULTADOS EN VIVO) -->
       <div class="lg:col-span-5 space-y-4">
         <div class="glass-card rounded-2xl p-5 space-y-4">
           <div class="flex items-center justify-between border-b border-slate-800 pb-3">
             <div>
-              <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">🏆 Resultados en Vivo (Acceso Gratis)</h3>
-              <p class="text-xs text-slate-400">Historial público verificado directamente desde las mesas</p>
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-extrabold text-xs">⚡ RUSH</span>
+                <h3 class="font-extrabold text-sm text-white uppercase tracking-wider">Resultados del Bot (Gratis)</h3>
+              </div>
+              <p class="text-xs text-slate-400 mt-0.5">Con la captura exacta del Bot · Historial permanente sin cortes</p>
             </div>
             <div class="text-right">
-              <span id="stat-winrate" class="text-lg font-extrabold text-emerald-400">94.5%</span>
-              <p class="text-xs text-slate-400">Efectividad</p>
+              <span id="stat-winrate-side" class="text-lg font-extrabold text-emerald-400">0.0%</span>
+              <p id="stat-total-side" class="text-[11px] text-slate-400">0 resultados</p>
             </div>
           </div>
 
-          <div id="public-results-list" class="space-y-2.5 max-h-[460px] overflow-y-auto pr-1">
-            <!-- Rellenado dinámicamente -->
+          <div id="side-rush-list" class="space-y-3 max-h-[480px] overflow-y-auto pr-1">
+            <div class="p-6 text-center text-xs text-slate-500">
+              Aún no hay resultados en RUSH. Cuando el Bot finalice una jugada (WIN o LOSS), aparecerá aquí con su captura real.
+            </div>
+          </div>
+
+          <button onclick="showSection('rush')" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-extrabold text-xs transition border border-slate-700">
+            ⚡ Abrir Apartado RUSH Completo (Ver Todos los Resultados) →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== APARTADO 2: RUSH (TODOS LOS RESULTADOS INTACTOS + ÚLTIMAS 15 CAPTURAS) ==================== -->
+    <section id="sec-rush" class="hidden space-y-5">
+      <!-- Encabezado y Estadísticas Globales de RUSH -->
+      <div class="glass-card rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 border border-emerald-500/30">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-extrabold text-xs">
+              ⚡ CANAL RUSH OFICIAL
+            </span>
+            <h2 class="text-lg font-extrabold text-white">Historial Completo e Intacto de Resultados (100% Gratis)</h2>
+          </div>
+          <p class="text-xs text-slate-400">
+            Aquí se conservan <b>absolutamente todos los resultados</b> enviados por el Bot sin borrarse ni cortarse jamás. Las <b>últimas 15 jugadas</b> incluyen la captura de pantalla original tomada por el Bot.
+          </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <div class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-center">
+            <p class="text-[11px] text-slate-400">Total Resultados Rush</p>
+            <p id="rush-total-count" class="text-base font-extrabold text-white font-mono">0</p>
+          </div>
+          <div class="px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/30 text-center">
+            <p class="text-[11px] text-emerald-400">Ganadas (WIN)</p>
+            <p id="rush-wins-count" class="text-base font-extrabold text-emerald-400 font-mono">0</p>
+          </div>
+          <div class="px-4 py-2 rounded-xl bg-slate-900 border border-rose-500/30 text-center">
+            <p class="text-[11px] text-rose-400">Perdidas (LOSS)</p>
+            <p id="rush-losses-count" class="text-base font-extrabold text-rose-400 font-mono">0</p>
+          </div>
+          <div class="px-4 py-2 rounded-xl bg-slate-900 border border-amber-500/30 text-center">
+            <p class="text-[11px] text-amber-400">Efectividad Real</p>
+            <p id="rush-winrate-big" class="text-base font-extrabold text-amber-400 font-mono">0.0%</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Listado Completo de Resultados RUSH (Sin recortes, soporta 10,000+ registros) -->
+      <div class="glass-card rounded-2xl p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+          <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-300">
+            📋 Registro Cronológico Intacto (Del más reciente al primero)
+          </h3>
+          <span class="text-xs text-slate-400">
+            📷 Las últimas 15 jugadas muestran la captura real del Bot (clic en la imagen para ampliar)
+          </span>
+        </div>
+
+        <div id="full-rush-container" class="space-y-3">
+          <div class="p-8 text-center text-xs text-slate-500">
+            Aún no se han recibido resultados desde el Bot. En cuanto el Bot cierre su primera mesa, quedará registrada aquí permanentemente.
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ==================== SECCIÓN 2: AUTENTICACIÓN Y VERIFICACIÓN DE CORREO ==================== -->
+    <!-- ==================== APARTADO 3: AUTENTICACIÓN Y VERIFICACIÓN DE CORREO ==================== -->
     <section id="sec-auth" class="hidden max-w-md mx-auto">
       <div class="glass-card rounded-2xl p-6 space-y-5">
         <div class="flex border-b border-slate-800 pb-3 gap-2">
@@ -223,12 +305,6 @@
           <button onclick="doLogin()" class="w-full py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs transition">
             🔐 Entrar con Verificación de Dispositivo
           </button>
-          <div class="pt-2 border-t border-slate-800 flex items-center justify-between">
-            <span class="text-xs text-slate-400">¿Eres el dueño del bot?</span>
-            <button onclick="quickAdminLogin()" class="text-xs text-amber-400 hover:underline font-bold">
-              👑 Autocompletar Admin
-            </button>
-          </div>
         </div>
 
         <!-- Formulario Registro -->
@@ -260,7 +336,7 @@
       </div>
     </section>
 
-    <!-- ==================== SECCIÓN 3: COMPRAR MEMBRESÍA VIP CON USDT ==================== -->
+    <!-- ==================== APARTADO 4: COMPRAR MEMBRESÍA VIP CON USDT ==================== -->
     <section id="sec-usdt" class="hidden max-w-3xl mx-auto">
       <div class="glass-card rounded-2xl p-6 space-y-5">
         <div class="border-b border-slate-800 pb-3">
@@ -273,13 +349,13 @@
             <span class="px-2 py-0.5 rounded bg-amber-500 text-black font-extrabold text-xs">MÁS POPULAR</span>
             <h3 class="font-extrabold text-base text-white pt-1">Membresía Mensual (30 Días)</h3>
             <p class="text-2xl font-extrabold text-amber-400">50 USDT</p>
-            <p class="text-xs text-slate-400">Acceso 24/7 a todas las señales en vivo + Capturas previas + Sonido</p>
+            <p class="text-xs text-slate-400">Acceso 24/7 a todas las señales en vivo + Capturas reales del Bot + Sonido</p>
           </div>
           <div onclick="selectPlan('VIP_7_DIAS', 20)" id="plan-7" class="cursor-pointer p-4 rounded-xl bg-slate-900 border border-slate-700 space-y-1">
             <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold text-xs">ACCESO SEMANAL</span>
             <h3 class="font-extrabold text-base text-white pt-1">Membresía Semanal (7 Días)</h3>
             <p class="text-2xl font-extrabold text-white">20 USDT</p>
-            <p class="text-xs text-slate-400">Ideal para probar la precisión del bot en vivo durante 1 semana</p>
+            <p class="text-xs text-slate-400">Ideal para operar con las señales en vivo del Bot durante 1 semana</p>
           </div>
         </div>
 
@@ -295,7 +371,7 @@
 
         <div class="space-y-3">
           <p class="text-xs text-slate-400 font-semibold">2. Pega el Hash de Transacción (TXID) o referencia de tu pago:</p>
-          <input type="text" id="usdt-txid" placeholder="Ej: 8f94c2b1a09e... o tu ID de Binance" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white" />
+          <input type="text" id="usdt-txid" placeholder="Ej: 8f94c2b1a09e... o tu ID de transferencia" class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white" />
           <button onclick="sendUsdtPayment()" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs transition">
             ✅ Enviar Comprobante al Administrador para Activación VIP
           </button>
@@ -304,26 +380,8 @@
       </div>
     </section>
 
-    <!-- ==================== SECCIÓN 4: PANEL DE ADMINISTRADOR ==================== -->
+    <!-- ==================== APARTADO 5: PANEL DE ADMINISTRADOR ==================== -->
     <section id="sec-admin" class="hidden space-y-6">
-      <!-- Simulador de Señal en Vivo para Pruebas del Admin -->
-      <div class="glass-card rounded-2xl p-5 border border-purple-500/40 space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div>
-            <h3 class="font-extrabold text-sm text-purple-300">⚡ Panel de Pruebas en Tiempo Real (Solo Admin)</h3>
-            <p class="text-xs text-slate-400">Puedes disparar una señal de prueba o un resultado ahora mismo para ver cómo se actualiza en vivo.</p>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <button onclick="adminTestSignal()" class="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs">
-              🚀 Disparar Señal de Prueba (Baccarat 2)
-            </button>
-            <button onclick="adminTestResult('win')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs">
-              🏆 Publicar WIN Tiro 1
-            </button>
-          </div>
-        </div>
-      </div>
-
       <!-- Pagos USDT Pendientes -->
       <div class="glass-card rounded-2xl p-5 space-y-3">
         <h3 class="font-extrabold text-sm text-amber-400">💎 Pagos en USDT Recibidos (Aprobar con 1 Clic)</h3>
@@ -372,9 +430,21 @@
     let userRole = localStorage.getItem('dynasty_role') || 'guest';
     let deviceFp = '';
     let lastSignalId = null;
+    let lastRushHash = '';
     let selectedPlan = 'VIP_30_DIAS';
     let selectedAmount = 50;
     let pendingVerifyEmail = '';
+
+    function openImageZoom(src, caption) {
+      if (!src) return;
+      document.getElementById('zoom-img-src').src = src;
+      document.getElementById('zoom-caption').innerText = caption || '📷 Captura Original del Bot';
+      document.getElementById('img-zoom-modal').classList.remove('hidden');
+    }
+
+    function closeImageZoom() {
+      document.getElementById('img-zoom-modal').classList.add('hidden');
+    }
 
     // 1. Generar Huella Digital Firme del Dispositivo (Device Fingerprint)
     function computeDeviceFingerprint() {
@@ -402,15 +472,15 @@
       document.getElementById('fp-display').innerText = deviceFp;
     }
 
-    // Sonido de Alerta al entrar nueva señal
+    // Sonido de Alerta al entrar nueva señal real del Bot
     function playSignalSound() {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12); // A5
+        osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+        osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12);
         gain.gain.setValueAtTime(0.15, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
         osc.connect(gain);
@@ -421,10 +491,27 @@
     }
 
     function showSection(sec) {
-      ['dashboard', 'auth', 'usdt', 'admin'].forEach(s => {
-        document.getElementById('sec-' + s).classList.add('hidden');
+      ['signals', 'rush', 'auth', 'usdt', 'admin'].forEach(s => {
+        const el = document.getElementById('sec-' + s);
+        if (el) el.classList.add('hidden');
       });
-      document.getElementById('sec-' + sec).classList.remove('hidden');
+      const target = document.getElementById('sec-' + sec);
+      if (target) target.classList.remove('hidden');
+
+      // Actualizar estilo activo en navegación
+      const navSignals = document.getElementById('nav-signals');
+      const navRush = document.getElementById('nav-rush');
+      const navUsdt = document.getElementById('nav-usdt');
+      navSignals.className = sec === 'signals'
+        ? 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-amber-500 text-black transition'
+        : 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white transition';
+      navRush.className = sec === 'rush'
+        ? 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-emerald-500 text-black transition flex items-center gap-1.5'
+        : 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300 hover:text-white transition flex items-center gap-1.5';
+      navUsdt.className = sec === 'usdt'
+        ? 'px-3.5 py-1.5 rounded-lg text-xs font-extrabold bg-amber-500 text-black transition'
+        : 'px-3.5 py-1.5 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white transition';
+
       if (sec === 'admin') loadAdminData();
     }
 
@@ -438,12 +525,6 @@
       document.getElementById('btn-mode-register').className = mode === 'register'
         ? 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-amber-500 text-black'
         : 'flex-1 py-2 rounded-lg text-xs font-extrabold bg-slate-800 text-slate-300';
-    }
-
-    function quickAdminLogin() {
-      document.getElementById('login-email').value = 'admin@baccaratdynasty.com';
-      document.getElementById('login-password').value = 'admin1234';
-      doLogin();
     }
 
     async function doRegister() {
@@ -461,7 +542,7 @@
         document.getElementById('form-register').classList.add('hidden');
         document.getElementById('form-verify').classList.remove('hidden');
         if (data.demo_otp) {
-          document.getElementById('otp-hint').innerHTML = `Código generado en base de datos para <b>${email}</b>: <span class="text-amber-400 font-mono font-bold">${data.demo_otp}</span>`;
+          document.getElementById('otp-hint').innerHTML = `Código de verificación generado para <b>${email}</b>: <span class="text-amber-400 font-mono font-bold">${data.demo_otp}</span>`;
           document.getElementById('verify-code').value = data.demo_otp;
         }
       }
@@ -517,7 +598,7 @@
       localStorage.setItem('dynasty_role', userRole);
       document.getElementById('auth-msg').innerText = '';
       updateHeaderUI();
-      showSection('dashboard');
+      showSection('signals');
       pollLiveState();
     }
 
@@ -601,7 +682,12 @@
       if (data.ok) document.getElementById('usdt-txid').value = '';
     }
 
-    // 2. Polling en Tiempo Real (Cada 1 segundo)
+    function formatImgSrc(b64) {
+      if (!b64) return '';
+      return b64.startsWith('data:') ? b64 : 'data:image/png;base64,' + b64;
+    }
+
+    // 2. Polling en Tiempo Real (Cada 1.5 segundos) — 100% Datos del Bot
     async function pollLiveState() {
       try {
         const res = await fetch(`/api/state?token=${encodeURIComponent(sessionToken)}&fp=${encodeURIComponent(deviceFp)}`);
@@ -622,32 +708,29 @@
           }
         }
 
-        if (data.stats) {
-          document.getElementById('stat-winrate').innerText = data.stats.win_rate + '%';
+        const results = data.results || [];
+        const totalTracked = data.stats ? (data.stats.total_tracked || results.length) : results.length;
+        const winsCount = data.stats ? (data.stats.wins || 0) : 0;
+        const lossesCount = data.stats ? (data.stats.losses || 0) : 0;
+        const winRate = data.stats ? (data.stats.win_rate || 0) : 0;
+
+        // Actualizar contadores RUSH
+        document.getElementById('rush-nav-count').innerText = totalTracked;
+        document.getElementById('stat-winrate-side').innerText = winRate + '%';
+        document.getElementById('stat-total-side').innerText = `${totalTracked} resultados en Rush`;
+        document.getElementById('rush-total-count').innerText = totalTracked;
+        document.getElementById('rush-wins-count').innerText = winsCount;
+        document.getElementById('rush-losses-count').innerText = lossesCount;
+        document.getElementById('rush-winrate-big').innerText = winRate + '%';
+
+        // Re-renderizar RUSH solo cuando cambie la lista para no interrumpir el scroll del usuario
+        const currentRushHash = results.length > 0 ? `${results.length}-${results[0].id}-${ Boolean(results[0].screenshot_b64) }` : 'empty';
+        if (currentRushHash !== lastRushHash) {
+          lastRushHash = currentRushHash;
+          renderRushLists(results);
         }
 
-        // Renderizar Resultados Gratuitos
-        if (data.results) {
-          const container = document.getElementById('public-results-list');
-          container.innerHTML = data.results.map(r => {
-            const isWin = r.result_type === 'win';
-            return `
-              <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900/90 border ${isWin ? 'border-emerald-500/30' : 'border-rose-500/30'} text-xs">
-                <div>
-                  <p class="font-extrabold ${isWin ? 'text-emerald-400' : 'text-rose-400'}">
-                    ${isWin ? '✅ WIN — ' : '💔 LOSS — '} ${r.table_name}
-                  </p>
-                  <p class="text-slate-400">Estrategia: ${r.strategy_name} · Hora: ${r.created_at}</p>
-                </div>
-                <span class="px-2.5 py-1 rounded-lg font-extrabold ${isWin ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
-                  Tiro ${r.attempt_number}/6
-                </span>
-              </div>
-            `;
-          }).join('');
-        }
-
-        // Renderizar Señal Activa
+        // Renderizar Señal Activa del Bot
         const sig = data.active_signal;
         const lockedOverlay = document.getElementById('sig-locked-overlay');
         const vipContent = document.getElementById('sig-vip-content');
@@ -655,8 +738,12 @@
         if (!sig) {
           lockedOverlay.classList.add('hidden');
           vipContent.classList.remove('hidden');
-          document.getElementById('sig-table-title').innerText = 'Analizando mesas en Stake Multiplay...';
-          document.getElementById('sig-countdown').innerText = 'Escaneando';
+          document.getElementById('sig-table-title').innerText = 'Esperando señal en vivo del Bot...';
+          document.getElementById('sig-countdown').innerText = 'En espera del Bot';
+          document.getElementById('sig-hand-info').innerText = 'Sin señal activa en este momento';
+          document.getElementById('sig-prob-badge').innerText = 'Esperando datos del Bot';
+          document.getElementById('sig-ref-img').classList.add('hidden');
+          document.getElementById('sig-placeholder-card').classList.remove('hidden');
           return;
         }
 
@@ -665,40 +752,40 @@
           playSignalSound();
         }
 
-        document.getElementById('sig-countdown').innerText = sig.countdown > 0 ? `${sig.countdown}s (Apostar)` : `Tiro ${sig.current_attempt}/6 en juego 🃏`;
+        document.getElementById('sig-countdown').innerText = sig.countdown > 0
+          ? `⏱️ ${sig.countdown}s para apostar Tiro 1`
+          : `🃏 Tiro ${sig.current_attempt}/6 en curso`;
 
         if (sig.is_locked) {
           lockedOverlay.classList.remove('hidden');
           vipContent.classList.add('hidden');
-          document.getElementById('sig-table-title').innerText = '🔒 Mesa Activa (Exclusivo VIP)';
+          document.getElementById('sig-table-title').innerText = '🔒 Señal del Bot en Curso (Exclusivo VIP)';
           document.getElementById('locked-prob').innerText = sig.probability + '%';
         } else {
           lockedOverlay.classList.add('hidden');
           vipContent.classList.remove('hidden');
-          document.getElementById('sig-table-title').innerText = `Mesa: ${sig.table_name}`;
+          document.getElementById('sig-table-title').innerText = `🎯 Mesa Activa: ${sig.table_name}`;
           document.getElementById('sig-prob-badge').innerText = `Probabilidad: ${sig.probability}% · [${sig.strategy_name}]`;
           document.getElementById('sig-hand-info').innerText = sig.base_hand_count > 0
-            ? `Ref. Mano #${sig.base_hand_count} -> Jugar Tiro 1 en Mano #${sig.base_hand_count + 1}`
-            : `Tiro Activo: ${sig.current_attempt}/6`;
+            ? `Ref. Mano #${sig.base_hand_count} -> Jugar Tiro 1 en Mano #${sig.base_hand_count + 1} · Tiro Actual: ${sig.current_attempt}/6`
+            : `Tiro Activo: ${sig.current_attempt}/6 · Hora: ${sig.created_at}`;
 
           const imgEl = document.getElementById('sig-ref-img');
           const phEl = document.getElementById('sig-placeholder-card');
           if (sig.reference_image_b64) {
-            imgEl.src = sig.reference_image_b64.startsWith('data:')
-              ? sig.reference_image_b64
-              : 'data:image/png;base64,' + sig.reference_image_b64;
+            imgEl.src = formatImgSrc(sig.reference_image_b64);
             imgEl.classList.remove('hidden');
             phEl.classList.add('hidden');
           } else {
             imgEl.classList.add('hidden');
             phEl.classList.remove('hidden');
-            phEl.innerHTML = `<p class="text-sm font-bold text-amber-400">🎯 Señal Activa en [${sig.table_name}] — Captura de referencia confirmada</p><p class="text-xs text-slate-400">Tienes los 15 segundos completos para colocar el Tiro ${sig.current_attempt}.</p>`;
+            phEl.innerHTML = `<p class="text-sm font-bold text-amber-400">🎯 Señal Real Activa en [${sig.table_name}]</p><p class="text-xs text-slate-400">Operando Tiro ${sig.current_attempt} de 6.</p>`;
           }
 
-          // Renderizar los 6 tiros
+          // Renderizar los 6 tiros enviados por el Bot
           const seqBoxes = document.getElementById('sig-sequence-boxes');
           seqBoxes.innerHTML = (sig.sequence || []).slice(0, 6).map((item, idx) => {
-            const isPlayer = item === 'P';
+            const isPlayer = String(item).toUpperCase() === 'P';
             const isCurrent = (idx + 1) === sig.current_attempt;
             const bgClass = isPlayer
               ? 'bg-blue-600/30 border-blue-500 text-blue-200'
@@ -713,6 +800,102 @@
           }).join('');
         }
       } catch (e) {}
+    }
+
+    function renderRushLists(results) {
+      const sideContainer = document.getElementById('side-rush-list');
+      const fullContainer = document.getElementById('full-rush-container');
+
+      if (!results || results.length === 0) {
+        const emptyHtml = `
+          <div class="p-6 text-center text-xs text-slate-500">
+            Aún no hay resultados en RUSH. Cuando enciendas el Bot y cierre su primera jugada, aparecerá aquí con su captura exacta.
+          </div>
+        `;
+        sideContainer.innerHTML = emptyHtml;
+        fullContainer.innerHTML = emptyHtml;
+        return;
+      }
+
+      // 1. Vista rápida lateral (en la pestaña Señales)
+      sideContainer.innerHTML = results.slice(0, 25).map((r, idx) => {
+        const isWin = r.result_type === 'win';
+        const imgSrc = formatImgSrc(r.screenshot_b64);
+        const numberLabel = results.length - idx;
+        return `
+          <div class="p-3 rounded-xl bg-slate-900/95 border ${isWin ? 'border-emerald-500/30' : 'border-rose-500/30'} space-y-2 text-xs">
+            <div class="flex items-center justify-between gap-2">
+              <div>
+                <span class="text-[11px] font-mono text-slate-500">#${numberLabel}</span>
+                <span class="font-extrabold ml-1 ${isWin ? 'text-emerald-400' : 'text-rose-400'}">
+                  ${isWin ? `✅ WIN ${r.attempt_number} — ${r.table_name}` : `❌ LOSS — ${r.table_name}`}
+                </span>
+                <p class="text-[11px] text-slate-400 mt-0.5">${r.strategy_name} · ${r.created_at}</p>
+              </div>
+              <span class="px-2.5 py-1 rounded-lg font-extrabold shrink-0 ${isWin ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                Tiro ${r.attempt_number}/6
+              </span>
+            </div>
+            ${imgSrc ? `
+              <div class="pt-1">
+                <img
+                  src="${imgSrc}"
+                  onclick="openImageZoom(this.src, 'RUSH #${numberLabel} — ${r.table_name} (${isWin ? 'WIN ' + r.attempt_number : 'LOSS'})')"
+                  alt="Captura Real Rush"
+                  class="w-full max-h-40 object-contain rounded-lg border border-slate-800 bg-slate-950 cursor-zoom-in hover:opacity-90 transition"
+                />
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      // 2. Apartado RUSH Completo (Todos los resultados intactos: si hay 10,000, se ven los 10,000)
+      fullContainer.innerHTML = results.map((r, idx) => {
+        const isWin = r.result_type === 'win';
+        const imgSrc = formatImgSrc(r.screenshot_b64);
+        const numberLabel = results.length - idx;
+        return `
+          <div class="p-4 rounded-xl bg-slate-900/95 border ${isWin ? 'border-emerald-500/30' : 'border-rose-500/30'} space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div class="flex items-center gap-3">
+                <span class="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-mono text-xs font-bold">
+                  #${numberLabel}
+                </span>
+                <div>
+                  <p class="text-sm font-extrabold ${isWin ? 'text-emerald-400' : 'text-rose-400'}">
+                    ${isWin ? `✅ WIN ${r.attempt_number} — ${r.table_name}` : `❌ LOSS — ${r.table_name}`}
+                  </p>
+                  <p class="text-xs text-slate-400">
+                    Estrategia: <b>${r.strategy_name}</b> · Fecha/Hora: <span class="font-mono">${r.created_at}</span>
+                  </p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                ${imgSrc
+                  ? `<span class="px-2.5 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-bold">📷 Captura Original Disponible (Últimas 15)</span>`
+                  : `<span class="px-2.5 py-1 rounded-md bg-slate-800 text-slate-400 text-[11px]">✓ Registro Rush Permanente</span>`
+                }
+                <span class="px-3 py-1 rounded-lg text-xs font-extrabold ${isWin ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30'}">
+                  ${isWin ? `GANADO EN TIRO ${r.attempt_number}/6` : 'PERDIDO (6/6)'}
+                </span>
+              </div>
+            </div>
+
+            ${imgSrc ? `
+              <div class="bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+                <p class="text-[11px] text-slate-400 mb-1.5 font-semibold">📷 Captura de pantalla exacta tomada por el Bot al cerrar la jugada (clic para ampliar):</p>
+                <img
+                  src="${imgSrc}"
+                  onclick="openImageZoom(this.src, 'RUSH #${numberLabel} — ${r.table_name} (${isWin ? 'WIN ' + r.attempt_number : 'LOSS'})')"
+                  alt="Captura Real del Bot"
+                  class="w-full max-h-[340px] object-contain rounded-lg cursor-zoom-in hover:opacity-95 transition mx-auto"
+                />
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
     }
 
     // 3. Funciones del Panel de Administrador
@@ -767,44 +950,11 @@
       pollLiveState();
     }
 
-    async function adminTestSignal() {
-      await fetch('/api/bot/signal', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          bot_secret: 'dynasty_bot_secret_2026',
-          table_name: 'Baccarat 2',
-          sequence: ['P', 'B', 'B', 'B', 'B', 'P'],
-          probability: 93,
-          strategy_name: 'DISRUPTIVA_4TEND',
-          base_hand_count: 51
-        })
-      });
-      showSection('dashboard');
-      pollLiveState();
-    }
-
-    async function adminTestResult(type) {
-      await fetch('/api/bot/result', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          bot_secret: 'dynasty_bot_secret_2026',
-          table_name: 'Baccarat 2',
-          result_type: type,
-          attempt_number: 1,
-          strategy_name: 'DISRUPTIVA_4TEND'
-        })
-      });
-      showSection('dashboard');
-      pollLiveState();
-    }
-
-    // Inicializar
+    // Inicialización
     computeDeviceFingerprint();
     updateHeaderUI();
     pollLiveState();
-    setInterval(pollLiveState, 1000);
+    setInterval(pollLiveState, 1500);
   </script>
 </body>
 </html>

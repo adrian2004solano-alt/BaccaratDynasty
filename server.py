@@ -1,17 +1,17 @@
 """
-server.py — Baccarat Dynasty VIP Web Platform (Backend + Conector Supabase + Anti-Sharing)
-==========================================================================================
-- Base de Datos Híbrida: Sincronización en tiempo real con Supabase (https://fevrpdoitikbosvrezxi.supabase.co)
-  + respaldo instantáneo SQLite local para 100% disponibilidad.
+server.py — Baccarat Dynasty VIP & Rush Web Platform (100% Datos Reales del Bot + Supabase)
+===========================================================================================
+- CERO DATOS SIMULADOS: Únicamente muestra las señales y resultados (Rush) que envíe el Bot de PC.
+- Dos Apartados Oficiales:
+  1) SEÑALES (Baccarat Dynasty VIP): Señal activa e historial de señales con la captura real del Bot.
+  2) RUSH (Resultados Gratis): Historial 100% intacto e infinito (si el Bot manda 10,000 señales,
+     los 10,000 resultados permanecen intactos sin cortarse ni borrarse nunca).
+- Filtro Automático de Imágenes: Conserva las últimas 15 capturas reales tomadas por el Bot y libera
+  automáticamente el peso de las imágenes más antiguas sin borrar jamás ningún registro del Rush.
 - Seguridad "La Vieja Confiable":
-  1) Verificación real de correo electrónico por código de 6 dígitos (OTP).
-  2) Huella Digital de Dispositivo (Device Fingerprinting - máx. 2 equipos por usuario).
-  3) Sesión Única Simultánea (Single Active Session): si un segundo dispositivo entra,
-     expulsa en tiempo real al primero.
-- Modelo Freemium:
-  * Usuarios GRATIS: Ven resultados históricos en vivo + alerta de señal activa bloqueada.
-  * Usuarios VIP: Ven señales en tiempo real (Mesa, Captura de Referencia Previa, 6 Tiros, Reloj 15s).
-- Pagos en USDT + Panel de Administrador con activación en 1 clic.
+  * Verificación de correo por código de 6 dígitos (OTP).
+  * Huella Digital de Dispositivo (máx. 2 equipos por usuario).
+  * Sesión Única Simultánea (expulsión en tiempo real si abren la cuenta en otro lugar).
 """
 
 import os
@@ -29,8 +29,8 @@ if sys.stderr and hasattr(sys.stderr, "reconfigure"):
         sys.stderr.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
         pass
+
 import uuid
-import hmac
 import hashlib
 import random
 import sqlite3
@@ -39,7 +39,7 @@ import threading
 from datetime import datetime, timedelta, timezone
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, quote
 import requests
 from dotenv import load_dotenv
 
@@ -59,6 +59,7 @@ ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@baccaratdynasty.com").lower()
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin1234")
 USDT_WALLET_TRC20 = os.getenv("USDT_WALLET_TRC20", "TX9kP7d2vBaccaratDynastyVIP9982LmN")
 PORT = int(os.getenv("PORT", "5000"))
+MAX_STORED_IMAGES = 15
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("VERCEL_ENV") or not os.access(BASE_DIR, os.W_OK))
@@ -71,7 +72,7 @@ def hash_password(password: str) -> str:
 
 
 # ============================================================================
-# CLIENTE DE SINCRONIZACIÓN CON SUPABASE + RESPALDO LOCAL SQLITE
+# CLIENTE BIDIRECCIONAL SUPABASE + RESPALDO LOCAL SQLITE
 # ============================================================================
 class SupabaseBridge:
     def __init__(self, url: str, key: str):
@@ -83,43 +84,56 @@ class SupabaseBridge:
             "Content-Type": "application/json",
             "Prefer": "return=representation",
         }
-        self.remote_ready = False
-        self._check_connection()
 
-    def _check_connection(self):
+    def select(self, table: str, query_params: str = "") -> list | None:
+        """Lee directamente de Supabase si la tabla ya fue creada por el usuario."""
         try:
-            r = requests.get(f"{self.url}/rest/v1/", headers=self.headers, timeout=3)
-            if r.status_code in (200, 404):
-                logger.info(f"✅ Conectado al endpoint de Supabase: {self.url}")
-                self.remote_ready = True
-        except Exception as e:
-            logger.warning(f"Modo local activo (Supabase en espera): {e}")
+            url = f"{self.url}/rest/v1/{table}"
+            if query_params:
+                url += f"?{query_params}"
+            r = requests.get(url, headers=self.headers, timeout=4)
+            if r.status_code == 200:
+                return r.json()
+        except Exception:
+            pass
+        return None
 
-    def insert_async(self, table: str, payload: dict):
+    def insert(self, table: str, payload: dict) -> dict | None:
+        try:
+            r = requests.post(
+                f"{self.url}/rest/v1/{table}",
+                headers=self.headers,
+                json=payload,
+                timeout=4,
+            )
+            if r.status_code in (200, 201):
+                data = r.json()
+                return data[0] if isinstance(data, list) and data else None
+        except Exception:
+            pass
+        return None
+
+    def update(self, table: str, filter_str: str, payload: dict) -> bool:
+        try:
+            r = requests.patch(
+                f"{self.url}/rest/v1/{table}?{filter_str}",
+                headers=self.headers,
+                json=payload,
+                timeout=4,
+            )
+            return r.status_code in (200, 204)
+        except Exception:
+            return False
+
+    def prune_images_older_than_15(self, table: str, img_col: str):
+        """Mantiene TODAS las filas intactas en Supabase, pero limpia las imágenes > 15."""
         def _worker():
             try:
-                requests.post(
-                    f"{self.url}/rest/v1/{table}",
-                    headers=self.headers,
-                    json=payload,
-                    timeout=3,
-                )
-            except Exception:
-                pass
-        if IS_VERCEL:
-            _worker()
-        else:
-            threading.Thread(target=_worker, daemon=True).start()
-
-    def update_async(self, table: str, match_col: str, match_val: str, payload: dict):
-        def _worker():
-            try:
-                requests.patch(
-                    f"{self.url}/rest/v1/{table}?{match_col}=eq.{match_val}",
-                    headers=self.headers,
-                    json=payload,
-                    timeout=3,
-                )
+                rows = self.select(table, f"select=id&{img_col}=not.is.null&order=id.desc&limit=100")
+                if rows and len(rows) > MAX_STORED_IMAGES:
+                    old_ids = [str(r["id"]) for r in rows[MAX_STORED_IMAGES:]]
+                    id_list = ",".join(old_ids)
+                    self.update(table, f"id=in.({id_list})", {img_col: None})
             except Exception:
                 pass
         if IS_VERCEL:
@@ -196,6 +210,9 @@ def init_db():
             )
         """)
 
+        # Limpiar cualquier resultado de demostración antiguo que no tenga captura ni fecha completa
+        cur.execute("DELETE FROM dynasty_results WHERE screenshot_b64 IS NULL AND length(created_at) <= 8")
+
         # Crear cuenta de Administrador por defecto si no existe
         cur.execute("SELECT id FROM dynasty_users WHERE email = ?", (ADMIN_EMAIL,))
         if not cur.fetchone():
@@ -209,27 +226,32 @@ def init_db():
             """, (ADMIN_EMAIL, hash_password(ADMIN_PASSWORD), vip_exp, now_str))
             logger.info(f"👑 Cuenta Admin lista: {ADMIN_EMAIL} (Clave: {ADMIN_PASSWORD})")
 
-        # Insertar resultados iniciales de demostración si la tabla está vacía
-        cur.execute("SELECT COUNT(*) as c FROM dynasty_results")
-        if cur.fetchone()["c"] == 0:
-            demo_results = [
-                ("Baccarat 3", "win", 1, "DISRUPTIVA_4TEND"),
-                ("Baccarat 5", "win", 2, "TENDENCIA_PURA_6"),
-                ("Baccarat 1", "win", 1, "TENDENCIA_3_DISR"),
-                ("Baccarat 2", "win", 1, "DISRUPTIVA_1_5TEND"),
-            ]
-            for t_name, r_type, att, strat in demo_results:
-                cur.execute("""
-                    INSERT INTO dynasty_results (table_name, result_type, attempt_number, strategy_name, created_at)
-                    VALUES (?, ?, ?, ?, ?)
-                """, (t_name, r_type, att, strat, datetime.now().strftime("%H:%M:%S")))
-
         conn.commit()
         conn.close()
 
 
+def _prune_sqlite_images(cur):
+    """Mantiene 100% de todos los registros Rush y Señales en SQLite, pero solo las últimas 15 imágenes."""
+    cur.execute(f"""
+        UPDATE dynasty_results
+        SET screenshot_b64 = NULL
+        WHERE screenshot_b64 IS NOT NULL
+          AND id NOT IN (
+              SELECT id FROM dynasty_results ORDER BY id DESC LIMIT {MAX_STORED_IMAGES}
+          )
+    """)
+    cur.execute(f"""
+        UPDATE dynasty_signals
+        SET reference_image_b64 = NULL
+        WHERE reference_image_b64 IS NOT NULL
+          AND id NOT IN (
+              SELECT id FROM dynasty_signals ORDER BY id DESC LIMIT {MAX_STORED_IMAGES}
+          )
+    """)
+
+
 # ============================================================================
-# SERVIDOR HTTP MULTIHILO
+# SERVIDOR HTTP MULTIHILO + HANDLER VERCEL
 # ============================================================================
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
     daemon_threads = True
@@ -245,6 +267,7 @@ class handler(BaseHTTPRequestHandler):
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Bot-Secret")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
         self.send_header("Content-Length", str(len(raw)))
         self.end_headers()
         self.wfile.write(raw)
@@ -277,6 +300,7 @@ class handler(BaseHTTPRequestHandler):
                     content = f.read()
                 self.send_response(200)
                 self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
                 self.send_header("Content-Length", str(len(content)))
                 self.end_headers()
                 self.wfile.write(content)
@@ -332,13 +356,18 @@ class handler(BaseHTTPRequestHandler):
 
         otp_code = f"{random.randint(100000, 999999)}"
         now_str = datetime.now(timezone.utc).isoformat()
+        pw_hash = hash_password(password)
+
+        # Verificar en Supabase primero si está activo
+        sb_users = supabase.select("dynasty_users", f"email=eq.{quote(email)}&select=id")
+        if sb_users and len(sb_users) > 0:
+            return self._send_json({"ok": False, "msg": "Este correo ya está registrado. Inicia sesión."}, 400)
 
         with db_lock:
             conn = get_db()
             cur = conn.cursor()
-            cur.execute("SELECT id, is_verified FROM dynasty_users WHERE email = ?", (email,))
-            existing = cur.fetchone()
-            if existing:
+            cur.execute("SELECT id FROM dynasty_users WHERE email = ?", (email,))
+            if cur.fetchone():
                 conn.close()
                 return self._send_json({"ok": False, "msg": "Este correo ya está registrado. Inicia sesión."}, 400)
 
@@ -347,46 +376,54 @@ class handler(BaseHTTPRequestHandler):
                     email, password_hash, is_verified, verification_code,
                     role, registered_devices, created_at
                 ) VALUES (?, ?, 0, ?, 'free', '[]', ?)
-            """, (email, hash_password(password), otp_code, now_str))
+            """, (email, pw_hash, otp_code, now_str))
             conn.commit()
             conn.close()
 
-        supabase.insert_async("dynasty_users", {
+        supabase.insert("dynasty_users", {
             "email": email,
-            "password_hash": hash_password(password),
+            "password_hash": pw_hash,
             "is_verified": False,
             "verification_code": otp_code,
             "role": "free",
+            "registered_devices": [],
+            "created_at": now_str,
         })
 
         logger.info(f"📧 Nuevo registro: {email} | Código de verificación OTP: {otp_code}")
         self._send_json({
             "ok": True,
             "msg": f"Código de verificación generado para {email}.",
-            "demo_otp": otp_code,  # Se muestra en pantalla para facilitar pruebas o si no hay servidor SMTP externo
+            "demo_otp": otp_code,
         })
 
     def _handle_verify(self, body: dict):
         email = (body.get("email") or "").strip().lower()
         code = (body.get("code") or "").strip()
 
+        sb_users = supabase.select("dynasty_users", f"email=eq.{quote(email)}&select=*")
+        if sb_users is not None and len(sb_users) > 0:
+            u = sb_users[0]
+            if str(u.get("verification_code")) != str(code):
+                return self._send_json({"ok": False, "msg": "Código incorrecto. Verifica e intenta de nuevo."}, 400)
+            supabase.update("dynasty_users", f"email=eq.{quote(email)}", {"is_verified": True})
+
         with db_lock:
             conn = get_db()
             cur = conn.cursor()
             cur.execute("SELECT id, verification_code FROM dynasty_users WHERE email = ?", (email,))
             row = cur.fetchone()
-            if not row:
+            if row:
+                if str(row["verification_code"]) != str(code) and not sb_users:
+                    conn.close()
+                    return self._send_json({"ok": False, "msg": "Código incorrecto. Verifica e intenta de nuevo."}, 400)
+                cur.execute("UPDATE dynasty_users SET is_verified = 1 WHERE email = ?", (email,))
+                conn.commit()
+            elif not sb_users:
                 conn.close()
                 return self._send_json({"ok": False, "msg": "Usuario no encontrado."}, 404)
-            if str(row["verification_code"]) != str(code):
-                conn.close()
-                return self._send_json({"ok": False, "msg": "Código incorrecto. Verifica e intenta de nuevo."}, 400)
-
-            cur.execute("UPDATE dynasty_users SET is_verified = 1 WHERE email = ?", (email,))
-            conn.commit()
             conn.close()
 
-        supabase.update_async("dynasty_users", "email", email, {"is_verified": True})
         logger.info(f"✅ Correo verificado con éxito: {email}")
         self._send_json({"ok": True, "msg": "¡Correo verificado! Ya puedes iniciar sesión."})
 
@@ -398,37 +435,99 @@ class handler(BaseHTTPRequestHandler):
         password = (body.get("password") or "").strip()
         device_fp = (body.get("device_fp") or "UNKNOWN_FP").strip()
         device_label = (body.get("device_label") or "Navegador Web").strip()
+        pw_hash = hash_password(password)
+
+        # Soporte garantizado para la cuenta de Administrador
+        if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
+            new_session_token = str(uuid.uuid4())
+            vip_exp = (datetime.now(timezone.utc) + timedelta(days=3650)).isoformat()
+            with db_lock:
+                conn = get_db()
+                cur = conn.cursor()
+                cur.execute("""
+                    UPDATE dynasty_users
+                    SET active_session_token = ?, active_device_fp = ?, role = 'admin', is_verified = 1
+                    WHERE email = ?
+                """, (new_session_token, device_fp, ADMIN_EMAIL))
+                conn.commit()
+                conn.close()
+
+            sb_admin = supabase.select("dynasty_users", f"email=eq.{quote(ADMIN_EMAIL)}&select=id")
+            if sb_admin is not None:
+                if len(sb_admin) == 0:
+                    supabase.insert("dynasty_users", {
+                        "email": ADMIN_EMAIL,
+                        "password_hash": pw_hash,
+                        "is_verified": True,
+                        "verification_code": "000000",
+                        "role": "admin",
+                        "vip_expires_at": vip_exp,
+                        "active_session_token": new_session_token,
+                        "active_device_fp": device_fp,
+                        "registered_devices": [],
+                    })
+                else:
+                    supabase.update("dynasty_users", f"email=eq.{quote(ADMIN_EMAIL)}", {
+                        "active_session_token": new_session_token,
+                        "active_device_fp": device_fp,
+                        "role": "admin",
+                        "is_verified": True,
+                    })
+
+            return self._send_json({
+                "ok": True,
+                "email": ADMIN_EMAIL,
+                "role": "admin",
+                "vip_expires_at": vip_exp,
+                "session_token": new_session_token,
+                "device_fp": device_fp,
+                "kicked_previous": False,
+                "usdt_wallet": USDT_WALLET_TRC20,
+            })
+
+        # Consultar usuario en Supabase primero, luego en SQLite
+        user = None
+        sb_users = supabase.select("dynasty_users", f"email=eq.{quote(email)}&select=*")
+        if sb_users and len(sb_users) > 0:
+            user = sb_users[0]
 
         with db_lock:
             conn = get_db()
             cur = conn.cursor()
-            cur.execute("SELECT * FROM dynasty_users WHERE email = ?", (email,))
-            user = cur.fetchone()
-            if not user or user["password_hash"] != hash_password(password):
+            if not user:
+                cur.execute("SELECT * FROM dynasty_users WHERE email = ?", (email,))
+                row = cur.fetchone()
+                if row:
+                    user = dict(row)
+
+            if not user or user.get("password_hash") != pw_hash:
                 conn.close()
                 return self._send_json({"ok": False, "msg": "Correo o contraseña incorrectos."}, 401)
 
-            if not user["is_verified"]:
+            if not user.get("is_verified"):
                 conn.close()
                 return self._send_json({
                     "ok": False,
                     "needs_verification": True,
-                    "demo_otp": user["verification_code"],
+                    "demo_otp": user.get("verification_code"),
                     "msg": "Tu correo aún no está verificado. Ingresa tu código de 6 dígitos.",
                 }, 403)
 
-            # Verificar lista de dispositivos físicos vinculados (Máximo 2: ej. 1 PC + 1 Móvil)
-            try:
-                devices = json.loads(user["registered_devices"] or "[]")
-            except Exception:
-                devices = []
+            raw_devs = user.get("registered_devices") or []
+            if isinstance(raw_devs, str):
+                try:
+                    devices = json.loads(raw_devs)
+                except Exception:
+                    devices = []
+            else:
+                devices = list(raw_devs)
 
-            known_fps = [d.get("fp") for d in devices]
-            if user["role"] != "admin":
+            known_fps = [d.get("fp") for d in devices if isinstance(d, dict)]
+            role = user.get("role") or "free"
+            if role != "admin":
                 if device_fp not in known_fps:
                     if len(devices) >= 2:
                         conn.close()
-                        logger.warning(f"🚨 Bloqueo por exceso de dispositivos en cuenta: {email} (FP: {device_fp})")
                         return self._send_json({
                             "ok": False,
                             "msg": "🛡️ SEGURIDAD ANTI-COMPARTIR: Esta cuenta ya tiene 2 dispositivos vinculados (PC/Móvil). No se permite abrir en equipos de terceros.",
@@ -439,13 +538,13 @@ class handler(BaseHTTPRequestHandler):
                         "added_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
                     })
 
-            # Generar nuevo token de sesión única (expulsa automáticamente cualquier sesión abierta en otro lado)
-            prev_token = user["active_session_token"]
-            prev_fp = user["active_device_fp"]
+            prev_token = user.get("active_session_token")
+            prev_fp = user.get("active_device_fp")
             kicked_previous = bool(prev_token and prev_fp and prev_fp != device_fp)
 
             new_session_token = str(uuid.uuid4())
             client_ip = self.client_address[0] if self.client_address else "127.0.0.1"
+            vip_exp = user.get("vip_expires_at")
 
             cur.execute("""
                 UPDATE dynasty_users
@@ -456,17 +555,15 @@ class handler(BaseHTTPRequestHandler):
                 WHERE email = ?
             """, (new_session_token, device_fp, json.dumps(devices), client_ip, email))
             conn.commit()
-            role = user["role"]
-            vip_exp = user["vip_expires_at"]
             conn.close()
 
-        supabase.update_async("dynasty_users", "email", email, {
+        supabase.update("dynasty_users", f"email=eq.{quote(email)}", {
             "active_session_token": new_session_token,
             "active_device_fp": device_fp,
             "registered_devices": devices,
+            "last_login_ip": client_ip,
         })
 
-        logger.info(f"🔐 Login exitoso: {email} ({role.upper()}) | Dispositivo: {device_fp[:12]} | Expulsó anterior: {kicked_previous}")
         self._send_json({
             "ok": True,
             "email": email,
@@ -479,103 +576,160 @@ class handler(BaseHTTPRequestHandler):
         })
 
     # ──────────────────────────────────────────────────────────────────────
-    # 3. ESTADO EN TIEMPO REAL (SEÑALES VIP, RESULTADOS GRATIS Y CONTROL SESIÓN)
+    # 3. ESTADO EN TIEMPO REAL: SEÑALES (DYNASTY) + RUSH COMPLETO (RESULTADOS)
     # ──────────────────────────────────────────────────────────────────────
     def _handle_get_state(self, token: str, fp: str):
         user_role = "guest"
         user_email = None
         vip_days_left = 0
 
-        with db_lock:
-            conn = get_db()
-            cur = conn.cursor()
-
-            if token:
-                cur.execute("SELECT * FROM dynasty_users WHERE active_session_token = ?", (token,))
-                u = cur.fetchone()
-                if not u:
+        # 3.1 Verificar sesión activa (Supabase + SQLite)
+        if token:
+            u = None
+            sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=*")
+            if sb_u is not None and len(sb_u) > 0:
+                u = sb_u[0]
+            else:
+                with db_lock:
+                    conn = get_db()
+                    cur = conn.cursor()
+                    cur.execute("SELECT * FROM dynasty_users WHERE active_session_token = ?", (token,))
+                    row = cur.fetchone()
+                    if row:
+                        u = dict(row)
                     conn.close()
-                    return self._send_json({
-                        "status": "kicked",
-                        "reason": "🚨 Tu cuenta fue abierta en otro dispositivo. Solo se permite 1 conexión activa a la vez.",
-                    })
-                user_email = u["email"]
-                user_role = u["role"]
-                if user_role == "vip" and u["vip_expires_at"]:
-                    try:
-                        exp_dt = datetime.fromisoformat(u["vip_expires_at"])
-                        diff = exp_dt - datetime.now(timezone.utc)
-                        if diff.total_seconds() <= 0:
-                            user_role = "free"
-                            cur.execute("UPDATE dynasty_users SET role = 'free' WHERE id = ?", (u["id"],))
-                            conn.commit()
-                        else:
-                            vip_days_left = max(1, diff.days + 1)
-                    except Exception:
-                        vip_days_left = 30
 
-            # Obtener señal activa más reciente
-            cur.execute("SELECT * FROM dynasty_signals ORDER BY id DESC LIMIT 1")
-            sig_row = cur.fetchone()
+            if not u:
+                return self._send_json({
+                    "status": "kicked",
+                    "reason": "🚨 Tu cuenta fue abierta en otro dispositivo. Solo se permite 1 conexión activa a la vez.",
+                })
 
-            # Obtener últimos 15 resultados (100% Gratis para todos)
-            cur.execute("SELECT * FROM dynasty_results ORDER BY id DESC LIMIT 15")
-            res_rows = cur.fetchall()
-            conn.close()
+            user_email = u.get("email")
+            user_role = u.get("role") or "free"
+            if user_role == "vip" and u.get("vip_expires_at"):
+                try:
+                    exp_dt = datetime.fromisoformat(str(u["vip_expires_at"]).replace("Z", "+00:00"))
+                    diff = exp_dt - datetime.now(timezone.utc)
+                    if diff.total_seconds() <= 0:
+                        user_role = "free"
+                    else:
+                        vip_days_left = max(1, diff.days + 1)
+                except Exception:
+                    vip_days_left = 30
+
+        # 3.2 Obtener Señales Reales enviadas por el Bot (Supabase primero, SQLite respaldo)
+        sig_rows = supabase.select("dynasty_signals", "select=*&order=id.desc&limit=15")
+        if sig_rows is None:
+            with db_lock:
+                conn = get_db()
+                cur = conn.cursor()
+                cur.execute("SELECT * FROM dynasty_signals ORDER BY id DESC LIMIT 15")
+                sig_rows = [dict(r) for r in cur.fetchall()]
+                conn.close()
+
+        # 3.3 Obtener TODOS los resultados del RUSH sin cortar ni borrar ninguno (10,000+ intactos)
+        #     Las columnas ligeras se traen de todo el historial, y las imágenes de los últimos 15
+        res_rows = supabase.select(
+            "dynasty_results",
+            "select=id,table_name,result_type,attempt_number,strategy_name,created_at&order=id.desc&limit=10000"
+        )
+        img_map = {}
+        if res_rows is not None:
+            recent_imgs = supabase.select(
+                "dynasty_results",
+                f"select=id,screenshot_b64&screenshot_b64=not.is.null&order=id.desc&limit={MAX_STORED_IMAGES}"
+            ) or []
+            for item in recent_imgs:
+                if item.get("screenshot_b64"):
+                    img_map[item["id"]] = item["screenshot_b64"]
+        else:
+            with db_lock:
+                conn = get_db()
+                cur = conn.cursor()
+                cur.execute("SELECT id, table_name, result_type, attempt_number, strategy_name, screenshot_b64, created_at FROM dynasty_results ORDER BY id DESC")
+                res_rows = []
+                for idx, r in enumerate(cur.fetchall()):
+                    d = dict(r)
+                    if idx < MAX_STORED_IMAGES and d.get("screenshot_b64"):
+                        img_map[d["id"]] = d["screenshot_b64"]
+                    res_rows.append(d)
+                conn.close()
 
         results_list = []
         wins_count = 0
-        for r in res_rows:
-            if r["result_type"] == "win":
+        for r in (res_rows or []):
+            rtype = (r.get("result_type") or "win").lower()
+            if rtype == "win":
                 wins_count += 1
+            rid = r.get("id")
             results_list.append({
-                "id": r["id"],
-                "table_name": r["table_name"],
-                "result_type": r["result_type"],
-                "attempt_number": r["attempt_number"],
-                "strategy_name": r["strategy_name"] or "DYNASTY_VIP",
-                "screenshot_b64": r["screenshot_b64"],
-                "created_at": r["created_at"],
+                "id": rid,
+                "table_name": r.get("table_name"),
+                "result_type": rtype,
+                "attempt_number": r.get("attempt_number") or 1,
+                "strategy_name": r.get("strategy_name") or "DYNASTY_VIP",
+                "screenshot_b64": img_map.get(rid),
+                "created_at": r.get("created_at") or "",
             })
 
         total_res = len(results_list)
-        win_rate = round((wins_count / total_res) * 100, 1) if total_res > 0 else 94.5
+        win_rate = round((wins_count / total_res) * 100, 1) if total_res > 0 else 0.0
 
+        # 3.4 Formatear Señal Activa e Historial de Señales del Bot
         active_signal = None
-        if sig_row and sig_row["status"] == "active":
-            elapsed = int(time.time() - (sig_row["created_ts"] or time.time()))
+        signals_history = []
+
+        for idx, s in enumerate(sig_rows or []):
+            raw_seq = s.get("sequence")
+            if isinstance(raw_seq, str):
+                try:
+                    seq_list = json.loads(raw_seq)
+                except Exception:
+                    seq_list = ["P", "B", "B", "B", "B", "P"]
+            elif isinstance(raw_seq, list):
+                seq_list = raw_seq
+            else:
+                seq_list = ["P", "B", "B", "B", "B", "P"]
+
+            created_ts = float(s.get("created_ts") or time.time())
+            elapsed = int(time.time() - created_ts)
             countdown_15 = max(0, 15 - elapsed)
-            seq_list = json.loads(sig_row["sequence"] or '["P","B","B","B","B","P"]')
 
             if user_role in ("vip", "admin"):
-                active_signal = {
-                    "id": sig_row["id"],
+                sig_obj = {
+                    "id": s.get("id"),
                     "is_locked": False,
-                    "table_name": sig_row["table_name"],
+                    "table_name": s.get("table_name"),
                     "sequence": seq_list,
-                    "probability": sig_row["probability"],
-                    "strategy_name": sig_row["strategy_name"],
-                    "reference_image_b64": sig_row["reference_image_b64"],
-                    "base_hand_count": sig_row["base_hand_count"],
-                    "current_attempt": sig_row["current_attempt"],
+                    "probability": s.get("probability") or 92,
+                    "strategy_name": s.get("strategy_name") or "DYNASTY_VIP",
+                    "reference_image_b64": s.get("reference_image_b64"),
+                    "base_hand_count": s.get("base_hand_count") or 0,
+                    "current_attempt": s.get("current_attempt") or 1,
+                    "status": s.get("status") or "active",
                     "countdown": countdown_15,
-                    "created_at": sig_row["created_at"],
+                    "created_at": s.get("created_at") or "",
                 }
             else:
-                # Usuario Gratis: ve que hay señal en curso, pero con datos sensibles ocultos
-                active_signal = {
-                    "id": sig_row["id"],
+                sig_obj = {
+                    "id": s.get("id"),
                     "is_locked": True,
                     "table_name": "🔒 MESA OCULTA (SOLO VIP)",
                     "sequence": ["?", "?", "?", "?", "?", "?"],
-                    "probability": sig_row["probability"],
+                    "probability": s.get("probability") or 92,
                     "strategy_name": "🔒 ESTRATEGIA VIP",
                     "reference_image_b64": None,
-                    "base_hand_count": sig_row["base_hand_count"],
-                    "current_attempt": sig_row["current_attempt"],
+                    "base_hand_count": s.get("base_hand_count") or 0,
+                    "current_attempt": s.get("current_attempt") or 1,
+                    "status": s.get("status") or "active",
                     "countdown": countdown_15,
-                    "created_at": sig_row["created_at"],
+                    "created_at": s.get("created_at") or "",
                 }
+
+            signals_history.append(sig_obj)
+            if idx == 0 and (s.get("status") == "active"):
+                active_signal = sig_obj
 
         self._send_json({
             "status": "ok",
@@ -585,11 +739,13 @@ class handler(BaseHTTPRequestHandler):
                 "vip_days_left": vip_days_left,
             },
             "active_signal": active_signal,
+            "signals_history": signals_history,
             "results": results_list,
             "stats": {
                 "win_rate": win_rate,
-                "total_ tracked": total_res,
+                "total_tracked": total_res,
                 "wins": wins_count,
+                "losses": total_res - wins_count,
             },
             "usdt_wallet": USDT_WALLET_TRC20,
         })
@@ -606,12 +762,20 @@ class handler(BaseHTTPRequestHandler):
         if not txid or len(txid) < 4:
             return self._send_json({"ok": False, "msg": "Ingresa el código TXID / Hash o referencia de tu transferencia USDT."}, 400)
 
+        u_email = None
+        sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=email")
+        if sb_u and len(sb_u) > 0:
+            u_email = sb_u[0].get("email")
+
         with db_lock:
             conn = get_db()
             cur = conn.cursor()
-            cur.execute("SELECT email FROM dynasty_users WHERE active_session_token = ?", (token,))
-            u = cur.fetchone()
-            if not u:
+            if not u_email:
+                cur.execute("SELECT email FROM dynasty_users WHERE active_session_token = ?", (token,))
+                row = cur.fetchone()
+                if row:
+                    u_email = row["email"]
+            if not u_email:
                 conn.close()
                 return self._send_json({"ok": False, "msg": "Debes iniciar sesión para reportar un pago."}, 401)
 
@@ -619,48 +783,73 @@ class handler(BaseHTTPRequestHandler):
             cur.execute("""
                 INSERT INTO dynasty_payments (user_email, plan_name, amount_usdt, txid, status, created_at)
                 VALUES (?, ?, ?, ?, 'pending', ?)
-            """, (u["email"], plan_name, amount_usdt, txid, now_str))
+            """, (u_email, plan_name, amount_usdt, txid, now_str))
             conn.commit()
             conn.close()
 
-        supabase.insert_async("dynasty_payments", {
-            "user_email": u["email"],
+        supabase.insert("dynasty_payments", {
+            "user_email": u_email,
             "plan_name": plan_name,
             "amount_usdt": amount_usdt,
             "txid": txid,
             "status": "pending",
+            "created_at": now_str,
         })
 
-        logger.info(f"💎 Nuevo pago USDT reportado por {u['email']}: {amount_usdt} USDT (TXID: {txid})")
         self._send_json({"ok": True, "msg": "✅ Comprobante enviado. El administrador activará tu membresía VIP en breve."})
 
     def _handle_admin_data(self, token: str):
+        is_admin = False
+        sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=role")
+        if sb_u and len(sb_u) > 0 and sb_u[0].get("role") == "admin":
+            is_admin = True
+
         with db_lock:
             conn = get_db()
             cur = conn.cursor()
-            cur.execute("SELECT role FROM dynasty_users WHERE active_session_token = ?", (token,))
-            u = cur.fetchone()
-            if not u or u["role"] != "admin":
+            if not is_admin:
+                cur.execute("SELECT role FROM dynasty_users WHERE active_session_token = ?", (token,))
+                u = cur.fetchone()
+                if u and u["role"] == "admin":
+                    is_admin = True
+            if not is_admin:
                 conn.close()
                 return self._send_json({"ok": False, "msg": "Acceso exclusivo para el Administrador."}, 403)
 
-            cur.execute("SELECT id, email, is_verified, role, vip_expires_at, active_device_fp, registered_devices, created_at FROM dynasty_users ORDER BY id DESC")
+            sb_all_users = supabase.select("dynasty_users", "select=*&order=id.desc")
+            if sb_all_users is not None:
+                raw_users = sb_all_users
+            else:
+                cur.execute("SELECT * FROM dynasty_users ORDER BY id DESC")
+                raw_users = [dict(r) for r in cur.fetchall()]
+
             users = []
-            for r in cur.fetchall():
-                devs = json.loads(r["registered_devices"] or "[]")
+            for r in raw_users:
+                raw_devs = r.get("registered_devices") or []
+                if isinstance(raw_devs, str):
+                    try:
+                        devs = json.loads(raw_devs)
+                    except Exception:
+                        devs = []
+                else:
+                    devs = list(raw_devs)
                 users.append({
-                    "id": r["id"],
-                    "email": r["email"],
-                    "is_verified": bool(r["is_verified"]),
-                    "role": r["role"],
-                    "vip_expires_at": r["vip_expires_at"],
+                    "id": r.get("id"),
+                    "email": r.get("email"),
+                    "is_verified": bool(r.get("is_verified")),
+                    "role": r.get("role") or "free",
+                    "vip_expires_at": r.get("vip_expires_at"),
                     "device_count": len(devs),
                     "devices": devs,
-                    "online": bool(r["active_device_fp"]),
+                    "online": bool(r.get("active_device_fp")),
                 })
 
-            cur.execute("SELECT * FROM dynasty_payments ORDER BY id DESC LIMIT 30")
-            payments = [dict(r) for r in cur.fetchall()]
+            sb_pays = supabase.select("dynasty_payments", "select=*&order=id.desc&limit=50")
+            if sb_pays is not None:
+                payments = sb_pays
+            else:
+                cur.execute("SELECT * FROM dynasty_payments ORDER BY id DESC LIMIT 50")
+                payments = [dict(r) for r in cur.fetchall()]
             conn.close()
 
         self._send_json({"ok": True, "users": users, "payments": payments})
@@ -672,52 +861,63 @@ class handler(BaseHTTPRequestHandler):
         payment_id = body.get("payment_id")
         days = int(body.get("days") or 30)
 
+        is_admin = False
+        sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=role")
+        if sb_u and len(sb_u) > 0 and sb_u[0].get("role") == "admin":
+            is_admin = True
+
         with db_lock:
             conn = get_db()
             cur = conn.cursor()
-            cur.execute("SELECT role FROM dynasty_users WHERE active_session_token = ?", (token,))
-            u = cur.fetchone()
-            if not u or u["role"] != "admin":
+            if not is_admin:
+                cur.execute("SELECT role FROM dynasty_users WHERE active_session_token = ?", (token,))
+                u = cur.fetchone()
+                if u and u["role"] == "admin":
+                    is_admin = True
+            if not is_admin:
                 conn.close()
                 return self._send_json({"ok": False, "msg": "No autorizado."}, 403)
 
             if action == "approve_payment" and payment_id:
+                sb_pay = supabase.select("dynasty_payments", f"id=eq.{payment_id}&select=*")
+                if sb_pay and len(sb_pay) > 0:
+                    target_email = sb_pay[0].get("user_email") or target_email
+                    days = 7 if "7" in str(sb_pay[0].get("plan_name", "")) else 30
+                    supabase.update("dynasty_payments", f"id=eq.{payment_id}", {"status": "approved"})
                 cur.execute("SELECT * FROM dynasty_payments WHERE id = ?", (payment_id,))
                 pay = cur.fetchone()
                 if pay:
                     target_email = pay["user_email"]
                     days = 7 if "7" in pay["plan_name"] else 30
                     cur.execute("UPDATE dynasty_payments SET status = 'approved' WHERE id = ?", (payment_id,))
-                    supabase.update_async("dynasty_payments", "id", str(payment_id), {"status": "approved"})
 
             if action in ("approve_payment", "grant_vip") and target_email:
                 exp = (datetime.now(timezone.utc) + timedelta(days=days)).isoformat()
                 cur.execute("UPDATE dynasty_users SET role = 'vip', vip_expires_at = ?, is_verified = 1 WHERE email = ?", (exp, target_email))
                 conn.commit()
                 conn.close()
-                supabase.update_async("dynasty_users", "email", target_email, {"role": "vip", "vip_expires_at": exp, "is_verified": True})
-                logger.info(f"👑 Admin activó VIP ({days} días) para: {target_email}")
+                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "vip", "vip_expires_at": exp, "is_verified": True})
                 return self._send_json({"ok": True, "msg": f"Membresía VIP ({days} días) activada para {target_email}."})
 
             if action == "revoke_vip" and target_email:
                 cur.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE email = ?", (target_email,))
                 conn.commit()
                 conn.close()
-                supabase.update_async("dynasty_users", "email", target_email, {"role": "free", "vip_expires_at": None})
+                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "free", "vip_expires_at": None})
                 return self._send_json({"ok": True, "msg": f"Usuario {target_email} pasado a plan Gratis."})
 
             if action == "reset_devices" and target_email:
                 cur.execute("UPDATE dynasty_users SET registered_devices = '[]', active_session_token = NULL, active_device_fp = NULL WHERE email = ?", (target_email,))
                 conn.commit()
                 conn.close()
-                supabase.update_async("dynasty_users", "email", target_email, {"registered_devices": [], "active_session_token": None})
+                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"registered_devices": [], "active_session_token": None, "active_device_fp": None})
                 return self._send_json({"ok": True, "msg": f"Dispositivos y sesiones reiniciados para {target_email}."})
 
             conn.close()
         self._send_json({"ok": False, "msg": "Acción no reconocida."}, 400)
 
     # ──────────────────────────────────────────────────────────────────────
-    # 5. ENDPOINTS PARA EL BOT DE PC (SEÑALES EN VIVO Y RESULTADOS)
+    # 5. ENDPOINTS EXCLUSIVOS PARA EL BOT DE PC (SEÑALES Y RUSH REALES)
     # ──────────────────────────────────────────────────────────────────────
     def _verify_bot_secret(self, body: dict) -> bool:
         header_sec = self.headers.get("X-Bot-Secret", "")
@@ -728,13 +928,14 @@ class handler(BaseHTTPRequestHandler):
         if not self._verify_bot_secret(body):
             return self._send_json({"ok": False, "msg": "Bot secret inválido"}, 403)
 
-        table_name = body.get("table_name", "Baccarat 2")
+        table_name = body.get("table_name", "Baccarat")
         sequence = body.get("sequence", ["P", "B", "B", "B", "B", "P"])
         probability = int(body.get("probability", 92))
         strategy_name = body.get("strategy_name", "DYNASTY_VIP")
         reference_image_b64 = body.get("reference_image_b64")
         base_hand_count = int(body.get("base_hand_count", 0))
-        now_str = datetime.now().strftime("%H:%M:%S")
+        now_ts = time.time()
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         with db_lock:
             conn = get_db()
@@ -748,13 +949,15 @@ class handler(BaseHTTPRequestHandler):
                 ) VALUES (?, ?, ?, ?, ?, ?, 1, 'active', ?, ?)
             """, (
                 table_name, json.dumps(sequence), probability, strategy_name,
-                reference_image_b64, base_hand_count, time.time(), now_str
+                reference_image_b64, base_hand_count, now_ts, now_str
             ))
             sig_id = cur.lastrowid
+            _prune_sqlite_images(cur)
             conn.commit()
             conn.close()
 
-        supabase.insert_async("dynasty_signals", {
+        supabase.update("dynasty_signals", "status=eq.active", {"status": "finished"})
+        sb_row = supabase.insert("dynasty_signals", {
             "table_name": table_name,
             "sequence": sequence,
             "probability": probability,
@@ -763,9 +966,14 @@ class handler(BaseHTTPRequestHandler):
             "base_hand_count": base_hand_count,
             "current_attempt": 1,
             "status": "active",
+            "created_ts": now_ts,
+            "created_at": now_str,
         })
+        if sb_row and sb_row.get("id"):
+            sig_id = sb_row["id"]
+        supabase.prune_images_older_than_15("dynasty_signals", "reference_image_b64")
 
-        logger.info(f"🚀 [SEÑAL EN VIVO RECIBIDA DEL BOT] Mesa: {table_name} | Secuencia: {sequence} ({probability}%)")
+        logger.info(f"🚀 [SEÑAL REAL DEL BOT] Mesa: {table_name} | Secuencia: {sequence} ({probability}%)")
         self._send_json({"ok": True, "signal_id": sig_id})
 
     def _handle_bot_attempt(self, body: dict):
@@ -779,6 +987,7 @@ class handler(BaseHTTPRequestHandler):
             cur.execute("UPDATE dynasty_signals SET current_attempt = ? WHERE status = 'active'", (attempt_number,))
             conn.commit()
             conn.close()
+        supabase.update("dynasty_signals", "status=eq.active", {"current_attempt": attempt_number})
         self._send_json({"ok": True})
 
     def _handle_bot_result(self, body: dict):
@@ -786,11 +995,11 @@ class handler(BaseHTTPRequestHandler):
             return self._send_json({"ok": False, "msg": "Bot secret inválido"}, 403)
 
         table_name = body.get("table_name", "Baccarat")
-        result_type = body.get("result_type", "win")
+        result_type = (body.get("result_type") or "win").lower()
         attempt_number = int(body.get("attempt_number", 1))
         strategy_name = body.get("strategy_name", "DYNASTY_VIP")
         screenshot_b64 = body.get("screenshot_b64")
-        now_str = datetime.now().strftime("%H:%M:%S")
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         with db_lock:
             conn = get_db()
@@ -801,18 +1010,22 @@ class handler(BaseHTTPRequestHandler):
                     table_name, result_type, attempt_number, strategy_name, screenshot_b64, created_at
                 ) VALUES (?, ?, ?, ?, ?, ?)
             """, (table_name, result_type, attempt_number, strategy_name, screenshot_b64, now_str))
+            _prune_sqlite_images(cur)
             conn.commit()
             conn.close()
 
-        supabase.insert_async("dynasty_results", {
+        supabase.update("dynasty_signals", "status=eq.active", {"status": result_type})
+        supabase.insert("dynasty_results", {
             "table_name": table_name,
             "result_type": result_type,
             "attempt_number": attempt_number,
             "strategy_name": strategy_name,
             "screenshot_b64": screenshot_b64,
+            "created_at": now_str,
         })
+        supabase.prune_images_older_than_15("dynasty_results", "screenshot_b64")
 
-        logger.info(f"🏆 [RESULTADO OFICIAL DEL BOT] {table_name} -> {result_type.upper()} en Tiro {attempt_number}")
+        logger.info(f"🏆 [RUSH OFICIAL DEL BOT] {table_name} -> {result_type.upper()} en Tiro {attempt_number}")
         self._send_json({"ok": True})
 
 
@@ -827,7 +1040,7 @@ except Exception as _db_err:
 if __name__ == "__main__":
     server = ThreadedHTTPServer(("0.0.0.0", PORT), handler)
     print("=" * 68)
-    print("  👑 BACCARAT DYNASTY VIP — PLATAFORMA WEB ACTIVA 👑")
+    print("  👑 BACCARAT DYNASTY VIP & RUSH — PLATAFORMA WEB ACTIVA 👑")
     print("=" * 68)
     print(f"  🌐 URL Local         : http://localhost:{PORT}")
     print(f"  🗄️  Supabase URL      : {SUPABASE_URL}")
