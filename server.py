@@ -58,6 +58,7 @@ BOT_API_SECRET = os.getenv("BOT_API_SECRET", "dynasty_bot_secret_2026")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@baccaratdynasty.com").lower()
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin1234")
 USDT_WALLET_TRC20 = os.getenv("USDT_WALLET_TRC20", "TX9kP7d2vBaccaratDynastyVIP9982LmN")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
 PORT = int(os.getenv("PORT", "5000"))
 MAX_STORED_IMAGES = 15
 
@@ -209,6 +210,12 @@ def init_db():
                 created_at TEXT
             )
         """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS dynasty_settings (
+                key TEXT PRIMARY KEY,
+                value TEXT
+            )
+        """)
 
         # Limpiar cualquier resultado de demostración antiguo que no tenga captura ni fecha completa
         cur.execute("DELETE FROM dynasty_results WHERE screenshot_b64 IS NULL AND length(created_at) <= 8")
@@ -228,6 +235,36 @@ def init_db():
 
         conn.commit()
         conn.close()
+
+
+def get_setting(key: str, default: str = "") -> str:
+    try:
+        with db_lock:
+            conn = get_db()
+            cur = conn.cursor()
+            cur.execute("SELECT value FROM dynasty_settings WHERE key = ?", (key,))
+            row = cur.fetchone()
+            conn.close()
+            if row and row["value"]:
+                return str(row["value"]).strip()
+    except Exception:
+        pass
+    return os.getenv(key.upper(), default)
+
+
+def set_setting(key: str, value: str):
+    try:
+        with db_lock:
+            conn = get_db()
+            cur = conn.cursor()
+            cur.execute("""
+                INSERT INTO dynasty_settings (key, value) VALUES (?, ?)
+                ON CONFLICT(key) DO UPDATE SET value = excluded.value
+            """, (key, value))
+            conn.commit()
+            conn.close()
+    except Exception:
+        pass
 
 
 def _prune_sqlite_images(cur):
@@ -332,6 +369,8 @@ class handler(BaseHTTPRequestHandler):
             self._handle_verify(body)
         elif path == "/api/auth/login":
             self._handle_login(body)
+        elif path == "/api/auth/google":
+            self._handle_google_login(body)
         elif path == "/api/payments/usdt":
             self._handle_usdt_payment(body)
         elif path == "/api/admin/action":
@@ -576,6 +615,151 @@ class handler(BaseHTTPRequestHandler):
         })
 
     # ──────────────────────────────────────────────────────────────────────
+    # 2.1 INICIO DE SESIÓN CON GOOGLE (TOKEN ID OFICIAL + ANTI-SHARING)
+    # ──────────────────────────────────────────────────────────────────────
+    def _handle_google_login(self, body: dict):
+        credential = (body.get("credential") or "").strip()
+        device_fp = (body.get("device_fp") or "UNKNOWN_FP").strip()
+        device_label = (body.get("device_label") or "Navegador Web").strip()
+
+        if not credential:
+            return self._send_json({"ok": False, "msg": "Token de Google no proporcionado."}, 400)
+
+        try:
+            r = requests.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={credential}", timeout=6)
+            if r.status_code != 200:
+                return self._send_json({"ok": False, "msg": "Token de Google inválido o expirado."}, 401)
+            g_data = r.json()
+        except Exception as e:
+            return self._send_json({"ok": False, "msg": f"Error comunicando con Google: {str(e)}"}, 500)
+
+        email = (g_data.get("email") or "").strip().lower()
+        email_verified = str(g_data.get("email_verified", "")).lower() in ("true", "1")
+
+        if not email or not email_verified:
+            return self._send_json({"ok": False, "msg": "La cuenta de Google no tiene un correo verificado."}, 400)
+
+        name = g_data.get("name") or email.split("@")[0]
+        picture = g_data.get("picture") or ""
+
+        user = None
+        sb_users = supabase.select("dynasty_users", f"email=eq.{quote(email)}&select=*")
+        if sb_users and len(sb_users) > 0:
+            user = sb_users[0]
+
+        now_str = datetime.now(timezone.utc).isoformat()
+        new_session_token = str(uuid.uuid4())
+        client_ip = self.client_address[0] if self.client_address else "127.0.0.1"
+
+        with db_lock:
+            conn = get_db()
+            cur = conn.cursor()
+            if not user:
+                cur.execute("SELECT * FROM dynasty_users WHERE email = ?", (email,))
+                row = cur.fetchone()
+                if row:
+                    user = dict(row)
+
+            if not user:
+                default_role = "admin" if email == ADMIN_EMAIL else "free"
+                vip_exp = (datetime.now(timezone.utc) + timedelta(days=3650)).isoformat() if default_role == "admin" else None
+                devices = [{
+                    "fp": device_fp,
+                    "label": device_label,
+                    "added_at": datetime.now().strftime("%Y-%m-%d %H:%M")
+                }]
+                devices_json = json.dumps(devices)
+
+                cur.execute("""
+                    INSERT INTO dynasty_users (
+                        email, password_hash, is_verified, verification_code,
+                        role, vip_expires_at, active_session_token, active_device_fp,
+                        registered_devices, last_login_ip, created_at
+                    ) VALUES (?, ?, 1, 'GOOGLE', ?, ?, ?, ?, ?, ?, ?)
+                """, (email, "OAUTH_GOOGLE", default_role, vip_exp, new_session_token, device_fp, devices_json, client_ip, now_str))
+                conn.commit()
+
+                if sb_users is not None:
+                    supabase.insert("dynasty_users", {
+                        "email": email,
+                        "password_hash": "OAUTH_GOOGLE",
+                        "is_verified": True,
+                        "verification_code": "GOOGLE",
+                        "role": default_role,
+                        "vip_expires_at": vip_exp,
+                        "active_session_token": new_session_token,
+                        "active_device_fp": device_fp,
+                        "registered_devices": devices,
+                        "last_login_ip": client_ip,
+                        "created_at": now_str,
+                    })
+
+                user = {
+                    "email": email,
+                    "role": default_role,
+                    "vip_expires_at": vip_exp,
+                    "registered_devices": devices
+                }
+            else:
+                raw_devs = user.get("registered_devices") or []
+                if isinstance(raw_devs, str):
+                    try:
+                        devices = json.loads(raw_devs)
+                    except Exception:
+                        devices = []
+                else:
+                    devices = list(raw_devs)
+
+                known_fps = [d.get("fp") for d in devices if isinstance(d, dict)]
+                role = user.get("role") or "free"
+
+                if role != "admin":
+                    if device_fp not in known_fps:
+                        if len(devices) >= 2:
+                            conn.close()
+                            return self._send_json({
+                                "ok": False,
+                                "msg": "🛡️ SEGURIDAD ANTI-COMPARTIR: Esta cuenta ya tiene 2 dispositivos vinculados. No se permite abrir en equipos de terceros.",
+                            }, 403)
+                        devices.append({
+                            "fp": device_fp,
+                            "label": device_label,
+                            "added_at": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                        })
+
+                devices_json = json.dumps(devices)
+                cur.execute("""
+                    UPDATE dynasty_users
+                    SET active_session_token = ?, active_device_fp = ?, registered_devices = ?, last_login_ip = ?, is_verified = 1
+                    WHERE email = ?
+                """, (new_session_token, device_fp, devices_json, client_ip, email))
+                conn.commit()
+
+                if sb_users is not None:
+                    supabase.update("dynasty_users", f"email=eq.{quote(email)}", {
+                        "active_session_token": new_session_token,
+                        "active_device_fp": device_fp,
+                        "registered_devices": devices,
+                        "last_login_ip": client_ip,
+                        "is_verified": True,
+                    })
+
+            conn.close()
+
+        logger.info(f"🌐 Inicio de sesión con Google exitoso: {email}")
+        return self._send_json({
+            "ok": True,
+            "email": email,
+            "role": user.get("role") or "free",
+            "vip_expires_at": user.get("vip_expires_at"),
+            "session_token": new_session_token,
+            "device_fp": device_fp,
+            "name": name,
+            "picture": picture,
+            "msg": "Sesión iniciada con Google correctamente."
+        })
+
+    # ──────────────────────────────────────────────────────────────────────
     # 3. ESTADO EN TIEMPO REAL: SEÑALES (DYNASTY) + RUSH COMPLETO (RESULTADOS)
     # ──────────────────────────────────────────────────────────────────────
     def _handle_get_state(self, token: str, fp: str):
@@ -732,6 +916,7 @@ class handler(BaseHTTPRequestHandler):
                 "losses": total_res - wins_count,
             },
             "usdt_wallet": USDT_WALLET_TRC20,
+            "google_client_id": get_setting("google_client_id", GOOGLE_CLIENT_ID),
         })
 
     # ──────────────────────────────────────────────────────────────────────
@@ -836,7 +1021,12 @@ class handler(BaseHTTPRequestHandler):
                 payments = [dict(r) for r in cur.fetchall()]
             conn.close()
 
-        self._send_json({"ok": True, "users": users, "payments": payments})
+        self._send_json({
+            "ok": True,
+            "users": users,
+            "payments": payments,
+            "google_client_id": get_setting("google_client_id", GOOGLE_CLIENT_ID),
+        })
 
     def _handle_admin_action(self, body: dict):
         token = (body.get("token") or "").strip()
@@ -908,6 +1098,12 @@ class handler(BaseHTTPRequestHandler):
                 except Exception:
                     pass
                 return self._send_json({"ok": True, "msg": "Señales y resultados de prueba limpiados."})
+
+            if action == "set_google_client_id":
+                val = (body.get("client_id") or "").strip()
+                set_setting("google_client_id", val)
+                conn.close()
+                return self._send_json({"ok": True, "msg": "Google Client ID guardado exitosamente."})
 
             conn.close()
         self._send_json({"ok": False, "msg": "Acción no reconocida."}, 400)

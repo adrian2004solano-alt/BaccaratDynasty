@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Baccarat Dynasty — VIP Signal Terminal</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -390,6 +391,26 @@
           </button>
         </div>
 
+        <!-- Separador O -->
+        <div class="relative flex items-center justify-center my-3">
+          <div class="border-t border-white/[0.08] w-full"></div>
+          <span class="bg-[#0b0f17] px-3 text-[10px] uppercase font-bold text-slate-500 tracking-wider absolute">O</span>
+        </div>
+
+        <!-- Botón Continuar con Google -->
+        <div id="google-auth-container" class="space-y-2">
+          <div id="g_id_signin_container" class="flex justify-center w-full min-h-[44px]"></div>
+          <button id="google-custom-btn" onclick="triggerGoogleSignIn()" class="w-full py-3 px-4 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-white font-bold text-xs flex items-center justify-center gap-3 transition">
+            <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Continuar con Google</span>
+          </button>
+        </div>
+
         <p id="auth-msg" class="text-xs text-center font-semibold text-amber-400"></p>
       </div>
     </section>
@@ -511,6 +532,27 @@
             <tbody id="admin-users-body" class="divide-y divide-white/[0.04]"></tbody>
           </table>
         </div>
+      </div>
+
+      <!-- Configuración Google OAuth -->
+      <div class="luxury-card rounded-3xl p-6 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Integración de Seguridad</span>
+            <h3 class="font-extrabold text-sm text-white">Google OAuth (Sign In With Google)</h3>
+          </div>
+          <span id="google-status-pill" class="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-amber-500/15 text-amber-400">
+            Pendiente de Client ID
+          </span>
+        </div>
+        <p class="text-xs text-slate-400">Pega aquí el Client ID generado en Google Cloud Console para activar el botón en toda la plataforma:</p>
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input type="text" id="admin-google-client-id" placeholder="Ej: 123456789-abcdef.apps.googleusercontent.com" class="flex-1 px-4 py-2.5 rounded-xl bg-[#060911] border border-white/10 text-xs text-white focus:outline-none focus:border-amber-400" />
+          <button onclick="adminSaveGoogleClientId()" class="px-5 py-2.5 rounded-xl btn-gold text-xs font-bold transition">
+            Guardar Client ID
+          </button>
+        </div>
+        <p id="admin-google-msg" class="text-xs font-semibold text-emerald-400"></p>
       </div>
     </section>
 
@@ -831,6 +873,10 @@
         document.getElementById('rush-wins-count').innerText = winsCount;
         document.getElementById('rush-losses-count').innerText = lossesCount;
 
+        if (data.google_client_id) {
+          initGoogleSignIn(data.google_client_id);
+        }
+
         const currentRushHash = results.length > 0 ? `${results.length}-${results[0].id}` : 'empty';
         if (currentRushHash !== lastRushHash) {
           lastRushHash = currentRushHash;
@@ -984,6 +1030,35 @@
           </td>
         </tr>
       `).join('');
+
+      if (data.google_client_id) {
+        const input = document.getElementById('admin-google-client-id');
+        if (input && !input.value) input.value = data.google_client_id;
+        const pill = document.getElementById('google-status-pill');
+        if (pill) {
+          pill.innerText = 'Activo en Plataforma';
+          pill.className = 'px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-emerald-500/15 text-emerald-400';
+        }
+      }
+    }
+
+    async function adminSaveGoogleClientId() {
+      const id = document.getElementById('admin-google-client-id').value.trim();
+      const res = await fetch('/api/admin/action', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ token: sessionToken, action: 'set_google_client_id', client_id: id })
+      });
+      const data = await res.json();
+      document.getElementById('admin-google-msg').innerText = data.msg || 'Guardado';
+      if (data.ok && id) {
+        initGoogleSignIn(id);
+        const pill = document.getElementById('google-status-pill');
+        if (pill) {
+          pill.innerText = 'Activo en Plataforma';
+          pill.className = 'px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-emerald-500/15 text-emerald-400';
+        }
+      }
     }
 
     async function adminAction(action, email, payment_id = null) {
@@ -1020,6 +1095,104 @@
       });
       lastRushHash = '';
       await pollLiveState();
+    }
+
+    let currentGoogleClientId = '';
+
+    function initGoogleSignIn(clientId) {
+      if (!clientId || clientId === currentGoogleClientId) return;
+      currentGoogleClientId = clientId;
+
+      function _renderGsi() {
+        if (!window.google || !window.google.accounts || !window.google.accounts.id) return;
+        try {
+          window.google.accounts.id.initialize({
+            client_id: currentGoogleClientId,
+            callback: handleGoogleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true,
+          });
+          const container = document.getElementById('g_id_signin_container');
+          if (container) {
+            container.innerHTML = '';
+            window.google.accounts.id.renderButton(container, {
+              type: 'standard',
+              shape: 'pill',
+              theme: 'filled_black',
+              text: 'continue_with',
+              size: 'large',
+              logo_alignment: 'left',
+              width: 320
+            });
+            const customBtn = document.getElementById('google-custom-btn');
+            if (customBtn) customBtn.classList.add('hidden');
+          }
+        } catch (e) {}
+      }
+
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        _renderGsi();
+      } else {
+        window.addEventListener('load', _renderGsi);
+      }
+    }
+
+    function triggerGoogleSignIn() {
+      if (!currentGoogleClientId) {
+        const id = prompt("Para activar el inicio con Google, ingresa el Google Client ID:\n(Ej: xxxxxxxxx.apps.googleusercontent.com)");
+        if (id && id.trim()) {
+          adminSaveGoogleClientIdDirect(id.trim());
+        }
+        return;
+      }
+      if (window.google && window.google.accounts && window.google.accounts.id) {
+        window.google.accounts.id.prompt();
+      }
+    }
+
+    async function adminSaveGoogleClientIdDirect(id) {
+      initGoogleSignIn(id);
+      if (sessionToken && userRole === 'admin') {
+        await fetch('/api/admin/action', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ token: sessionToken, action: 'set_google_client_id', client_id: id })
+        });
+      }
+    }
+
+    async function handleGoogleCredentialResponse(response) {
+      if (!response || !response.credential) return;
+      const authMsg = document.getElementById('auth-msg');
+      if (authMsg) authMsg.innerText = 'Verificando cuenta con Google...';
+      try {
+        const res = await fetch('/api/auth/google', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            credential: response.credential,
+            device_fp: deviceFp,
+            device_label: navigator.platform
+          })
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          if (authMsg) authMsg.innerText = data.msg || 'Error al iniciar sesión con Google';
+          return;
+        }
+        sessionToken = data.session_token;
+        userEmail = data.email;
+        userRole = data.role;
+        localStorage.setItem('dynasty_token', sessionToken);
+        localStorage.setItem('dynasty_email', userEmail);
+        localStorage.setItem('dynasty_role', userRole);
+        if (authMsg) authMsg.innerText = '';
+        updateHeaderUI();
+        showSection('signals');
+        pollLiveState();
+      } catch (e) {
+        if (authMsg) authMsg.innerText = 'Error al conectar con el servidor.';
+      }
     }
 
     computeDeviceFingerprint();
