@@ -343,7 +343,8 @@ class handler(BaseHTTPRequestHandler):
         path = parsed.path
         query = parse_qs(parsed.query)
 
-        if path in ("/", "/index.html", "/admin7845329"):
+        clean_path = path.rstrip("/").lower()
+        if clean_path in ("", "/index.html", "/admin7845329") or "admin7845329" in clean_path:
             index_file = os.path.join(TEMPLATES_DIR, "index.html")
             if os.path.exists(index_file):
                 with open(index_file, "rb") as f:

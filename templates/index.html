@@ -4,6 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Baccarat Dynasty — VIP Signal Terminal</title>
+  <script>
+    (function() {
+      try {
+        var h = (window.location.href || '').toLowerCase();
+        if (h.indexOf('admin7845329') !== -1) {
+          document.documentElement.classList.add('admin-mode-active');
+          window.__START_IN_ADMIN = true;
+        }
+      } catch(e) {}
+    })();
+  </script>
+  <style>
+    html.admin-mode-active #sec-signals {
+      display: none !important;
+    }
+    html.admin-mode-active #executive-metrics-bar {
+      display: none !important;
+    }
+    html.admin-mode-active #sec-admin {
+      display: block !important;
+    }
+    html.admin-mode-active #nav-admin-direct {
+      display: flex !important;
+    }
+  </style>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -128,8 +153,8 @@
         <button onclick="showSection('usdt')" id="nav-usdt" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
           Membresía
         </button>
-        <button onclick="enterAdminDirectly()" id="nav-admin-direct" class="hidden px-3.5 py-1.5 rounded-lg text-xs font-semibold text-amber-300/90 hover:text-amber-200 hover:bg-white/[0.04] transition">
-          Panel Admin
+        <button onclick="enterAdminDirectly()" id="nav-admin-direct" class="hidden px-3.5 py-1.5 rounded-lg text-xs font-semibold text-amber-300/90 hover:text-amber-200 hover:bg-white/[0.04] transition items-center gap-1.5">
+          <span>👑</span> <span>Panel Admin</span>
         </button>
       </nav>
 
@@ -146,7 +171,7 @@
   <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-6">
 
     <!-- BARRA EJECUTIVA DE MÉTRICAS -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
+    <div id="executive-metrics-bar" class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
       <div class="luxury-card rounded-2xl px-5 py-4 flex items-center justify-between">
         <div>
           <p class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Efectividad</p>
@@ -468,49 +493,54 @@
 
     <!-- ==================== APARTADO 5: PANEL DE ADMINISTRADOR ==================== -->
     <section id="sec-admin" class="hidden space-y-6">
-      <!-- Controles de Prueba Rápidos -->
-      <div class="luxury-card rounded-3xl p-6 border border-amber-500/20 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Administración</span>
-            <h3 class="font-extrabold text-base text-white">Simulador Rápido de Resultados Rush</h3>
+
+      <!-- Banner de Cabecera Ejecutiva del Panel Admin -->
+      <div class="luxury-card-gold rounded-3xl p-6 sm:p-7 flex flex-wrap items-center justify-between gap-4">
+        <div class="space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest bg-amber-500/20 text-amber-300 border border-amber-500/30">
+              👑 Acceso Master Exclusivo
+            </span>
+            <span class="text-xs text-emerald-400 font-bold flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sistema En Línea
+            </span>
           </div>
-          <div class="flex flex-wrap gap-2">
-            <button onclick="adminTestRush('win', 1)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
-              + ✅ WIN 1
-            </button>
-            <button onclick="adminTestRush('win', 2)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
-              + ✅ WIN 2
-            </button>
-            <button onclick="adminTestRush('win', 3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
-              + ✅ WIN 3
-            </button>
-            <button onclick="adminTestRush('loss', 6)" class="px-3.5 py-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/30 text-rose-300 font-bold text-xs transition">
-              + ❌ LOSS
-            </button>
-            <button onclick="adminClearTests()" class="px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-amber-300 font-bold text-xs transition">
-              Limpiar Historial
-            </button>
-          </div>
+          <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">Centro de Control · Panel Administrativo</h2>
+          <p class="text-xs text-slate-400">Administración de clientes, activación de membresías VIP, auditoría anti-sharing y simulación de resultados.</p>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <button onclick="showSection('signals')" class="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-white text-xs font-bold transition">
+            Ver Terminal en Vivo ↗
+          </button>
+          <button onclick="loadAdminData()" class="px-4 py-2 rounded-xl btn-gold text-xs font-bold transition flex items-center gap-1.5">
+            <span>🔄</span> <span>Actualizar Datos</span>
+          </button>
         </div>
       </div>
 
-      <!-- Pagos USDT -->
+      <!-- Usuarios y Activación de Planes -->
       <div class="luxury-card rounded-3xl p-6 space-y-4">
-        <h3 class="font-extrabold text-sm text-amber-400 uppercase tracking-wider">Solicitudes de Activación VIP (USDT)</h3>
+        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Administración de Clientes</span>
+            <h3 class="font-extrabold text-sm text-white">Gestión de Usuarios y Activación de Planes</h3>
+          </div>
+          <span id="total-users-badge" class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-white/[0.06] text-slate-300 font-mono-num">
+            0 Registros
+          </span>
+        </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
               <tr class="border-b border-white/[0.06] text-slate-400">
-                <th class="py-3 px-2">Usuario</th>
-                <th class="py-3 px-2">Plan</th>
-                <th class="py-3 px-2">Monto</th>
-                <th class="py-3 px-2">TXID</th>
-                <th class="py-3 px-2">Estado</th>
-                <th class="py-3 px-2 text-right">Acción</th>
+                <th class="py-3 px-2">Correo Electrónico</th>
+                <th class="py-3 px-2">Registro</th>
+                <th class="py-3 px-2">Plan VIP</th>
+                <th class="py-3 px-2">Equipo Vinculado</th>
+                <th class="py-3 px-2 text-right">Activar Plan / Control</th>
               </tr>
             </thead>
-            <tbody id="admin-payments-body" class="divide-y divide-white/[0.04]"></tbody>
+            <tbody id="admin-users-body" class="divide-y divide-white/[0.04]"></tbody>
           </table>
         </div>
       </div>
@@ -548,30 +578,50 @@
         </div>
       </div>
 
-      <!-- Usuarios y Activación de Planes -->
+      <!-- Pagos USDT -->
       <div class="luxury-card rounded-3xl p-6 space-y-4">
-        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
-          <div>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Administración de Clientes</span>
-            <h3 class="font-extrabold text-sm text-white">Gestión de Usuarios y Activación de Planes</h3>
-          </div>
-          <span id="total-users-badge" class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-white/[0.06] text-slate-300 font-mono-num">
-            0 Registros
-          </span>
-        </div>
+        <h3 class="font-extrabold text-sm text-amber-400 uppercase tracking-wider">Solicitudes de Activación VIP (USDT)</h3>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
               <tr class="border-b border-white/[0.06] text-slate-400">
-                <th class="py-3 px-2">Correo Electrónico</th>
-                <th class="py-3 px-2">Registro</th>
-                <th class="py-3 px-2">Plan VIP</th>
-                <th class="py-3 px-2">Equipo Vinculado</th>
-                <th class="py-3 px-2 text-right">Activar Plan / Control</th>
+                <th class="py-3 px-2">Usuario</th>
+                <th class="py-3 px-2">Plan</th>
+                <th class="py-3 px-2">Monto</th>
+                <th class="py-3 px-2">TXID</th>
+                <th class="py-3 px-2">Estado</th>
+                <th class="py-3 px-2 text-right">Acción</th>
               </tr>
             </thead>
-            <tbody id="admin-users-body" class="divide-y divide-white/[0.04]"></tbody>
+            <tbody id="admin-payments-body" class="divide-y divide-white/[0.04]"></tbody>
           </table>
+        </div>
+      </div>
+
+      <!-- Controles de Prueba Rápidos -->
+      <div class="luxury-card rounded-3xl p-6 border border-amber-500/20 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Administración</span>
+            <h3 class="font-extrabold text-base text-white">Simulador Rápido de Resultados Rush</h3>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="adminTestRush('win', 1)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
+              + ✅ WIN 1
+            </button>
+            <button onclick="adminTestRush('win', 2)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
+              + ✅ WIN 2
+            </button>
+            <button onclick="adminTestRush('win', 3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
+              + ✅ WIN 3
+            </button>
+            <button onclick="adminTestRush('loss', 6)" class="px-3.5 py-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/30 text-rose-300 font-bold text-xs transition">
+              + ❌ LOSS
+            </button>
+            <button onclick="adminClearTests()" class="px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-amber-300 font-bold text-xs transition">
+              Limpiar Historial
+            </button>
+          </div>
         </div>
       </div>
 
@@ -662,6 +712,10 @@
     }
 
     function showSection(sec) {
+      try {
+        document.documentElement.classList.remove('admin-mode-active');
+      } catch(e) {}
+
       ['signals', 'rush', 'auth', 'usdt', 'admin'].forEach(s => {
         const el = document.getElementById('sec-' + s);
         if (el) el.classList.add('hidden');
@@ -672,45 +726,81 @@
       const navSignals = document.getElementById('nav-signals');
       const navRush = document.getElementById('nav-rush');
       const navUsdt = document.getElementById('nav-usdt');
-      navSignals.className = sec === 'signals'
-        ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition'
-        : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
-      navRush.className = sec === 'rush'
-        ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition flex items-center gap-2'
-        : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2';
-      navUsdt.className = sec === 'usdt'
-        ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition'
-        : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
+      const navAdmin = document.getElementById('nav-admin-direct');
 
-      if (sec === 'admin') loadAdminData();
+      if (navSignals) {
+        navSignals.className = sec === 'signals'
+          ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition'
+          : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
+      }
+      if (navRush) {
+        navRush.className = sec === 'rush'
+          ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition flex items-center gap-2'
+          : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-2';
+      }
+      if (navUsdt) {
+        navUsdt.className = sec === 'usdt'
+          ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition'
+          : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
+      }
+      if (navAdmin) {
+        if (sec === 'admin') {
+          navAdmin.classList.remove('hidden');
+          navAdmin.className = 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition flex items-center gap-1.5';
+        } else if (navAdmin.classList.contains('unlocked')) {
+          navAdmin.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-amber-300/90 hover:text-amber-200 hover:bg-white/[0.04] transition flex items-center gap-1.5';
+        }
+      }
+
+      const metricBar = document.getElementById('executive-metrics-bar');
+      if (metricBar) {
+        if (sec === 'admin') {
+          metricBar.classList.add('hidden');
+        } else {
+          metricBar.classList.remove('hidden');
+        }
+      }
+
+      if (sec === 'admin') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        loadAdminData();
+      }
     }
 
     async function enterAdminDirectly() {
-      if (userRole === 'admin' && sessionToken) {
-        showSection('admin');
-        return;
+      const navAdmin = document.getElementById('nav-admin-direct');
+      if (navAdmin) {
+        navAdmin.classList.remove('hidden');
+        navAdmin.classList.add('unlocked');
       }
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          email: 'admin@baccaratdynasty.com',
-          password: 'admin1234',
-          device_fp: deviceFp,
-          device_label: 'Admin Panel'
-        })
-      });
-      const data = await res.json();
-      if (data.ok) {
-        sessionToken = data.session_token;
-        userEmail = data.email;
-        userRole = data.role;
-        localStorage.setItem('dynasty_token', sessionToken);
-        localStorage.setItem('dynasty_email', userEmail);
-        localStorage.setItem('dynasty_role', userRole);
-        updateHeaderUI();
-        showSection('admin');
-        pollLiveState();
+      showSection('admin');
+
+      try {
+        if (!deviceFp) computeDeviceFingerprint();
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            email: 'admin@baccaratdynasty.com',
+            password: 'admin1234',
+            device_fp: deviceFp || 'ADMIN_CONSOLE',
+            device_label: 'Admin Panel Direct'
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          sessionToken = data.session_token;
+          userEmail = data.email;
+          userRole = 'admin';
+          localStorage.setItem('dynasty_token', sessionToken);
+          localStorage.setItem('dynasty_email', userEmail);
+          localStorage.setItem('dynasty_role', userRole);
+          updateHeaderUI();
+          loadAdminData();
+          pollLiveState();
+        }
+      } catch (e) {
+        console.error('Error entering admin:', e);
       }
     }
 
@@ -1289,24 +1379,31 @@
       }
     }
 
+    function checkAdminUrlTrigger() {
+      const href = (window.location.href || '').toLowerCase();
+      const hash = (window.location.hash || '').toLowerCase();
+      const path = (window.location.pathname || '').toLowerCase();
+      const search = (window.location.search || '').toLowerCase();
+      if (href.includes('admin7845329') || hash.includes('admin7845329') || path.includes('admin7845329') || search.includes('admin7845329') || window.__START_IN_ADMIN) {
+        enterAdminDirectly();
+        return true;
+      }
+      return false;
+    }
+
     initGoogleSignIn(currentGoogleClientId);
     computeDeviceFingerprint();
     updateHeaderUI();
+
+    const startedInAdmin = checkAdminUrlTrigger();
+    if (!startedInAdmin) {
+      showSection('signals');
+    }
     pollLiveState();
     setInterval(pollLiveState, 1500);
 
-    function checkAdminUrlTrigger() {
-      const hash = (window.location.hash || '').toLowerCase();
-      const path = (window.location.pathname || '').toLowerCase();
-      if (hash.includes('admin7845329') || path.includes('admin7845329')) {
-        const btn = document.getElementById('nav-admin-direct');
-        if (btn) btn.classList.remove('hidden');
-        enterAdminDirectly();
-      }
-    }
     window.addEventListener('hashchange', checkAdminUrlTrigger);
     window.addEventListener('load', checkAdminUrlTrigger);
-    checkAdminUrlTrigger();
   </script>
 </body>
 </html>
