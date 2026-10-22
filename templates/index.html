@@ -128,7 +128,7 @@
         <button onclick="showSection('usdt')" id="nav-usdt" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">
           Membresía
         </button>
-        <button onclick="enterAdminDirectly()" id="nav-admin-direct" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-amber-300/90 hover:text-amber-200 hover:bg-white/[0.04] transition">
+        <button onclick="enterAdminDirectly()" id="nav-admin-direct" class="hidden px-3.5 py-1.5 rounded-lg text-xs font-semibold text-amber-300/90 hover:text-amber-200 hover:bg-white/[0.04] transition">
           Panel Admin
         </button>
       </nav>
@@ -586,9 +586,8 @@
             Pendiente de Client ID
           </span>
         </div>
-        <p class="text-xs text-slate-400">Pega aquí el Client ID generado en Google Cloud Console para activar el botón en toda la plataforma:</p>
         <div class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="admin-google-client-id" placeholder="Ej: 123456789-abcdef.apps.googleusercontent.com" class="flex-1 px-4 py-2.5 rounded-xl bg-[#060911] border border-white/10 text-xs text-white focus:outline-none focus:border-amber-400" />
+          <input type="text" id="admin-google-client-id" placeholder="Google Client ID" class="flex-1 px-4 py-2.5 rounded-xl bg-[#060911] border border-white/10 text-xs text-white focus:outline-none focus:border-amber-400 font-mono-num" />
           <button onclick="adminSaveGoogleClientId()" class="px-5 py-2.5 rounded-xl btn-gold text-xs font-bold transition">
             Guardar Client ID
           </button>
@@ -1295,6 +1294,19 @@
     updateHeaderUI();
     pollLiveState();
     setInterval(pollLiveState, 1500);
+
+    function checkAdminUrlTrigger() {
+      const hash = (window.location.hash || '').toLowerCase();
+      const path = (window.location.pathname || '').toLowerCase();
+      if (hash.includes('admin7845329') || path.includes('admin7845329')) {
+        const btn = document.getElementById('nav-admin-direct');
+        if (btn) btn.classList.remove('hidden');
+        enterAdminDirectly();
+      }
+    }
+    window.addEventListener('hashchange', checkAdminUrlTrigger);
+    window.addEventListener('load', checkAdminUrlTrigger);
+    checkAdminUrlTrigger();
   </script>
 </body>
 </html>
