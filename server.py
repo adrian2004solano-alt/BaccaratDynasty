@@ -58,7 +58,7 @@ BOT_API_SECRET = os.getenv("BOT_API_SECRET", "dynasty_bot_secret_2026")
 ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@baccaratdynasty.com").lower()
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin1234")
 USDT_WALLET_TRC20 = os.getenv("USDT_WALLET_TRC20", "TX9kP7d2vBaccaratDynastyVIP9982LmN")
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "152674692011-0vkgv9pqduk6gmrj17llk68n02qkls9n.apps.googleusercontent.com")
 PORT = int(os.getenv("PORT", "5000"))
 MAX_STORED_IMAGES = 15
 

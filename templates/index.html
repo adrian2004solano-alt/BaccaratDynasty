@@ -1097,10 +1097,10 @@
       await pollLiveState();
     }
 
-    let currentGoogleClientId = '';
+    let currentGoogleClientId = '152674692011-0vkgv9pqduk6gmrj17llk68n02qkls9n.apps.googleusercontent.com';
 
     function initGoogleSignIn(clientId) {
-      if (!clientId || clientId === currentGoogleClientId) return;
+      if (!clientId) return;
       currentGoogleClientId = clientId;
 
       function _renderGsi() {
@@ -1195,6 +1195,7 @@
       }
     }
 
+    initGoogleSignIn(currentGoogleClientId);
     computeDeviceFingerprint();
     updateHeaderUI();
     pollLiveState();
