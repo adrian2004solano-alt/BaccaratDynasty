@@ -216,6 +216,19 @@ def init_db():
                 value TEXT
             )
         """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS dynasty_security_alerts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_email TEXT NOT NULL,
+                alert_type TEXT NOT NULL,
+                detected_ip TEXT,
+                device_fp TEXT,
+                device_label TEXT,
+                details TEXT,
+                status TEXT DEFAULT 'new',
+                created_at TEXT
+            )
+        """)
 
         # Limpiar cualquier resultado de demostración antiguo que no tenga captura ni fecha completa
         cur.execute("DELETE FROM dynasty_results WHERE screenshot_b64 IS NULL AND length(created_at) <= 8")
@@ -563,13 +576,28 @@ class handler(BaseHTTPRequestHandler):
 
             known_fps = [d.get("fp") for d in devices if isinstance(d, dict)]
             role = user.get("role") or "free"
+            client_ip = self.client_address[0] if self.client_address else "127.0.0.1"
+            now_str = datetime.now(timezone.utc).isoformat()
+
             if role != "admin":
                 if device_fp not in known_fps:
-                    if len(devices) >= 2:
+                    # Si el usuario tiene plan VIP activo y ya tiene un dispositivo vinculado, bloqueamos el intento y alertamos al Admin
+                    if role == "vip" and len(devices) >= 1:
+                        cur.execute("""
+                            INSERT INTO dynasty_security_alerts (user_email, alert_type, detected_ip, device_fp, device_label, details, status, created_at)
+                            VALUES (?, 'SHARING_BLOCKED', ?, ?, ?, ?, 'new', ?)
+                        """, (email, client_ip, device_fp, device_label, "Intento de inicio VIP en segundo dispositivo no autorizado", now_str))
+                        conn.commit()
                         conn.close()
                         return self._send_json({
                             "ok": False,
-                            "msg": "🛡️ SEGURIDAD ANTI-COMPARTIR: Esta cuenta ya tiene 2 dispositivos vinculados (PC/Móvil). No se permite abrir en equipos de terceros.",
+                            "msg": "🛡️ SEGURIDAD DYNASTY: Tu cuenta VIP está vinculada a tu dispositivo original. No está permitido compartir cuentas. Este intento ha sido reportado al Administrador.",
+                        }, 403)
+                    elif len(devices) >= 2:
+                        conn.close()
+                        return self._send_json({
+                            "ok": False,
+                            "msg": "🛡️ SEGURIDAD ANTI-COMPARTIR: Esta cuenta ya tiene 2 dispositivos vinculados. No se permite abrir en equipos de terceros.",
                         }, 403)
                     devices.append({
                         "fp": device_fp,
@@ -715,7 +743,18 @@ class handler(BaseHTTPRequestHandler):
 
                 if role != "admin":
                     if device_fp not in known_fps:
-                        if len(devices) >= 2:
+                        if role == "vip" and len(devices) >= 1:
+                            cur.execute("""
+                                INSERT INTO dynasty_security_alerts (user_email, alert_type, detected_ip, device_fp, device_label, details, status, created_at)
+                                VALUES (?, 'SHARING_BLOCKED', ?, ?, ?, ?, 'new', ?)
+                            """, (email, client_ip, device_fp, device_label, "Intento de inicio VIP (Google) en segundo dispositivo no autorizado", now_str))
+                            conn.commit()
+                            conn.close()
+                            return self._send_json({
+                                "ok": False,
+                                "msg": "🛡️ SEGURIDAD DYNASTY: Tu cuenta VIP está vinculada a tu dispositivo original. No está permitido compartir cuentas. Este intento ha sido reportado al Administrador.",
+                            }, 403)
+                        elif len(devices) >= 2:
                             conn.close()
                             return self._send_json({
                                 "ok": False,
@@ -1019,12 +1058,16 @@ class handler(BaseHTTPRequestHandler):
             else:
                 cur.execute("SELECT * FROM dynasty_payments ORDER BY id DESC LIMIT 50")
                 payments = [dict(r) for r in cur.fetchall()]
+
+            cur.execute("SELECT * FROM dynasty_security_alerts ORDER BY id DESC LIMIT 50")
+            alerts = [dict(r) for r in cur.fetchall()]
             conn.close()
 
         self._send_json({
             "ok": True,
             "users": users,
             "payments": payments,
+            "alerts": alerts,
             "google_client_id": get_setting("google_client_id", GOOGLE_CLIENT_ID),
         })
 
@@ -1033,6 +1076,7 @@ class handler(BaseHTTPRequestHandler):
         action = (body.get("action") or "").strip()
         target_email = (body.get("email") or "").strip().lower()
         payment_id = body.get("payment_id")
+        alert_id = body.get("alert_id")
         days = int(body.get("days") or 30)
 
         is_admin = False
@@ -1056,13 +1100,13 @@ class handler(BaseHTTPRequestHandler):
                 sb_pay = supabase.select("dynasty_payments", f"id=eq.{payment_id}&select=*")
                 if sb_pay and len(sb_pay) > 0:
                     target_email = sb_pay[0].get("user_email") or target_email
-                    days = 7 if "7" in str(sb_pay[0].get("plan_name", "")) else 30
+                    days = 15 if "15" in str(sb_pay[0].get("plan_name", "")) else 30
                     supabase.update("dynasty_payments", f"id=eq.{payment_id}", {"status": "approved"})
                 cur.execute("SELECT * FROM dynasty_payments WHERE id = ?", (payment_id,))
                 pay = cur.fetchone()
                 if pay:
                     target_email = pay["user_email"]
-                    days = 7 if "7" in pay["plan_name"] else 30
+                    days = 15 if "15" in str(pay["plan_name"]) else 30
                     cur.execute("UPDATE dynasty_payments SET status = 'approved' WHERE id = ?", (payment_id,))
 
             if action in ("approve_payment", "grant_vip") and target_email:
@@ -1071,7 +1115,21 @@ class handler(BaseHTTPRequestHandler):
                 conn.commit()
                 conn.close()
                 supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "vip", "vip_expires_at": exp, "is_verified": True})
-                return self._send_json({"ok": True, "msg": f"Membresía VIP ({days} días) activada para {target_email}."})
+                plan_label = "Quincenal (15 días - $50)" if days == 15 else f"Mensual ({days} días - $100)"
+                return self._send_json({"ok": True, "msg": f"Membresía {plan_label} activada exitosamente para {target_email}."})
+
+            if action == "dismiss_alert" and alert_id:
+                cur.execute("UPDATE dynasty_security_alerts SET status = 'dismissed' WHERE id = ?", (alert_id,))
+                conn.commit()
+                conn.close()
+                return self._send_json({"ok": True, "msg": "Alerta de seguridad descartada."})
+
+            if action == "block_user" and target_email:
+                cur.execute("UPDATE dynasty_users SET role = 'blocked', active_session_token = NULL WHERE email = ?", (target_email,))
+                conn.commit()
+                conn.close()
+                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "blocked", "active_session_token": None})
+                return self._send_json({"ok": True, "msg": f"Usuario {target_email} bloqueado por intento de compartir cuenta."})
 
             if action == "revoke_vip" and target_email:
                 cur.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE email = ?", (target_email,))
