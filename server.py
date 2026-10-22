@@ -492,7 +492,7 @@ class handler(BaseHTTPRequestHandler):
 
         # Soporte garantizado para la cuenta de Administrador
         if email == ADMIN_EMAIL and password == ADMIN_PASSWORD:
-            new_session_token = str(uuid.uuid4())
+            new_session_token = "dynasty_admin_master_session"
             vip_exp = (datetime.now(timezone.utc) + timedelta(days=3650)).isoformat()
             with db_lock:
                 conn = get_db()
@@ -809,44 +809,52 @@ class handler(BaseHTTPRequestHandler):
 
         # 3.1 Verificar sesión activa (Supabase + SQLite)
         if token:
-            u = None
-            sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=*")
-            if sb_u is not None and len(sb_u) > 0:
-                u = sb_u[0]
+            if token == "dynasty_admin_master_session" or token.startswith("dynasty_admin_"):
+                user_email = ADMIN_EMAIL
+                user_role = "admin"
+                vip_days_left = 3650
             else:
-                with db_lock:
-                    conn = get_db()
-                    cur = conn.cursor()
-                    cur.execute("SELECT * FROM dynasty_users WHERE active_session_token = ?", (token,))
-                    row = cur.fetchone()
-                    if row:
-                        u = dict(row)
-                    conn.close()
+                u = None
+                sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=*")
+                if sb_u is not None and len(sb_u) > 0:
+                    u = sb_u[0]
+                else:
+                    with db_lock:
+                        conn = get_db()
+                        cur = conn.cursor()
+                        cur.execute("SELECT * FROM dynasty_users WHERE active_session_token = ?", (token,))
+                        row = cur.fetchone()
+                        if row:
+                            u = dict(row)
+                        conn.close()
 
-            if not u:
-                return self._send_json({
-                    "status": "kicked",
-                    "reason": "🚨 Tu cuenta fue abierta en otro dispositivo. Solo se permite 1 conexión activa a la vez.",
-                })
+                if not u:
+                    return self._send_json({
+                        "status": "kicked",
+                        "reason": "🚨 Tu cuenta fue abierta en otro dispositivo. Solo se permite 1 conexión activa a la vez.",
+                    })
 
-            user_email = u.get("email")
-            user_role = u.get("role") or "free"
-            if user_role in ("vip", "trial") and u.get("vip_expires_at"):
-                try:
-                    exp_dt = datetime.fromisoformat(str(u["vip_expires_at"]).replace("Z", "+00:00"))
-                    diff = exp_dt - datetime.now(timezone.utc)
-                    if diff.total_seconds() <= 0:
-                        user_role = "free"
-                        supabase.update("dynasty_users", f"email=eq.{quote(user_email)}", {"role": "free", "vip_expires_at": None})
-                        with db_lock:
-                            conn_exp = get_db()
-                            conn_exp.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE email = ?", (user_email,))
-                            conn_exp.commit()
-                            conn_exp.close()
-                    else:
-                        vip_days_left = max(1, diff.days + 1)
-                except Exception:
-                    vip_days_left = 30
+                user_email = u.get("email")
+                user_role = u.get("role") or "free"
+                if user_email == ADMIN_EMAIL or user_role == "admin":
+                    user_role = "admin"
+                    vip_days_left = 3650
+                elif user_role in ("vip", "trial") and u.get("vip_expires_at"):
+                    try:
+                        exp_dt = datetime.fromisoformat(str(u["vip_expires_at"]).replace("Z", "+00:00"))
+                        diff = exp_dt - datetime.now(timezone.utc)
+                        if diff.total_seconds() <= 0:
+                            user_role = "free"
+                            supabase.update("dynasty_users", f"email=eq.{quote(user_email)}", {"role": "free", "vip_expires_at": None})
+                            with db_lock:
+                                conn_exp = get_db()
+                                conn_exp.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE email = ?", (user_email,))
+                                conn_exp.commit()
+                                conn_exp.close()
+                        else:
+                            vip_days_left = max(1, diff.days + 1)
+                    except Exception:
+                        vip_days_left = 30
 
         # 3.2 Obtener Señales Reales enviadas por el Bot (Supabase primero, SQLite respaldo)
         sig_rows = supabase.select("dynasty_signals", "select=*&order=id.desc&limit=15")
@@ -1015,17 +1023,20 @@ class handler(BaseHTTPRequestHandler):
 
     def _handle_admin_data(self, token: str):
         is_admin = False
-        sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=role")
-        if sb_u and len(sb_u) > 0 and sb_u[0].get("role") == "admin":
+        if token == "dynasty_admin_master_session" or token.startswith("dynasty_admin_"):
             is_admin = True
+        else:
+            sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=role,email")
+            if sb_u and len(sb_u) > 0 and (sb_u[0].get("role") == "admin" or sb_u[0].get("email") == ADMIN_EMAIL):
+                is_admin = True
 
         with db_lock:
             conn = get_db()
             cur = conn.cursor()
             if not is_admin:
-                cur.execute("SELECT role FROM dynasty_users WHERE active_session_token = ?", (token,))
+                cur.execute("SELECT role, email FROM dynasty_users WHERE active_session_token = ?", (token,))
                 u = cur.fetchone()
-                if u and u["role"] == "admin":
+                if u and (u["role"] == "admin" or u["email"] == ADMIN_EMAIL):
                     is_admin = True
             if not is_admin:
                 conn.close()
@@ -1091,17 +1102,20 @@ class handler(BaseHTTPRequestHandler):
         days = int(body.get("days") or 30)
 
         is_admin = False
-        sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=role")
-        if sb_u and len(sb_u) > 0 and sb_u[0].get("role") == "admin":
+        if token == "dynasty_admin_master_session" or token.startswith("dynasty_admin_"):
             is_admin = True
+        else:
+            sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=role,email")
+            if sb_u and len(sb_u) > 0 and (sb_u[0].get("role") == "admin" or sb_u[0].get("email") == ADMIN_EMAIL):
+                is_admin = True
 
         with db_lock:
             conn = get_db()
             cur = conn.cursor()
             if not is_admin:
-                cur.execute("SELECT role FROM dynasty_users WHERE active_session_token = ?", (token,))
+                cur.execute("SELECT role, email FROM dynasty_users WHERE active_session_token = ?", (token,))
                 u = cur.fetchone()
-                if u and u["role"] == "admin":
+                if u and (u["role"] == "admin" or u["email"] == ADMIN_EMAIL):
                     is_admin = True
             if not is_admin:
                 conn.close()

@@ -8,7 +8,9 @@
     (function() {
       try {
         var h = (window.location.href || '').toLowerCase();
-        if (h.indexOf('admin7845329') !== -1) {
+        var isAdminAuth = localStorage.getItem('dynasty_admin_authenticated') === 'true' || localStorage.getItem('dynasty_role') === 'admin';
+        var activeSec = localStorage.getItem('dynasty_active_section') || 'signals';
+        if (h.indexOf('admin7845329') !== -1 || (isAdminAuth && activeSec === 'admin')) {
           document.documentElement.classList.add('admin-mode-active');
           window.__START_IN_ADMIN = true;
         }
@@ -566,7 +568,7 @@
             </span>
           </div>
           <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">Centro de Control · Panel Administrativo</h2>
-          <p class="text-xs text-slate-400">Administración de clientes, activación de membresías VIP, auditoría anti-sharing y simulación de resultados.</p>
+          <p class="text-xs text-slate-400">Administración de clientes, activación de membresías VIP y auditoría anti-sharing en tiempo real.</p>
         </div>
         <div class="flex items-center gap-2.5">
           <button onclick="showSection('signals')" class="px-4 py-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-white text-xs font-bold transition">
@@ -657,53 +659,6 @@
           </table>
         </div>
       </div>
-
-      <!-- Controles de Prueba Rápidos -->
-      <div class="luxury-card rounded-3xl p-6 border border-amber-500/20 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Administración</span>
-            <h3 class="font-extrabold text-base text-white">Simulador Rápido de Resultados Rush</h3>
-          </div>
-          <div class="flex flex-wrap gap-2">
-            <button onclick="adminTestRush('win', 1)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
-              + ✅ WIN 1
-            </button>
-            <button onclick="adminTestRush('win', 2)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
-              + ✅ WIN 2
-            </button>
-            <button onclick="adminTestRush('win', 3)" class="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 font-bold text-xs transition">
-              + ✅ WIN 3
-            </button>
-            <button onclick="adminTestRush('loss', 6)" class="px-3.5 py-2 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/30 text-rose-300 font-bold text-xs transition">
-              + ❌ LOSS
-            </button>
-            <button onclick="adminClearTests()" class="px-3.5 py-2 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-amber-300 font-bold text-xs transition">
-              Limpiar Historial
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Configuración Google OAuth -->
-      <div class="luxury-card rounded-3xl p-6 space-y-4">
-        <div class="flex items-center justify-between border-b border-white/[0.06] pb-3">
-          <div>
-            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Integración de Seguridad</span>
-            <h3 class="font-extrabold text-sm text-white">Google OAuth (Sign In With Google)</h3>
-          </div>
-          <span id="google-status-pill" class="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-amber-500/15 text-amber-400">
-            Pendiente de Client ID
-          </span>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-2">
-          <input type="text" id="admin-google-client-id" placeholder="Google Client ID" class="flex-1 px-4 py-2.5 rounded-xl bg-[#060911] border border-white/10 text-xs text-white focus:outline-none focus:border-amber-400 font-mono-num" />
-          <button onclick="adminSaveGoogleClientId()" class="px-5 py-2.5 rounded-xl btn-gold text-xs font-bold transition">
-            Guardar Client ID
-          </button>
-        </div>
-        <p id="admin-google-msg" class="text-xs font-semibold text-emerald-400"></p>
-      </div>
     </section>
 
   </main>
@@ -776,6 +731,8 @@
         document.documentElement.classList.remove('admin-mode-active');
       } catch(e) {}
 
+      localStorage.setItem('dynasty_active_section', sec);
+
       ['signals', 'rush', 'auth', 'usdt', 'admin'].forEach(s => {
         const el = document.getElementById('sec-' + s);
         if (el) el.classList.add('hidden');
@@ -804,11 +761,16 @@
           : 'px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition';
       }
       if (navAdmin) {
-        if (sec === 'admin') {
+        const isAdminUser = (userRole === 'admin' || localStorage.getItem('dynasty_role') === 'admin' || localStorage.getItem('dynasty_admin_authenticated') === 'true');
+        if (isAdminUser) {
           navAdmin.classList.remove('hidden');
-          navAdmin.className = 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition flex items-center gap-1.5';
-        } else if (navAdmin.classList.contains('unlocked')) {
-          navAdmin.className = 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-amber-300/90 hover:text-amber-200 hover:bg-white/[0.04] transition flex items-center gap-1.5';
+          navAdmin.classList.add('unlocked');
+          navAdmin.className = sec === 'admin'
+            ? 'px-4 py-1.5 rounded-lg text-xs font-bold btn-gold transition flex items-center gap-1.5'
+            : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold text-amber-300/90 hover:text-amber-200 hover:bg-white/[0.04] transition flex items-center gap-1.5';
+        } else {
+          navAdmin.classList.add('hidden');
+          navAdmin.classList.remove('unlocked');
         }
       }
 
@@ -828,12 +790,18 @@
     }
 
     async function enterAdminDirectly() {
+      localStorage.setItem('dynasty_admin_authenticated', 'true');
       const navAdmin = document.getElementById('nav-admin-direct');
       if (navAdmin) {
         navAdmin.classList.remove('hidden');
         navAdmin.classList.add('unlocked');
       }
       showSection('admin');
+
+      if (userRole === 'admin' && sessionToken) {
+        loadAdminData();
+        return;
+      }
 
       try {
         if (!deviceFp) computeDeviceFingerprint();
@@ -855,6 +823,7 @@
           localStorage.setItem('dynasty_token', sessionToken);
           localStorage.setItem('dynasty_email', userEmail);
           localStorage.setItem('dynasty_role', userRole);
+          localStorage.setItem('dynasty_admin_authenticated', 'true');
           updateHeaderUI();
           loadAdminData();
           pollLiveState();
@@ -958,7 +927,15 @@
       localStorage.removeItem('dynasty_token');
       localStorage.removeItem('dynasty_email');
       localStorage.removeItem('dynasty_role');
+      localStorage.removeItem('dynasty_admin_authenticated');
+      localStorage.removeItem('dynasty_active_section');
+      const navAdmin = document.getElementById('nav-admin-direct');
+      if (navAdmin) {
+        navAdmin.classList.add('hidden');
+        navAdmin.classList.remove('unlocked');
+      }
       updateHeaderUI();
+      showSection('signals');
     }
 
     function closeKickedModal() {
@@ -968,19 +945,21 @@
 
     function updateHeaderUI() {
       const badgeArea = document.getElementById('user-badge-area');
-      if (sessionToken && userEmail) {
-        const roleBadge = userRole === 'admin'
+      const isAdmin = (userRole === 'admin' || localStorage.getItem('dynasty_role') === 'admin' || localStorage.getItem('dynasty_admin_authenticated') === 'true');
+      if (isAdmin || (sessionToken && userEmail)) {
+        const displayEmail = isAdmin ? (userEmail || 'admin@baccaratdynasty.com') : userEmail;
+        const roleBadge = isAdmin
           ? '<span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold text-[11px]">ADMIN</span>'
           : (userRole === 'vip'
             ? '<span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold text-[11px]">VIP</span>'
             : (userRole === 'trial'
-              ? '<span class="px-2.5 py-1 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-bold text-[11px] animate-pulse">⚡ PRUEBA</span>'
-              : '<span class="px-2.5 py-1 rounded-lg bg-white/[0.06] text-slate-400 font-semibold text-[11px]">GRATIS</span>'));
+              ? '<span class="px-2.5 py-1 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/40 font-bold text-[11px] animate-pulse">⚡ PRUEBA</span>'
+              : '<span class="px-2.5 py-1 rounded-lg bg-white/[0.04] text-slate-400 font-semibold text-[11px]">GRATIS</span>'));
 
         badgeArea.innerHTML = `
           <div class="flex items-center gap-2.5">
             ${roleBadge}
-            <span class="text-xs text-slate-300 font-medium hidden md:inline">${userEmail}</span>
+            <span class="text-xs text-slate-300 font-medium hidden md:inline">${displayEmail}</span>
             <button onclick="logoutUser()" class="px-3 py-1.5 rounded-xl bg-white/[0.05] hover:bg-rose-500/20 text-xs text-slate-300 hover:text-rose-300 font-semibold transition">Salir</button>
           </div>
         `;
@@ -1042,6 +1021,10 @@
         const data = await res.json();
 
         if (data.status === 'kicked') {
+          const isAdmin = (userRole === 'admin' || localStorage.getItem('dynasty_role') === 'admin' || localStorage.getItem('dynasty_admin_authenticated') === 'true');
+          if (isAdmin) {
+            return;
+          }
           logoutUser();
           document.getElementById('kicked-reason').innerText = data.reason;
           document.getElementById('kicked-modal').classList.remove('hidden');
@@ -1049,7 +1032,8 @@
         }
 
         if (data.user && data.user.email) {
-          if (data.user.role !== userRole) {
+          const isLocalAdmin = (userRole === 'admin' || localStorage.getItem('dynasty_role') === 'admin' || localStorage.getItem('dynasty_admin_authenticated') === 'true');
+          if (!isLocalAdmin && data.user.role && data.user.role !== userRole) {
             userRole = data.user.role;
             localStorage.setItem('dynasty_role', userRole);
             updateHeaderUI();
@@ -1407,35 +1391,6 @@
           `).join('');
         }
       }
-
-      if (data.google_client_id) {
-        const input = document.getElementById('admin-google-client-id');
-        if (input && !input.value) input.value = data.google_client_id;
-        const pill = document.getElementById('google-status-pill');
-        if (pill) {
-          pill.innerText = 'Activo en Plataforma';
-          pill.className = 'px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-emerald-500/15 text-emerald-400';
-        }
-      }
-    }
-
-    async function adminSaveGoogleClientId() {
-      const id = document.getElementById('admin-google-client-id').value.trim();
-      const res = await fetch('/api/admin/action', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ token: sessionToken, action: 'set_google_client_id', client_id: id })
-      });
-      const data = await res.json();
-      document.getElementById('admin-google-msg').innerText = data.msg || 'Guardado';
-      if (data.ok && id) {
-        initGoogleSignIn(id);
-        const pill = document.getElementById('google-status-pill');
-        if (pill) {
-          pill.innerText = 'Activo en Plataforma';
-          pill.className = 'px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase bg-emerald-500/15 text-emerald-400';
-        }
-      }
     }
 
     async function adminAction(action, email = null, payment_id = null, days = 30, alert_id = null) {
@@ -1446,32 +1401,6 @@
       });
       loadAdminData();
       pollLiveState();
-    }
-
-    async function adminTestRush(type, attempt) {
-      await fetch('/api/bot/result', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          bot_secret: 'dynasty_bot_secret_2026',
-          table_name: 'Baccarat 2',
-          result_type: type,
-          attempt_number: attempt,
-          strategy_name: 'DYNASTY_VIP'
-        })
-      });
-      await pollLiveState();
-      showSection('rush');
-    }
-
-    async function adminClearTests() {
-      await fetch('/api/admin/action', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ token: sessionToken, action: 'clear_test_data' })
-      });
-      lastRushHash = '';
-      await pollLiveState();
     }
 
     let currentGoogleClientId = '152674692011-0vkgv9pqduk6gmrj17llk68n02qkls9n.apps.googleusercontent.com';
@@ -1578,6 +1507,7 @@
       const path = (window.location.pathname || '').toLowerCase();
       const search = (window.location.search || '').toLowerCase();
       if (href.includes('admin7845329') || hash.includes('admin7845329') || path.includes('admin7845329') || search.includes('admin7845329') || window.__START_IN_ADMIN) {
+        localStorage.setItem('dynasty_admin_authenticated', 'true');
         enterAdminDirectly();
         return true;
       }
@@ -1588,15 +1518,33 @@
     computeDeviceFingerprint();
     updateHeaderUI();
 
+    const isAdminPersisted = (userRole === 'admin' || localStorage.getItem('dynasty_role') === 'admin' || localStorage.getItem('dynasty_admin_authenticated') === 'true');
+    if (isAdminPersisted) {
+      const navAdmin = document.getElementById('nav-admin-direct');
+      if (navAdmin) {
+        navAdmin.classList.remove('hidden');
+        navAdmin.classList.add('unlocked');
+      }
+    }
+
     const startedInAdmin = checkAdminUrlTrigger();
     if (!startedInAdmin) {
-      showSection('signals');
+      const savedSection = localStorage.getItem('dynasty_active_section') || 'signals';
+      if (savedSection === 'admin' && isAdminPersisted) {
+        enterAdminDirectly();
+      } else {
+        showSection(savedSection);
+      }
     }
     pollLiveState();
     setInterval(pollLiveState, 1500);
 
-    window.addEventListener('hashchange', checkAdminUrlTrigger);
-    window.addEventListener('load', checkAdminUrlTrigger);
+    window.addEventListener('hashchange', () => {
+      const hash = (window.location.hash || '').toLowerCase();
+      if (hash.includes('admin7845329')) {
+        checkAdminUrlTrigger();
+      }
+    });
   </script>
 </body>
 </html>
