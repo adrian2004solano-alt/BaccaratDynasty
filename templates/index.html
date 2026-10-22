@@ -1118,9 +1118,15 @@
 
         document.getElementById('kpi-status').innerText = 'Señal Activa';
         document.getElementById('kpi-status').className = 'text-sm font-extrabold text-emerald-400 mt-1.5';
-        document.getElementById('sig-countdown').innerText = sig.countdown > 0
-          ? `Entrada: ${sig.countdown}s`
-          : `Intento ${sig.current_attempt} / 6`;
+
+        const currentAtt = parseInt(sig.current_attempt || 1, 10);
+        if (sig.countdown > 0) {
+          document.getElementById('sig-countdown').innerText = `Entrada: ${sig.countdown}s`;
+          document.getElementById('sig-countdown').className = 'px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/40 animate-pulse font-mono-num';
+        } else {
+          document.getElementById('sig-countdown').innerText = `🎯 Tiro ${currentAtt} / 6`;
+          document.getElementById('sig-countdown').className = 'px-3 py-1 rounded-xl text-xs font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono-num';
+        }
 
         if (sig.is_locked) {
           lockedOverlay.classList.remove('hidden');
@@ -1132,7 +1138,13 @@
           vipContent.classList.remove('hidden');
           document.getElementById('sig-table-title').innerText = sig.table_name;
           document.getElementById('sig-prob-badge').innerText = `Precisión: ${sig.probability}%`;
-          document.getElementById('sig-hand-info').innerText = `Intento Activo: ${sig.current_attempt} de 6 · ${sig.created_at}`;
+
+          let handText = `Tiro ${currentAtt} de 6 en juego`;
+          if (sig.base_hand_count && sig.base_hand_count > 0) {
+            handText += ` · Mano previa: #${sig.base_hand_count} ➔ Jugar Mano #${sig.base_hand_count + currentAtt}`;
+          }
+          if (sig.created_at) handText += ` · 🕐 ${formatResultTime(sig.created_at)}`;
+          document.getElementById('sig-hand-info').innerHTML = `<span class="text-amber-400 font-bold font-mono-num">${handText}</span>`;
 
           const imgEl = document.getElementById('sig-ref-img');
           const phEl = document.getElementById('sig-placeholder-card');
@@ -1147,20 +1159,50 @@
 
           const seqBoxes = document.getElementById('sig-sequence-boxes');
           seqBoxes.innerHTML = (sig.sequence || []).slice(0, 6).map((item, idx) => {
+            const shotNum = idx + 1;
             const isPlayer = String(item).toUpperCase() === 'P';
-            const isCurrent = (idx + 1) === sig.current_attempt;
-            const cardStyle = isPlayer
-              ? 'bg-blue-600/15 border-blue-500/40 text-blue-300'
-              : 'bg-rose-600/15 border-rose-500/40 text-rose-300';
-            const activeRing = isCurrent
-              ? 'ring-2 ring-amber-400 bg-white/[0.06] scale-[1.03] shadow-lg'
-              : 'opacity-80';
-            return `
-              <div class="p-3.5 rounded-2xl border ${cardStyle} ${activeRing} transition">
-                <span class="block text-[10px] font-bold uppercase tracking-wider opacity-75">Tiro ${idx + 1}</span>
-                <span class="font-extrabold text-xs sm:text-sm mt-1 block">${isPlayer ? '🔵 JUGADOR' : '🔴 BANCA'}</span>
-              </div>
-            `;
+            const colorLabel = isPlayer ? '🔵 JUGADOR' : '🔴 BANCA';
+
+            if (shotNum < currentAtt) {
+              return `
+                <div class="p-3 rounded-2xl border border-slate-700/60 bg-[#060911]/80 opacity-40 scale-[0.97] transition flex flex-col justify-between items-center text-center">
+                  <div class="flex items-center gap-1 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    <span class="text-rose-400 font-black">✗</span> <span>Tiro ${shotNum}</span>
+                  </div>
+                  <span class="font-semibold text-xs my-1 text-slate-400 line-through">${colorLabel}</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    Falló
+                  </span>
+                </div>
+              `;
+            } else if (shotNum === currentAtt) {
+              const glowBorder = isPlayer ? 'border-blue-500 ring-2 ring-blue-400/90 shadow-[0_0_25px_rgba(59,130,246,0.45)]' : 'border-rose-500 ring-2 ring-rose-400/90 shadow-[0_0_25px_rgba(244,63,94,0.45)]';
+              const bgGrad = isPlayer ? 'bg-gradient-to-b from-blue-950/70 to-[#070b16]' : 'bg-gradient-to-b from-rose-950/70 to-[#070b16]';
+              return `
+                <div class="p-3.5 rounded-2xl border-2 ${glowBorder} ${bgGrad} scale-[1.06] relative z-20 transition-all duration-300 flex flex-col justify-between items-center text-center">
+                  <div class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-amber-400 text-slate-950 animate-pulse font-mono-num mb-1 shadow">
+                    ⚡ JUGAR AHORA
+                  </div>
+                  <span class="block text-[11px] font-black uppercase tracking-wider text-amber-300 font-mono-num">Tiro ${shotNum}</span>
+                  <span class="font-black text-xs sm:text-sm my-1 block ${isPlayer ? 'text-blue-300' : 'text-rose-300'} drop-shadow">
+                    ${colorLabel}
+                  </span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/40">
+                    EN JUEGO
+                  </span>
+                </div>
+              `;
+            } else {
+              return `
+                <div class="p-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] opacity-70 transition flex flex-col justify-between items-center text-center">
+                  <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Tiro ${shotNum}</span>
+                  <span class="font-bold text-xs sm:text-sm my-1 block ${isPlayer ? 'text-blue-300/80' : 'text-rose-300/80'}">${colorLabel}</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-semibold text-slate-500 bg-white/[0.03]">
+                    En reserva
+                  </span>
+                </div>
+              `;
+            }
           }).join('');
         }
       } catch (e) {}

@@ -1275,10 +1275,18 @@ class handler(BaseHTTPRequestHandler):
             conn = get_db()
             cur = conn.cursor()
             cur.execute("UPDATE dynasty_signals SET current_attempt = ? WHERE status = 'active'", (attempt_number,))
+            cur.execute("UPDATE dynasty_signals SET current_attempt = ? WHERE id = (SELECT id FROM dynasty_signals ORDER BY id DESC LIMIT 1)", (attempt_number,))
             conn.commit()
             conn.close()
+
         supabase.update("dynasty_signals", "status=eq.active", {"current_attempt": attempt_number})
-        self._send_json({"ok": True})
+        recent_sigs = supabase.select("dynasty_signals", "select=id&order=id.desc&limit=1")
+        if recent_sigs and len(recent_sigs) > 0:
+            latest_id = recent_sigs[0]["id"]
+            supabase.update("dynasty_signals", f"id=eq.{latest_id}", {"current_attempt": attempt_number})
+
+        logger.info(f"⚡ [ACTUALIZACIÓN TIRO] Tiro {attempt_number}/6 registrado en señal activa.")
+        self._send_json({"ok": True, "attempt_number": attempt_number})
 
     def _handle_bot_result(self, body: dict):
         if not self._verify_bot_secret(body):
