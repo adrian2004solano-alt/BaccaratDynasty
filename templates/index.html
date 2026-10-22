@@ -912,8 +912,10 @@
         const roleBadge = userRole === 'admin'
           ? '<span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold text-[11px]">ADMIN</span>'
           : (userRole === 'vip'
-            ? '<span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 font-bold text-[11px]">VIP</span>'
-            : '<span class="px-2.5 py-1 rounded-lg bg-white/[0.06] text-slate-300 font-semibold text-[11px]">ESTÁNDAR</span>');
+            ? '<span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-bold text-[11px]">VIP</span>'
+            : (userRole === 'trial'
+              ? '<span class="px-2.5 py-1 rounded-lg bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-bold text-[11px] animate-pulse">⚡ PRUEBA</span>'
+              : '<span class="px-2.5 py-1 rounded-lg bg-white/[0.06] text-slate-400 font-semibold text-[11px]">GRATIS</span>'));
 
         badgeArea.innerHTML = `
           <div class="flex items-center gap-2.5">
@@ -1019,13 +1021,41 @@
           renderRushLists(results);
         }
 
+        const isAuthorizedVip = userRole === 'vip' || userRole === 'admin' || userRole === 'trial';
         const sig = data.active_signal;
         const lockedOverlay = document.getElementById('sig-locked-overlay');
         const vipContent = document.getElementById('sig-vip-content');
 
+        if (!isAuthorizedVip) {
+          // Bloqueo estricto para usuarios sin membresía VIP ni prueba activa
+          lockedOverlay.classList.remove('hidden');
+          vipContent.classList.add('hidden');
+          const imgEl = document.getElementById('sig-ref-img');
+          const phEl = document.getElementById('sig-placeholder-card');
+          if (imgEl) { imgEl.src = ''; imgEl.classList.add('hidden'); }
+          if (phEl) phEl.classList.add('hidden');
+
+          if (sig) {
+            document.getElementById('sig-table-title').innerText = 'Mesa VIP en Operación';
+            document.getElementById('locked-prob').innerText = (sig.probability || 92) + '%';
+            document.getElementById('sig-prob-badge').innerText = `Precisión: ${sig.probability || 92}%`;
+            document.getElementById('sig-countdown').innerText = sig.countdown > 0
+              ? `Entrada: ${sig.countdown}s`
+              : `Intento ${sig.current_attempt || 1} / 6`;
+          } else {
+            document.getElementById('sig-table-title').innerText = 'Terminal VIP (Bloqueada)';
+            document.getElementById('locked-prob').innerText = '--%';
+            document.getElementById('sig-prob-badge').innerText = 'Precisión: --%';
+            document.getElementById('sig-countdown').innerText = 'En Espera';
+          }
+          return;
+        }
+
+        // Usuario autorizado (VIP, Admin o Prueba Gratis activa)
+        lockedOverlay.classList.add('hidden');
+        vipContent.classList.remove('hidden');
+
         if (!sig) {
-          lockedOverlay.classList.add('hidden');
-          vipContent.classList.remove('hidden');
           document.getElementById('kpi-status').innerText = 'Monitoreando Mesas';
           document.getElementById('kpi-status').className = 'text-sm font-bold text-slate-300 mt-1.5';
           document.getElementById('sig-table-title').innerText = 'Analizando Mesas en Vivo';
@@ -1160,19 +1190,46 @@
         const isGoogle = u.email && (u.email.includes('@gmail.com') || u.auth_provider === 'google');
         const isVip = u.role === 'vip';
         const isAdmin = u.role === 'admin';
+        const isTrial = u.role === 'trial';
+        const isBlocked = u.role === 'blocked';
 
-        let planBadge = '<span class="text-slate-500 font-semibold text-[11px]">Sin Plan (Free)</span>';
+        let planBadge = '<span class="px-2.5 py-0.5 rounded-md bg-white/[0.04] text-slate-400 font-semibold text-[10px]">GRATIS (Bloqueado)</span>';
         if (isAdmin) {
-          planBadge = '<span class="px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-bold font-mono-num text-[10px]">ADMIN</span>';
+          planBadge = '<span class="px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-bold font-mono-num text-[10px]">👑 ADMIN</span>';
+        } else if (isTrial) {
+          planBadge = '<span class="px-2.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold text-[10px] animate-pulse">⚡ PRUEBA ACTIVA</span>';
         } else if (isVip) {
-          planBadge = `<span class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold font-mono-num text-[10px]">VIP ACTIVO</span>`;
-        } else if (u.role === 'blocked') {
-          planBadge = '<span class="px-2.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 font-bold text-[10px]">BLOQUEADO</span>';
+          planBadge = `<span class="px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-bold font-mono-num text-[10px]">💎 VIP ACTIVO</span>`;
+        } else if (isBlocked) {
+          planBadge = '<span class="px-2.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 font-bold text-[10px]">🚫 BLOQUEADO</span>';
         }
 
         const regType = isGoogle
           ? '<span class="inline-flex items-center gap-1 text-[11px] text-blue-400 font-semibold">Google 🌐</span>'
           : '<span class="text-[11px] text-slate-400">Correo ✉️</span>';
+
+        let actionButtons = '';
+        if (isAdmin) {
+          actionButtons = '<span class="text-slate-500 text-xs">Acceso Maestro</span>';
+        } else if (isTrial) {
+          actionButtons = `
+            <button onclick="adminAction('close_trial', '${u.email}')" class="px-3 py-1 rounded-lg bg-rose-600/30 hover:bg-rose-600/50 text-rose-300 border border-rose-500/40 font-bold text-[11px] transition">🚫 Cerrar Prueba</button>
+            <button onclick="adminAction('grant_vip', '${u.email}', null, 15)" class="px-2.5 py-1 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition">+ Quincenal ($50)</button>
+            <button onclick="adminAction('grant_vip', '${u.email}', null, 30)" class="px-2.5 py-1 rounded-lg btn-gold font-bold text-[11px] transition">+ Mensual ($100)</button>
+          `;
+        } else if (isVip) {
+          actionButtons = `
+            <button onclick="adminAction('close_trial', '${u.email}')" class="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-[11px] font-semibold transition">Quitar VIP</button>
+            <button onclick="adminAction('reset_devices', '${u.email}')" class="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-300 text-[11px] transition" title="Permite al usuario cambiar de equipo">Reset Equipo</button>
+            <button onclick="adminAction('grant_vip', '${u.email}', null, 30)" class="px-2.5 py-1 rounded-lg btn-gold font-bold text-[11px] transition">+ 30 Días</button>
+          `;
+        } else {
+          actionButtons = `
+            <button onclick="adminAction('enable_trial', '${u.email}')" class="px-3 py-1 rounded-lg bg-cyan-600/25 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/40 font-bold text-[11px] transition inline-flex items-center gap-1"><span>⚡</span> <span>Habilitar Prueba</span></button>
+            <button onclick="adminAction('grant_vip', '${u.email}', null, 15)" class="px-2.5 py-1 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition">+ Quincenal ($50)</button>
+            <button onclick="adminAction('grant_vip', '${u.email}', null, 30)" class="px-2.5 py-1 rounded-lg btn-gold font-bold text-[11px] transition">+ Mensual ($100)</button>
+          `;
+        }
 
         return `
           <tr>
@@ -1181,10 +1238,7 @@
             <td class="py-3 px-2">${planBadge}</td>
             <td class="py-3 px-2 text-slate-400 font-mono-num">${u.device_count} / 1 equipo</td>
             <td class="py-3 px-2 text-right space-x-1.5 whitespace-nowrap">
-              <button onclick="adminAction('grant_vip', '${u.email}', null, 15)" class="px-2.5 py-1 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition">+ Quincenal ($50)</button>
-              <button onclick="adminAction('grant_vip', '${u.email}', null, 30)" class="px-2.5 py-1 rounded-lg btn-gold font-bold text-[11px] transition">+ Mensual ($100)</button>
-              <button onclick="adminAction('reset_devices', '${u.email}')" class="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-300 text-[11px] transition" title="Permite al usuario cambiar de equipo">Reset Equipo</button>
-              ${isVip ? `<button onclick="adminAction('revoke_vip', '${u.email}')" class="px-2 py-1 rounded-lg bg-rose-500/20 text-rose-300 text-[11px] transition">Quitar VIP</button>` : ''}
+              ${actionButtons}
             </td>
           </tr>
         `;

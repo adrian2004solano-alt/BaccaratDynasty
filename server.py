@@ -831,12 +831,18 @@ class handler(BaseHTTPRequestHandler):
 
             user_email = u.get("email")
             user_role = u.get("role") or "free"
-            if user_role == "vip" and u.get("vip_expires_at"):
+            if user_role in ("vip", "trial") and u.get("vip_expires_at"):
                 try:
                     exp_dt = datetime.fromisoformat(str(u["vip_expires_at"]).replace("Z", "+00:00"))
                     diff = exp_dt - datetime.now(timezone.utc)
                     if diff.total_seconds() <= 0:
                         user_role = "free"
+                        supabase.update("dynasty_users", f"email=eq.{quote(user_email)}", {"role": "free", "vip_expires_at": None})
+                        with db_lock:
+                            conn_exp = get_db()
+                            conn_exp.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE email = ?", (user_email,))
+                            conn_exp.commit()
+                            conn_exp.close()
                     else:
                         vip_days_left = max(1, diff.days + 1)
                 except Exception:
@@ -904,7 +910,7 @@ class handler(BaseHTTPRequestHandler):
             elapsed = int(time.time() - created_ts)
             countdown_15 = max(0, 15 - elapsed)
 
-            if user_role in ("vip", "admin"):
+            if user_role in ("vip", "admin", "trial"):
                 sig_obj = {
                     "id": s.get("id"),
                     "is_locked": False,
@@ -1060,8 +1066,12 @@ class handler(BaseHTTPRequestHandler):
                 cur.execute("SELECT * FROM dynasty_payments ORDER BY id DESC LIMIT 50")
                 payments = [dict(r) for r in cur.fetchall()]
 
-            cur.execute("SELECT * FROM dynasty_security_alerts ORDER BY id DESC LIMIT 50")
-            alerts = [dict(r) for r in cur.fetchall()]
+            sb_alerts = supabase.select("dynasty_security_alerts", "select=*&order=id.desc&limit=50")
+            if sb_alerts is not None:
+                alerts = sb_alerts
+            else:
+                cur.execute("SELECT * FROM dynasty_security_alerts ORDER BY id DESC LIMIT 50")
+                alerts = [dict(r) for r in cur.fetchall()]
             conn.close()
 
         self._send_json({
@@ -1118,6 +1128,21 @@ class handler(BaseHTTPRequestHandler):
                 supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "vip", "vip_expires_at": exp, "is_verified": True})
                 plan_label = "Quincenal (15 días - $50)" if days == 15 else f"Mensual ({days} días - $100)"
                 return self._send_json({"ok": True, "msg": f"Membresía {plan_label} activada exitosamente para {target_email}."})
+
+            if action == "enable_trial" and target_email:
+                exp = (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
+                cur.execute("UPDATE dynasty_users SET role = 'trial', vip_expires_at = ?, is_verified = 1 WHERE email = ?", (exp, target_email))
+                conn.commit()
+                conn.close()
+                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "trial", "vip_expires_at": exp, "is_verified": True})
+                return self._send_json({"ok": True, "msg": f"Prueba gratis habilitada para {target_email}. Señales e imágenes desbloqueadas."})
+
+            if action in ("close_trial", "revoke_vip") and target_email:
+                cur.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE email = ?", (target_email,))
+                conn.commit()
+                conn.close()
+                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "free", "vip_expires_at": None})
+                return self._send_json({"ok": True, "msg": f"Acceso cerrado para {target_email}. Señales e imágenes bloqueadas."})
 
             if action == "dismiss_alert" and alert_id:
                 cur.execute("UPDATE dynasty_security_alerts SET status = 'dismissed' WHERE id = ?", (alert_id,))
