@@ -510,25 +510,15 @@
           <h2 class="text-2xl font-extrabold text-white mt-0.5">Membresía Baccarat Dynasty VIP</h2>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div onclick="selectPlan('VIP_15_DIAS', 50)" id="plan-15" class="cursor-pointer p-6 rounded-2xl bg-[#070a10] border border-white/10 space-y-2 transition">
-            <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 rounded-md bg-white/[0.06] text-slate-300 font-bold text-[10px] uppercase tracking-wider">Quincenal</span>
-              <span class="text-xs text-slate-400 font-semibold">15 Días</span>
-            </div>
-            <h3 class="font-bold text-base text-white pt-1">Pase Quincenal VIP</h3>
-            <p class="text-3xl font-extrabold text-white font-mono-num">50 <span class="text-sm font-normal text-slate-400">USDT</span></p>
-            <p class="text-xs text-slate-400 leading-relaxed">Acceso completo durante 15 días continuos a todas las señales en vivo del terminal VIP.</p>
-          </div>
-
-          <div onclick="selectPlan('VIP_30_DIAS', 100)" id="plan-30" class="cursor-pointer p-6 rounded-2xl bg-[#070a10] border-2 border-amber-500/80 space-y-2 transition">
+        <div id="usdt-plans-container" class="grid grid-cols-1 max-w-md mx-auto gap-4">
+          <div class="cursor-pointer p-6 rounded-2xl bg-[#070a10] border-2 border-amber-500/80 space-y-2 transition shadow-lg shadow-amber-500/10">
             <div class="flex items-center justify-between">
               <span class="px-2.5 py-0.5 rounded-md btn-gold font-extrabold text-[10px] uppercase tracking-wider">Recomendado</span>
               <span class="text-xs text-slate-400 font-semibold">30 Días</span>
             </div>
             <h3 class="font-bold text-base text-white pt-1">Pase Mensual VIP</h3>
-            <p class="text-3xl font-extrabold text-amber-400 font-mono-num">100 <span class="text-sm font-normal text-slate-400">USDT</span></p>
-            <p class="text-xs text-slate-400 leading-relaxed">Acceso ilimitado 24/7 a la terminal de señales en vivo, vista de mesa y alertas sonoras por 1 mes.</p>
+            <p class="text-3xl font-extrabold text-amber-400 font-mono-num">150 <span class="text-sm font-normal text-slate-400">USDT</span></p>
+            <p class="text-xs text-slate-400 leading-relaxed">Acceso completo durante 30 días a todas las señales en vivo del terminal VIP.</p>
           </div>
         </div>
 
@@ -576,6 +566,80 @@
           </button>
           <button onclick="loadAdminData()" class="px-4 py-2 rounded-xl btn-gold text-xs font-bold transition flex items-center gap-1.5">
             <span>🔄</span> <span>Actualizar Datos</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sección de Membresía -->
+      <div class="luxury-card rounded-3xl p-6 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400">Configuración</span>
+            <h3 class="font-extrabold text-sm text-white">Sección de Membresía</h3>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-slate-400 font-medium">Planes:</span>
+            <div class="inline-flex rounded-xl bg-black/40 p-1 border border-white/10">
+              <button type="button" id="btn-count-1" onclick="setAdminPlanCount(1)" class="px-3 py-1 rounded-lg text-xs font-bold transition btn-gold">1 Plan</button>
+              <button type="button" id="btn-count-2" onclick="setAdminPlanCount(2)" class="px-3 py-1 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white">2 Planes</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Plan 1 -->
+          <div class="p-4 rounded-2xl bg-[#070a10] border border-amber-500/30 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Plan 1</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-300">Activo</span>
+            </div>
+            <div class="space-y-2">
+              <div>
+                <label class="text-[11px] text-slate-400 font-medium">Nombre</label>
+                <input type="text" id="admin-plan1-name" value="Pase Mensual VIP" class="w-full mt-1 px-3 py-2 rounded-xl bg-black/50 border border-white/10 focus:border-amber-500/60 text-xs text-white" />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[11px] text-slate-400 font-medium">Precio (USDT)</label>
+                  <input type="number" id="admin-plan1-price" value="150" min="1" step="1" class="w-full mt-1 px-3 py-2 rounded-xl bg-black/50 border border-white/10 focus:border-amber-500/60 font-mono-num text-xs text-white" />
+                </div>
+                <div>
+                  <label class="text-[11px] text-slate-400 font-medium">Duración (Días)</label>
+                  <input type="number" id="admin-plan1-days" value="30" min="1" step="1" class="w-full mt-1 px-3 py-2 rounded-xl bg-black/50 border border-white/10 focus:border-amber-500/60 font-mono-num text-xs text-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Plan 2 -->
+          <div id="admin-plan2-box" class="p-4 rounded-2xl bg-[#070a10] border border-white/10 space-y-3 opacity-40 transition">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Plan 2</span>
+              <span id="admin-plan2-status-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-white/[0.05] text-slate-400">Inactivo</span>
+            </div>
+            <div class="space-y-2">
+              <div>
+                <label class="text-[11px] text-slate-400 font-medium">Nombre</label>
+                <input type="text" id="admin-plan2-name" value="Pase Quincenal VIP" disabled class="w-full mt-1 px-3 py-2 rounded-xl bg-black/50 border border-white/10 focus:border-amber-500/60 text-xs text-white disabled:opacity-50" />
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <label class="text-[11px] text-slate-400 font-medium">Precio (USDT)</label>
+                  <input type="number" id="admin-plan2-price" value="75" min="1" step="1" disabled class="w-full mt-1 px-3 py-2 rounded-xl bg-black/50 border border-white/10 focus:border-amber-500/60 font-mono-num text-xs text-white disabled:opacity-50" />
+                </div>
+                <div>
+                  <label class="text-[11px] text-slate-400 font-medium">Duración (Días)</label>
+                  <input type="number" id="admin-plan2-days" value="15" min="1" step="1" disabled class="w-full mt-1 px-3 py-2 rounded-xl bg-black/50 border border-white/10 focus:border-amber-500/60 font-mono-num text-xs text-white disabled:opacity-50" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <span id="admin-plan-save-status" class="text-xs font-semibold text-emerald-400"></span>
+          <button type="button" onclick="adminSavePlans()" class="px-5 py-2.5 rounded-xl btn-gold font-bold text-xs uppercase tracking-wider transition">
+            Guardar Cambios
           </button>
         </div>
       </div>
@@ -670,9 +734,16 @@
     let deviceFp = '';
     let lastSignalId = null;
     let lastRushHash = '';
-    let selectedPlan = 'VIP_30_DIAS';
-    let selectedAmount = 50;
+    let selectedPlan = 'Pase Mensual VIP';
+    let selectedAmount = 150;
     let pendingVerifyEmail = '';
+    let currentMembershipConfig = {
+      plan_count: 1,
+      plans: [
+        { id: 'plan_1', name: 'Pase Mensual VIP', price_usdt: 150, duration_days: 30, tag: 'Recomendado' }
+      ]
+    };
+    let adminSelectedPlanCount = 1;
 
     function openImageZoom(src, caption) {
       if (!src) return;
@@ -972,20 +1043,164 @@
       }
     }
 
-    function selectPlan(plan, amount) {
+    function selectPlan(plan, amount, id) {
       selectedPlan = plan;
       selectedAmount = amount;
-      const el30 = document.getElementById('plan-30');
-      const el15 = document.getElementById('plan-15');
-      if (el30) {
-        el30.className = plan === 'VIP_30_DIAS'
-          ? 'cursor-pointer p-6 rounded-2xl bg-[#070a10] border-2 border-amber-500/80 space-y-2 transition'
-          : 'cursor-pointer p-6 rounded-2xl bg-[#070a10] border border-white/10 space-y-2 transition';
+      if (currentMembershipConfig && currentMembershipConfig.plans) {
+        renderUserPlans(currentMembershipConfig);
       }
-      if (el15) {
-        el15.className = plan === 'VIP_15_DIAS'
-          ? 'cursor-pointer p-6 rounded-2xl bg-[#070a10] border-2 border-amber-500/80 space-y-2 transition'
-          : 'cursor-pointer p-6 rounded-2xl bg-[#070a10] border border-white/10 space-y-2 transition';
+    }
+
+    function renderUserPlans(cfg) {
+      if (!cfg || !cfg.plans || !cfg.plans.length) return;
+      currentMembershipConfig = cfg;
+      const container = document.getElementById('usdt-plans-container');
+      if (!container) return;
+
+      const activeCount = (cfg.plan_count === 2) ? 2 : 1;
+      const activePlans = cfg.plans.slice(0, activeCount);
+
+      if (activeCount === 1) {
+        container.className = 'grid grid-cols-1 max-w-md mx-auto gap-4';
+      } else {
+        container.className = 'grid grid-cols-1 md:grid-cols-2 gap-4';
+      }
+
+      const hasMatch = activePlans.some(p => (p.price != null ? p.price : p.price_usdt) === selectedAmount);
+      if (!hasMatch && activePlans.length > 0) {
+        selectedPlan = activePlans[0].name;
+        selectedAmount = activePlans[0].price != null ? activePlans[0].price : activePlans[0].price_usdt;
+      }
+
+      container.innerHTML = activePlans.map((p, idx) => {
+        const price = p.price != null ? p.price : (p.price_usdt != null ? p.price_usdt : 150);
+        const days = p.days != null ? p.days : (p.duration_days != null ? p.duration_days : 30);
+        const isSelected = price === selectedAmount || (activePlans.length === 1);
+        const borderClass = isSelected ? 'border-2 border-amber-500/80 shadow-lg shadow-amber-500/10' : 'border border-white/10 hover:border-white/20';
+        const badgeClass = isSelected ? 'btn-gold font-extrabold' : 'bg-white/[0.06] text-slate-300 font-bold';
+        const tagText = p.badge || p.tag || (days + ' Días');
+        const planId = p.id || ('plan_' + idx);
+
+        return `
+          <div onclick="selectPlan('${p.name}', ${price}, '${planId}')" id="plan-${planId}" class="cursor-pointer p-6 rounded-2xl bg-[#070a10] ${borderClass} space-y-2 transition">
+            <div class="flex items-center justify-between">
+              <span class="px-2.5 py-0.5 rounded-md ${badgeClass} text-[10px] uppercase tracking-wider">${tagText}</span>
+              <span class="text-xs text-slate-400 font-semibold">${days} Días</span>
+            </div>
+            <h3 class="font-bold text-base text-white pt-1">${p.name}</h3>
+            <p class="text-3xl font-extrabold ${isSelected ? 'text-amber-400' : 'text-white'} font-mono-num">${price} <span class="text-sm font-normal text-slate-400">USDT</span></p>
+            <p class="text-xs text-slate-400 leading-relaxed">${p.description || ('Acceso completo durante ' + days + ' días a todas las señales en vivo del terminal VIP.')}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setAdminPlanCount(count) {
+      adminSelectedPlanCount = count === 2 ? 2 : 1;
+      const b1 = document.getElementById('btn-count-1');
+      const b2 = document.getElementById('btn-count-2');
+      const p2Box = document.getElementById('admin-plan2-box');
+      const p2Badge = document.getElementById('admin-plan2-status-badge');
+      const p2Name = document.getElementById('admin-plan2-name');
+      const p2Price = document.getElementById('admin-plan2-price');
+      const p2Days = document.getElementById('admin-plan2-days');
+
+      if (adminSelectedPlanCount === 1) {
+        if (b1) b1.className = 'px-3 py-1 rounded-lg text-xs font-bold transition btn-gold';
+        if (b2) b2.className = 'px-3 py-1 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white';
+        if (p2Box) { p2Box.classList.add('opacity-40'); p2Box.classList.remove('border-amber-500/30'); }
+        if (p2Badge) { p2Badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-white/[0.05] text-slate-400'; p2Badge.innerText = 'Inactivo'; }
+        if (p2Name) p2Name.disabled = true;
+        if (p2Price) p2Price.disabled = true;
+        if (p2Days) p2Days.disabled = true;
+      } else {
+        if (b1) b1.className = 'px-3 py-1 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white';
+        if (b2) b2.className = 'px-3 py-1 rounded-lg text-xs font-bold transition btn-gold';
+        if (p2Box) { p2Box.classList.remove('opacity-40'); p2Box.classList.add('border-amber-500/30'); }
+        if (p2Badge) { p2Badge.className = 'px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-300'; p2Badge.innerText = 'Activo'; }
+        if (p2Name) p2Name.disabled = false;
+        if (p2Price) p2Price.disabled = false;
+        if (p2Days) p2Days.disabled = false;
+      }
+    }
+
+    function populateAdminMembershipForm(cfg) {
+      if (!cfg) return;
+      if (cfg.plan_count) {
+        setAdminPlanCount(cfg.plan_count);
+      }
+      if (cfg.plans && cfg.plans[0]) {
+        const p1 = cfg.plans[0];
+        const elN = document.getElementById('admin-plan1-name');
+        const elP = document.getElementById('admin-plan1-price');
+        const elD = document.getElementById('admin-plan1-days');
+        if (elN) elN.value = p1.name || 'Pase Mensual VIP';
+        if (elP) elP.value = p1.price != null ? p1.price : (p1.price_usdt != null ? p1.price_usdt : 150);
+        if (elD) elD.value = p1.days != null ? p1.days : (p1.duration_days != null ? p1.duration_days : 30);
+      }
+      if (cfg.plans && cfg.plans[1]) {
+        const p2 = cfg.plans[1];
+        const elN = document.getElementById('admin-plan2-name');
+        const elP = document.getElementById('admin-plan2-price');
+        const elD = document.getElementById('admin-plan2-days');
+        if (elN) elN.value = p2.name || 'Pase Quincenal VIP';
+        if (elP) elP.value = p2.price != null ? p2.price : (p2.price_usdt != null ? p2.price_usdt : 75);
+        if (elD) elD.value = p2.days != null ? p2.days : (p2.duration_days != null ? p2.duration_days : 15);
+      }
+    }
+
+    async function adminSavePlans() {
+      const statusEl = document.getElementById('admin-plan-save-status');
+      if (statusEl) {
+        statusEl.className = 'text-xs font-semibold text-amber-400';
+        statusEl.innerText = 'Guardando...';
+      }
+
+      const plan1_name = (document.getElementById('admin-plan1-name')?.value || 'Pase Mensual VIP').trim();
+      const plan1_price = parseFloat(document.getElementById('admin-plan1-price')?.value) || 150;
+      const plan1_days = parseInt(document.getElementById('admin-plan1-days')?.value) || 30;
+      const plan2_name = (document.getElementById('admin-plan2-name')?.value || 'Pase Quincenal VIP').trim();
+      const plan2_price = parseFloat(document.getElementById('admin-plan2-price')?.value) || 75;
+      const plan2_days = parseInt(document.getElementById('admin-plan2-days')?.value) || 15;
+
+      try {
+        const res = await fetch('/api/admin/action', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            token: sessionToken,
+            action: 'update_membership',
+            plan_count: adminSelectedPlanCount,
+            plan1_name,
+            plan1_price,
+            plan1_days,
+            plan2_name,
+            plan2_price,
+            plan2_days
+          })
+        });
+        const d = await res.json();
+        if (d.ok && d.membership) {
+          currentMembershipConfig = d.membership;
+          renderUserPlans(d.membership);
+          populateAdminMembershipForm(d.membership);
+          if (statusEl) {
+            statusEl.className = 'text-xs font-semibold text-emerald-400';
+            statusEl.innerText = 'Configuración guardada correctamente';
+            setTimeout(() => { statusEl.innerText = ''; }, 3500);
+          }
+          loadAdminData();
+        } else {
+          if (statusEl) {
+            statusEl.className = 'text-xs font-semibold text-rose-400';
+            statusEl.innerText = d.error || 'Error al guardar';
+          }
+        }
+      } catch (e) {
+        if (statusEl) {
+          statusEl.className = 'text-xs font-semibold text-rose-400';
+          statusEl.innerText = 'Error de conexión';
+        }
       }
     }
 
@@ -1057,6 +1272,10 @@
 
         if (data.google_client_id) {
           initGoogleSignIn(data.google_client_id);
+        }
+
+        if (data.membership) {
+          renderUserPlans(data.membership);
         }
 
         const currentRushHash = results.length > 0 ? `${results.length}-${results[0].id}` : 'empty';
@@ -1327,6 +1546,12 @@
       const data = await res.json();
       if (!data.ok) return;
 
+      if (data.membership) {
+        currentMembershipConfig = data.membership;
+        populateAdminMembershipForm(data.membership);
+        renderUserPlans(data.membership);
+      }
+
       const payBody = document.getElementById('admin-payments-body');
       payBody.innerHTML = (data.payments || []).map(p => `
         <tr>
@@ -1351,6 +1576,11 @@
       const totalUsersBadge = document.getElementById('total-users-badge');
       if (totalUsersBadge) totalUsersBadge.innerText = `${(data.users || []).length} Registros`;
 
+      const activeCount = (currentMembershipConfig && currentMembershipConfig.plan_count === 2) ? 2 : 1;
+      const plansToUse = (currentMembershipConfig && currentMembershipConfig.plans && currentMembershipConfig.plans.length > 0)
+        ? currentMembershipConfig.plans.slice(0, activeCount)
+        : [{ id: 'VIP_30_DIAS', name: 'Pase Mensual VIP', price: 150, days: 30 }];
+
       usrBody.innerHTML = (data.users || []).map(u => {
         const isGoogle = u.email && (u.email.includes('@gmail.com') || u.auth_provider === 'google');
         const isVip = u.role === 'vip';
@@ -1373,26 +1603,34 @@
           ? '<span class="inline-flex items-center gap-1 text-[11px] text-blue-400 font-semibold">Google 🌐</span>'
           : '<span class="text-[11px] text-slate-400">Correo ✉️</span>';
 
+        const dynamicVipBtns = plansToUse.map((p, idx) => {
+          const price = p.price != null ? p.price : (p.price_usdt != null ? p.price_usdt : 150);
+          const days = p.days != null ? p.days : (p.duration_days != null ? p.duration_days : 30);
+          return `
+            <button onclick="adminAction('grant_vip', '${u.email}', null, ${days})" class="px-2.5 py-1 rounded-lg ${idx === 0 ? 'btn-gold' : 'bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/30 text-emerald-300'} font-bold text-[11px] transition">
+              + ${p.name} ($${price})
+            </button>
+          `;
+        }).join(' ');
+
         let actionButtons = '';
         if (isAdmin) {
           actionButtons = '<span class="text-slate-500 text-xs">Acceso Maestro</span>';
         } else if (isTrial) {
           actionButtons = `
             <button onclick="adminAction('close_trial', '${u.email}')" class="px-3 py-1 rounded-lg bg-rose-600/30 hover:bg-rose-600/50 text-rose-300 border border-rose-500/40 font-bold text-[11px] transition">🚫 Cerrar Prueba</button>
-            <button onclick="adminAction('grant_vip', '${u.email}', null, 15)" class="px-2.5 py-1 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition">+ Quincenal ($50)</button>
-            <button onclick="adminAction('grant_vip', '${u.email}', null, 30)" class="px-2.5 py-1 rounded-lg btn-gold font-bold text-[11px] transition">+ Mensual ($100)</button>
+            ${dynamicVipBtns}
           `;
         } else if (isVip) {
           actionButtons = `
             <button onclick="adminAction('close_trial', '${u.email}')" class="px-2.5 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-[11px] font-semibold transition">Quitar VIP</button>
             <button onclick="adminAction('reset_devices', '${u.email}')" class="px-2 py-1 rounded-lg bg-white/[0.06] hover:bg-white/[0.12] text-slate-300 text-[11px] transition" title="Permite al usuario cambiar de equipo">Reset Equipo</button>
-            <button onclick="adminAction('grant_vip', '${u.email}', null, 30)" class="px-2.5 py-1 rounded-lg btn-gold font-bold text-[11px] transition">+ 30 Días</button>
+            ${dynamicVipBtns}
           `;
         } else {
           actionButtons = `
             <button onclick="adminAction('enable_trial', '${u.email}')" class="px-3 py-1 rounded-lg bg-cyan-600/25 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/40 font-bold text-[11px] transition inline-flex items-center gap-1"><span>⚡</span> <span>Habilitar Prueba</span></button>
-            <button onclick="adminAction('grant_vip', '${u.email}', null, 15)" class="px-2.5 py-1 rounded-lg bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/30 text-emerald-300 font-bold text-[11px] transition">+ Quincenal ($50)</button>
-            <button onclick="adminAction('grant_vip', '${u.email}', null, 30)" class="px-2.5 py-1 rounded-lg btn-gold font-bold text-[11px] transition">+ Mensual ($100)</button>
+            ${dynamicVipBtns}
           `;
         }
 

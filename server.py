@@ -251,6 +251,15 @@ def init_db():
 
 
 def get_setting(key: str, default: str = "") -> str:
+    # 1. Supabase (persistencia global en Vercel)
+    try:
+        sb_rows = supabase.select("dynasty_settings", f"key=eq.{quote(key)}&select=value")
+        if sb_rows and len(sb_rows) > 0 and sb_rows[0].get("value") is not None:
+            return str(sb_rows[0]["value"]).strip()
+    except Exception:
+        pass
+
+    # 2. SQLite local respaldo
     try:
         with db_lock:
             conn = get_db()
@@ -262,10 +271,13 @@ def get_setting(key: str, default: str = "") -> str:
                 return str(row["value"]).strip()
     except Exception:
         pass
+
     return os.getenv(key.upper(), default)
 
 
 def set_setting(key: str, value: str):
+    val_str = str(value).strip()
+    # 1. SQLite
     try:
         with db_lock:
             conn = get_db()
@@ -273,11 +285,60 @@ def set_setting(key: str, value: str):
             cur.execute("""
                 INSERT INTO dynasty_settings (key, value) VALUES (?, ?)
                 ON CONFLICT(key) DO UPDATE SET value = excluded.value
-            """, (key, value))
+            """, (key, val_str))
             conn.commit()
             conn.close()
     except Exception:
         pass
+
+    # 2. Supabase
+    try:
+        sb_exist = supabase.select("dynasty_settings", f"key=eq.{quote(key)}&select=key")
+        if sb_exist and len(sb_exist) > 0:
+            supabase.update("dynasty_settings", f"key=eq.{quote(key)}", {"value": val_str})
+        else:
+            supabase.insert("dynasty_settings", {"key": key, "value": val_str})
+    except Exception:
+        pass
+
+
+DEFAULT_MEMBERSHIP_CONFIG = {
+    "plan_count": 1,
+    "plans": [
+        {
+            "id": "VIP_30_DIAS",
+            "name": "Pase Mensual VIP",
+            "price": 150,
+            "days": 30,
+            "badge": "Recomendado",
+            "description": "Acceso ilimitado 24/7 a la terminal de señales en vivo, vista de mesa y alertas sonoras."
+        },
+        {
+            "id": "VIP_15_DIAS",
+            "name": "Pase Quincenal VIP",
+            "price": 75,
+            "days": 15,
+            "badge": "Quincenal",
+            "description": "Acceso completo durante 15 días continuos a todas las señales en vivo del terminal VIP."
+        }
+    ]
+}
+
+
+def get_membership_config() -> dict:
+    raw = get_setting("membership_config", "")
+    if raw:
+        try:
+            data = json.loads(raw)
+            if isinstance(data, dict) and "plans" in data and isinstance(data["plans"], list):
+                return data
+        except Exception:
+            pass
+    return DEFAULT_MEMBERSHIP_CONFIG
+
+
+def set_membership_config(cfg: dict):
+    set_setting("membership_config", json.dumps(cfg))
 
 
 def _prune_sqlite_images(cur):
@@ -971,6 +1032,7 @@ class handler(BaseHTTPRequestHandler):
             },
             "usdt_wallet": USDT_WALLET_TRC20,
             "google_client_id": get_setting("google_client_id", GOOGLE_CLIENT_ID),
+            "membership": get_membership_config(),
         })
 
     # ──────────────────────────────────────────────────────────────────────
@@ -979,7 +1041,7 @@ class handler(BaseHTTPRequestHandler):
     def _handle_usdt_payment(self, body: dict):
         token = (body.get("token") or "").strip()
         plan_name = (body.get("plan_name") or "VIP_30_DIAS").strip()
-        amount_usdt = float(body.get("amount_usdt") or 50.0)
+        amount_usdt = float(body.get("amount_usdt") or 150.0)
         txid = (body.get("txid") or "").strip()
 
         if not txid or len(txid) < 4:
@@ -1091,6 +1153,7 @@ class handler(BaseHTTPRequestHandler):
             "payments": payments,
             "alerts": alerts,
             "google_client_id": get_setting("google_client_id", GOOGLE_CLIENT_ID),
+            "membership": get_membership_config(),
         })
 
     def _handle_admin_action(self, body: dict):
@@ -1196,6 +1259,41 @@ class handler(BaseHTTPRequestHandler):
                 except Exception:
                     pass
                 return self._send_json({"ok": True, "msg": "Señales y resultados de prueba limpiados."})
+
+            if action == "update_membership":
+                plan_count = int(body.get("plan_count") or 1)
+                plan1_name = (body.get("plan1_name") or "Pase Mensual VIP").strip()
+                plan1_price = float(body.get("plan1_price") or 150)
+                plan1_days = int(body.get("plan1_days") or 30)
+
+                plan2_name = (body.get("plan2_name") or "Pase Quincenal VIP").strip()
+                plan2_price = float(body.get("plan2_price") or 75)
+                plan2_days = int(body.get("plan2_days") or 15)
+
+                updated_cfg = {
+                    "plan_count": 2 if plan_count == 2 else 1,
+                    "plans": [
+                        {
+                            "id": "VIP_30_DIAS",
+                            "name": plan1_name,
+                            "price": plan1_price,
+                            "days": plan1_days,
+                            "badge": "Recomendado",
+                            "description": f"Acceso ilimitado 24/7 a la terminal de señales en vivo, vista de mesa y alertas sonoras."
+                        },
+                        {
+                            "id": "VIP_15_DIAS",
+                            "name": plan2_name,
+                            "price": plan2_price,
+                            "days": plan2_days,
+                            "badge": "Quincenal",
+                            "description": f"Acceso completo durante {plan2_days} días continuos a todas las señales en vivo del terminal VIP."
+                        }
+                    ]
+                }
+                set_membership_config(updated_cfg)
+                conn.close()
+                return self._send_json({"ok": True, "msg": "Configuración guardada.", "membership": updated_cfg})
 
             if action == "set_google_client_id":
                 val = (body.get("client_id") or "").strip()
