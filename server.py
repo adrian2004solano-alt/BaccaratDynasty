@@ -144,7 +144,7 @@ class SupabaseBridge:
 
 
 supabase = SupabaseBridge(SUPABASE_URL, SUPABASE_KEY)
-db_lock = threading.Lock()
+db_lock = threading.RLock()
 
 
 def get_db():
@@ -1261,6 +1261,7 @@ class handler(BaseHTTPRequestHandler):
                 return self._send_json({"ok": True, "msg": "Señales y resultados de prueba limpiados."})
 
             if action == "update_membership":
+                conn.close()
                 plan_count = int(body.get("plan_count") or 1)
                 plan1_name = (body.get("plan1_name") or "Pase Mensual VIP").strip()
                 plan1_price = float(body.get("plan1_price") or 150)
@@ -1279,7 +1280,7 @@ class handler(BaseHTTPRequestHandler):
                             "price": plan1_price,
                             "days": plan1_days,
                             "badge": "Recomendado",
-                            "description": f"Acceso ilimitado 24/7 a la terminal de señales en vivo, vista de mesa y alertas sonoras."
+                            "description": "Acceso ilimitado 24/7 a la terminal de señales en vivo, vista de mesa y alertas sonoras."
                         },
                         {
                             "id": "VIP_15_DIAS",
@@ -1292,13 +1293,12 @@ class handler(BaseHTTPRequestHandler):
                     ]
                 }
                 set_membership_config(updated_cfg)
-                conn.close()
                 return self._send_json({"ok": True, "msg": "Configuración guardada.", "membership": updated_cfg})
 
             if action == "set_google_client_id":
+                conn.close()
                 val = (body.get("client_id") or "").strip()
                 set_setting("google_client_id", val)
-                conn.close()
                 return self._send_json({"ok": True, "msg": "Google Client ID guardado exitosamente."})
 
             conn.close()
