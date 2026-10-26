@@ -8,11 +8,13 @@
     (function() {
       try {
         var h = (window.location.href || '').toLowerCase();
-        var isAdminAuth = localStorage.getItem('dynasty_admin_authenticated') === 'true' || localStorage.getItem('dynasty_role') === 'admin';
-        var activeSec = localStorage.getItem('dynasty_active_section') || 'signals';
-        if (h.indexOf('admin7845329') !== -1 || (isAdminAuth && activeSec === 'admin')) {
+        // El panel admin se activa ÚNICAMENTE si la URL contiene explícitamente admin7845329
+        if (h.indexOf('admin7845329') !== -1) {
           document.documentElement.classList.add('admin-mode-active');
           window.__START_IN_ADMIN = true;
+        } else {
+          document.documentElement.classList.remove('admin-mode-active');
+          window.__START_IN_ADMIN = false;
         }
       } catch(e) {}
     })();
@@ -799,7 +801,11 @@
 
     function showSection(sec) {
       try {
-        document.documentElement.classList.remove('admin-mode-active');
+        if (sec === 'admin') {
+          document.documentElement.classList.add('admin-mode-active');
+        } else {
+          document.documentElement.classList.remove('admin-mode-active');
+        }
       } catch(e) {}
 
       localStorage.setItem('dynasty_active_section', sec);
@@ -995,6 +1001,9 @@
       sessionToken = '';
       userEmail = '';
       userRole = 'guest';
+      try {
+        document.documentElement.classList.remove('admin-mode-active');
+      } catch(e) {}
       localStorage.removeItem('dynasty_token');
       localStorage.removeItem('dynasty_email');
       localStorage.removeItem('dynasty_role');
@@ -1786,11 +1795,14 @@
       const hash = (window.location.hash || '').toLowerCase();
       const path = (window.location.pathname || '').toLowerCase();
       const search = (window.location.search || '').toLowerCase();
-      if (href.includes('admin7845329') || hash.includes('admin7845329') || path.includes('admin7845329') || search.includes('admin7845329') || window.__START_IN_ADMIN) {
+      const hasAdminInUrl = href.includes('admin7845329') || hash.includes('admin7845329') || path.includes('admin7845329') || search.includes('admin7845329');
+      if (hasAdminInUrl) {
+        document.documentElement.classList.add('admin-mode-active');
         localStorage.setItem('dynasty_admin_authenticated', 'true');
         enterAdminDirectly();
         return true;
       }
+      document.documentElement.classList.remove('admin-mode-active');
       return false;
     }
 
@@ -1809,6 +1821,7 @@
 
     const startedInAdmin = checkAdminUrlTrigger();
     if (!startedInAdmin) {
+      document.documentElement.classList.remove('admin-mode-active');
       const hash = (window.location.hash || '').toLowerCase();
       if (hash.includes('register')) {
         showSection('auth');
@@ -1817,12 +1830,12 @@
         showSection('auth');
         switchAuthMode('login');
       } else {
-        const savedSection = localStorage.getItem('dynasty_active_section') || 'signals';
-        if (savedSection === 'admin' && isAdminPersisted) {
-          enterAdminDirectly();
-        } else {
-          showSection(savedSection);
+        let savedSection = localStorage.getItem('dynasty_active_section') || 'signals';
+        if (savedSection === 'admin') {
+          savedSection = 'signals';
+          localStorage.setItem('dynasty_active_section', 'signals');
         }
+        showSection(savedSection);
       }
     }
     pollLiveState();
