@@ -1809,11 +1809,20 @@
 
     const startedInAdmin = checkAdminUrlTrigger();
     if (!startedInAdmin) {
-      const savedSection = localStorage.getItem('dynasty_active_section') || 'signals';
-      if (savedSection === 'admin' && isAdminPersisted) {
-        enterAdminDirectly();
+      const hash = (window.location.hash || '').toLowerCase();
+      if (hash.includes('register')) {
+        showSection('auth');
+        switchAuthMode('register');
+      } else if (hash.includes('auth') || hash.includes('login')) {
+        showSection('auth');
+        switchAuthMode('login');
       } else {
-        showSection(savedSection);
+        const savedSection = localStorage.getItem('dynasty_active_section') || 'signals';
+        if (savedSection === 'admin' && isAdminPersisted) {
+          enterAdminDirectly();
+        } else {
+          showSection(savedSection);
+        }
       }
     }
     pollLiveState();
@@ -1823,6 +1832,12 @@
       const hash = (window.location.hash || '').toLowerCase();
       if (hash.includes('admin7845329')) {
         checkAdminUrlTrigger();
+      } else if (hash.includes('register')) {
+        showSection('auth');
+        switchAuthMode('register');
+      } else if (hash.includes('auth') || hash.includes('login')) {
+        showSection('auth');
+        switchAuthMode('login');
       }
     });
   </script>
