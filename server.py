@@ -61,6 +61,8 @@ USDT_WALLET_TRC20 = os.getenv("USDT_WALLET_TRC20", "TX9kP7d2vBaccaratDynastyVIP9
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "152674692011-0vkgv9pqduk6gmrj17llk68n02qkls9n.apps.googleusercontent.com")
 PORT = int(os.getenv("PORT", "5000"))
 MAX_STORED_IMAGES = 15
+APP_VERSION = "2.1.2"
+BUILD_TIMESTAMP = "2026-10-26T14:41:00Z"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("VERCEL_ENV") or not os.access(BASE_DIR, os.W_OK))
@@ -413,6 +415,7 @@ class handler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header("Content-Type", "text/html; charset=utf-8")
                 self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+                self.send_header("X-App-Version", APP_VERSION)
                 self.send_header("Content-Length", str(len(content)))
                 self.end_headers()
                 self.wfile.write(content)
