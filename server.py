@@ -61,8 +61,8 @@ USDT_WALLET_TRC20 = os.getenv("USDT_WALLET_TRC20", "TX9kP7d2vBaccaratDynastyVIP9
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "152674692011-0vkgv9pqduk6gmrj17llk68n02qkls9n.apps.googleusercontent.com")
 PORT = int(os.getenv("PORT", "5000"))
 MAX_STORED_IMAGES = 15
-APP_VERSION = "2.1.2"
-BUILD_TIMESTAMP = "2026-10-26T14:41:00Z"
+APP_VERSION = "2.1.3"
+BUILD_TIMESTAMP = "2026-10-26T14:52:00Z"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("VERCEL_ENV") or not os.access(BASE_DIR, os.W_OK))
@@ -892,33 +892,33 @@ class handler(BaseHTTPRequestHandler):
                             u = dict(row)
                         conn.close()
 
-                if not u:
-                    return self._send_json({
-                        "status": "kicked",
-                        "reason": "🚨 Tu cuenta fue abierta en otro dispositivo. Solo se permite 1 conexión activa a la vez.",
-                    })
-
-                user_email = u.get("email")
-                user_role = u.get("role") or "free"
-                if user_email == ADMIN_EMAIL or user_role == "admin":
-                    user_role = "admin"
-                    vip_days_left = 3650
-                elif user_role in ("vip", "trial") and u.get("vip_expires_at"):
-                    try:
-                        exp_dt = datetime.fromisoformat(str(u["vip_expires_at"]).replace("Z", "+00:00"))
-                        diff = exp_dt - datetime.now(timezone.utc)
-                        if diff.total_seconds() <= 0:
-                            user_role = "free"
-                            supabase.update("dynasty_users", f"email=eq.{quote(user_email)}", {"role": "free", "vip_expires_at": None})
-                            with db_lock:
-                                conn_exp = get_db()
-                                conn_exp.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE email = ?", (user_email,))
-                                conn_exp.commit()
-                                conn_exp.close()
-                        else:
-                            vip_days_left = max(1, diff.days + 1)
-                    except Exception:
-                        vip_days_left = 30
+                if u:
+                    user_email = u.get("email")
+                    user_role = u.get("role") or "free"
+                    if user_email == ADMIN_EMAIL or user_role == "admin":
+                        user_role = "admin"
+                        vip_days_left = 3650
+                    elif user_role in ("vip", "trial") and u.get("vip_expires_at"):
+                        try:
+                            exp_dt = datetime.fromisoformat(str(u["vip_expires_at"]).replace("Z", "+00:00"))
+                            diff = exp_dt - datetime.now(timezone.utc)
+                            if diff.total_seconds() <= 0:
+                                user_role = "free"
+                                supabase.update("dynasty_users", f"email=ilike.{quote(user_email)}", {"role": "free", "vip_expires_at": None})
+                                with db_lock:
+                                    conn_exp = get_db()
+                                    conn_exp.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE LOWER(email) = LOWER(?)", (user_email,))
+                                    conn_exp.commit()
+                                    conn_exp.close()
+                            else:
+                                vip_days_left = max(1, diff.days + 1)
+                        except Exception:
+                            vip_days_left = 30
+                else:
+                    # Token no encontrado o expirado. Tratamos silenciosamente como invitado sin emitir alertas erróneas de otro dispositivo.
+                    user_role = "guest"
+                    user_email = None
+                    vip_days_left = 0
 
         # 3.2 Obtener Señales Reales enviadas por el Bot (Supabase primero, SQLite respaldo)
         sig_rows = supabase.select("dynasty_signals", "select=*&order=id.desc&limit=15")
@@ -1202,27 +1202,31 @@ class handler(BaseHTTPRequestHandler):
 
             if action in ("approve_payment", "grant_vip") and target_email:
                 exp = (datetime.now(timezone.utc) + timedelta(days=days)).isoformat()
-                cur.execute("UPDATE dynasty_users SET role = 'vip', vip_expires_at = ?, is_verified = 1 WHERE email = ?", (exp, target_email))
+                cur.execute("UPDATE dynasty_users SET role = 'vip', vip_expires_at = ?, is_verified = 1 WHERE LOWER(email) = LOWER(?)", (exp, target_email))
                 conn.commit()
                 conn.close()
-                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "vip", "vip_expires_at": exp, "is_verified": True})
-                plan_label = "Quincenal (15 días - $50)" if days == 15 else f"Mensual ({days} días - $100)"
-                return self._send_json({"ok": True, "msg": f"Membresía {plan_label} activada exitosamente para {target_email}."})
+                supabase.update("dynasty_users", f"email=ilike.{quote(target_email)}", {"role": "vip", "vip_expires_at": exp, "is_verified": True})
+                try:
+                    supabase.update("dynasty_security_alerts", f"user_email=ilike.{quote(target_email)}&status=eq.new", {"status": "resolved"})
+                except Exception:
+                    pass
+                plan_label = f"VIP ({days} días)"
+                return self._send_json({"ok": True, "msg": f"Membresía {plan_label} activada exitosamente para {target_email}.", "email": target_email, "role": "vip", "vip_expires_at": exp})
 
             if action == "enable_trial" and target_email:
                 exp = (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat()
-                cur.execute("UPDATE dynasty_users SET role = 'trial', vip_expires_at = ?, is_verified = 1 WHERE email = ?", (exp, target_email))
+                cur.execute("UPDATE dynasty_users SET role = 'trial', vip_expires_at = ?, is_verified = 1 WHERE LOWER(email) = LOWER(?)", (exp, target_email))
                 conn.commit()
                 conn.close()
-                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "trial", "vip_expires_at": exp, "is_verified": True})
-                return self._send_json({"ok": True, "msg": f"Prueba gratis habilitada para {target_email}. Señales e imágenes desbloqueadas."})
+                supabase.update("dynasty_users", f"email=ilike.{quote(target_email)}", {"role": "trial", "vip_expires_at": exp, "is_verified": True})
+                return self._send_json({"ok": True, "msg": f"Prueba gratis habilitada para {target_email}. Señales e imágenes desbloqueadas.", "email": target_email, "role": "trial"})
 
             if action in ("close_trial", "revoke_vip") and target_email:
-                cur.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE email = ?", (target_email,))
+                cur.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE LOWER(email) = LOWER(?)", (target_email,))
                 conn.commit()
                 conn.close()
-                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "free", "vip_expires_at": None})
-                return self._send_json({"ok": True, "msg": f"Acceso cerrado para {target_email}. Señales e imágenes bloqueadas."})
+                supabase.update("dynasty_users", f"email=ilike.{quote(target_email)}", {"role": "free", "vip_expires_at": None})
+                return self._send_json({"ok": True, "msg": f"Acceso cerrado para {target_email}. Señales e imágenes bloqueadas.", "email": target_email, "role": "free"})
 
             if action == "dismiss_alert" and alert_id:
                 cur.execute("UPDATE dynasty_security_alerts SET status = 'dismissed' WHERE id = ?", (alert_id,))

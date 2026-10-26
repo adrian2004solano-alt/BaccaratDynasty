@@ -657,6 +657,7 @@
             0 Registros
           </span>
         </div>
+        <div id="admin-action-notice" class="hidden"></div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
             <thead>
@@ -1249,8 +1250,11 @@
           if (isAdmin) {
             return;
           }
+          if (!sessionToken || userRole === 'guest') {
+            return;
+          }
           logoutUser();
-          document.getElementById('kicked-reason').innerText = data.reason;
+          document.getElementById('kicked-reason').innerText = data.reason || 'Se ha detectado un nuevo inicio de sesión en tu cuenta.';
           document.getElementById('kicked-modal').classList.remove('hidden');
           return;
         }
@@ -1615,8 +1619,11 @@
         const dynamicVipBtns = plansToUse.map((p, idx) => {
           const price = p.price != null ? p.price : (p.price_usdt != null ? p.price_usdt : 150);
           const days = p.days != null ? p.days : (p.duration_days != null ? p.duration_days : 30);
+          const safeEmail = (u.email || '').replace(/[^a-zA-Z0-9]/g, '_');
+          const btnId = `btn-vip-${safeEmail}-${idx}`;
+          const cleanPlanName = (p.name || 'Plan VIP').replace(/'/g, "\\'");
           return `
-            <button onclick="adminAction('grant_vip', '${u.email}', null, ${days})" class="px-2.5 py-1 rounded-lg ${idx === 0 ? 'btn-gold' : 'bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/30 text-emerald-300'} font-bold text-[11px] transition">
+            <button id="${btnId}" onclick="requestGrantVip('${u.email}', ${days}, '${cleanPlanName}', ${price}, '${btnId}')" class="px-2.5 py-1 rounded-lg ${idx === 0 ? 'btn-gold' : 'bg-emerald-600/25 hover:bg-emerald-600/40 border border-emerald-500/30 text-emerald-300'} font-bold text-[11px] transition">
               + ${p.name} ($${price})
             </button>
           `;
@@ -1682,12 +1689,104 @@
       }
     }
 
+    let pendingVipTimers = {};
+
+    function requestGrantVip(email, days, planName, price, btnId) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+
+      if (pendingVipTimers[btnId]) {
+        clearTimeout(pendingVipTimers[btnId]);
+      }
+
+      const origClass = btn.className;
+      const origHtml = btn.innerHTML;
+
+      // Botón de validación interactiva solicitado: al tocarlo dice "Confirmar Membresía"
+      btn.className = 'px-3 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-black border-2 border-emerald-300 font-black text-[11px] shadow-lg shadow-emerald-500/30 animate-pulse transition';
+      btn.innerHTML = '✓ Confirmar Membresía';
+      btn.onclick = function() {
+        executeGrantVip(email, days, planName, price, btnId);
+      };
+
+      // Si no confirma dentro de 6 segundos, regresa a su estado original
+      pendingVipTimers[btnId] = setTimeout(() => {
+        if (btn) {
+          btn.className = origClass;
+          btn.innerHTML = origHtml;
+          btn.onclick = function() {
+            requestGrantVip(email, days, planName, price, btnId);
+          };
+        }
+        delete pendingVipTimers[btnId];
+      }, 6000);
+    }
+
+    async function executeGrantVip(email, days, planName, price, btnId) {
+      const btn = document.getElementById(btnId);
+      if (pendingVipTimers[btnId]) {
+        clearTimeout(pendingVipTimers[btnId]);
+        delete pendingVipTimers[btnId];
+      }
+
+      if (btn) {
+        btn.disabled = true;
+        btn.className = 'px-3 py-1 rounded-lg bg-emerald-600/60 text-white font-bold text-[11px] transition';
+        btn.innerHTML = '⏳ Activando...';
+      }
+
+      try {
+        const res = await fetch('/api/admin/action', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ token: sessionToken, action: 'grant_vip', email, days })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          if (btn) {
+            btn.className = 'px-3 py-1 rounded-lg bg-emerald-500 text-black font-black text-[11px] transition';
+            btn.innerHTML = '✓ Membresía Confirmada';
+          }
+          showAdminNotice(`✓ Membresía ${planName} ($${price}) confirmada y activada exitosamente para ${email}`);
+        } else {
+          showAdminNotice(data.msg || 'Error al confirmar membresía', true);
+        }
+      } catch (e) {
+        showAdminNotice('Error de conexión al activar membresía', true);
+      }
+
+      setTimeout(() => {
+        loadAdminData();
+        pollLiveState();
+      }, 700);
+    }
+
+    function showAdminNotice(msg, isError = false) {
+      const notice = document.getElementById('admin-action-notice');
+      if (notice) {
+        notice.innerText = msg;
+        notice.className = isError 
+          ? 'px-4 py-2.5 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold transition flex items-center justify-between mb-3'
+          : 'px-4 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition flex items-center justify-between mb-3';
+        notice.classList.remove('hidden');
+        setTimeout(() => { notice.classList.add('hidden'); }, 5000);
+      }
+    }
+
     async function adminAction(action, email = null, payment_id = null, days = 30, alert_id = null) {
-      await fetch('/api/admin/action', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ token: sessionToken, action, email, payment_id, days, alert_id })
-      });
+      try {
+        const res = await fetch('/api/admin/action', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ token: sessionToken, action, email, payment_id, days, alert_id })
+        });
+        const data = await res.json();
+        if (data.ok && data.msg) {
+          showAdminNotice(data.msg);
+        }
+      } catch(e) {
+        console.error(e);
+      }
       loadAdminData();
       pollLiveState();
     }
