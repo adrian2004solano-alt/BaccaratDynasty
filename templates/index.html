@@ -760,27 +760,24 @@
     }
 
     function computeDeviceFingerprint() {
-      let savedDeviceId = localStorage.getItem('dynasty_hw_id');
-      if (!savedDeviceId) {
-        const nav = window.navigator;
-        const scr = window.screen;
-        const raw = [
-          nav.platform,
-          nav.language,
-          scr.width + 'x' + scr.height,
-          scr.colorDepth,
-          Intl.DateTimeFormat().resolvedOptions().timeZone,
-          nav.hardwareConcurrency || 4
-        ].join('|');
-        let hash = 0;
-        for (let i = 0; i < raw.length; i++) {
-          hash = ((hash << 5) - hash) + raw.charCodeAt(i);
-          hash |= 0;
-        }
-        savedDeviceId = 'FP-' + Math.abs(hash).toString(16).toUpperCase() + '-' + Math.random().toString(36).substring(2, 6).toUpperCase();
-        localStorage.setItem('dynasty_hw_id', savedDeviceId);
+      const nav = window.navigator;
+      const scr = window.screen;
+      const raw = [
+        nav.platform,
+        nav.language,
+        scr.width + 'x' + scr.height,
+        scr.colorDepth,
+        Intl.DateTimeFormat().resolvedOptions().timeZone,
+        nav.hardwareConcurrency || 4
+      ].join('|');
+      let hash = 0;
+      for (let i = 0; i < raw.length; i++) {
+        hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+        hash |= 0;
       }
-      deviceFp = savedDeviceId;
+      const deterministicId = 'FP-' + Math.abs(hash).toString(16).toUpperCase();
+      localStorage.setItem('dynasty_hw_id', deterministicId);
+      deviceFp = deterministicId;
     }
 
     function playSignalSound() {
@@ -1215,7 +1212,7 @@
     }
 
     async function sendUsdtPayment() {
-      if (!sessionToken) {
+      if (!sessionToken && !userEmail) {
         showSection('auth');
         return;
       }
@@ -1225,6 +1222,7 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({
           token: sessionToken,
+          email: userEmail,
           plan_name: selectedPlan,
           amount_usdt: selectedAmount,
           txid
@@ -1242,7 +1240,7 @@
 
     async function pollLiveState() {
       try {
-        const res = await fetch(`/api/state?token=${encodeURIComponent(sessionToken)}&fp=${encodeURIComponent(deviceFp)}`);
+        const res = await fetch(`/api/state?token=${encodeURIComponent(sessionToken || '')}&fp=${encodeURIComponent(deviceFp || '')}&email=${encodeURIComponent(userEmail || '')}`);
         const data = await res.json();
 
         if (data.status === 'kicked') {
@@ -1259,7 +1257,7 @@
           return;
         }
 
-        if (data.user && data.user.email) {
+        if (data.user) {
           const isLocalAdmin = (userRole === 'admin' || localStorage.getItem('dynasty_role') === 'admin' || localStorage.getItem('dynasty_admin_authenticated') === 'true');
           if (!isLocalAdmin && data.user.role && data.user.role !== userRole) {
             userRole = data.user.role;

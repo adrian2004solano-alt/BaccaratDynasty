@@ -61,8 +61,8 @@ USDT_WALLET_TRC20 = os.getenv("USDT_WALLET_TRC20", "TX9kP7d2vBaccaratDynastyVIP9
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "152674692011-0vkgv9pqduk6gmrj17llk68n02qkls9n.apps.googleusercontent.com")
 PORT = int(os.getenv("PORT", "5000"))
 MAX_STORED_IMAGES = 15
-APP_VERSION = "2.1.3"
-BUILD_TIMESTAMP = "2026-10-26T14:52:00Z"
+APP_VERSION = "2.1.4"
+BUILD_TIMESTAMP = "2026-10-26T15:15:00Z"
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 IS_VERCEL = bool(os.getenv("VERCEL") or os.getenv("VERCEL_ENV") or not os.access(BASE_DIR, os.W_OK))
@@ -252,12 +252,34 @@ def init_db():
         conn.close()
 
 
+_settings_cache: dict[str, tuple[float, str]] = {}
+_SETTINGS_TTL_SEC = 15.0
+
+
+def _fp_base(fp: str) -> str:
+    """Normaliza la huella digital de hardware a su prefijo determinístico (FP-XXXXXXXX)
+    para evitar bloqueos falsos cuando el mismo equipo físico borra caché o cambia de navegador."""
+    s = str(fp or "").strip().upper()
+    if s.startswith("FP-"):
+        parts = s.split("-")
+        if len(parts) >= 2:
+            return f"{parts[0]}-{parts[1]}"
+    return s
+
+
 def get_setting(key: str, default: str = "") -> str:
+    now_t = time.time()
+    cached = _settings_cache.get(key)
+    if cached and (now_t - cached[0]) < _SETTINGS_TTL_SEC:
+        return cached[1]
+
     # 1. Supabase (persistencia global en Vercel)
     try:
         sb_rows = supabase.select("dynasty_settings", f"key=eq.{quote(key)}&select=value")
         if sb_rows and len(sb_rows) > 0 and sb_rows[0].get("value") is not None:
-            return str(sb_rows[0]["value"]).strip()
+            val = str(sb_rows[0]["value"]).strip()
+            _settings_cache[key] = (now_t, val)
+            return val
     except Exception:
         pass
 
@@ -270,15 +292,20 @@ def get_setting(key: str, default: str = "") -> str:
             row = cur.fetchone()
             conn.close()
             if row and row["value"]:
-                return str(row["value"]).strip()
+                val = str(row["value"]).strip()
+                _settings_cache[key] = (now_t, val)
+                return val
     except Exception:
         pass
 
-    return os.getenv(key.upper(), default)
+    fallback = os.getenv(key.upper(), default)
+    _settings_cache[key] = (now_t, fallback)
+    return fallback
 
 
 def set_setting(key: str, value: str):
     val_str = str(value).strip()
+    _settings_cache[key] = (time.time(), val_str)
     # 1. SQLite
     try:
         with db_lock:
@@ -426,7 +453,8 @@ class handler(BaseHTTPRequestHandler):
         if path == "/api/state":
             token = query.get("token", [""])[0]
             fp = query.get("fp", [""])[0]
-            self._handle_get_state(token, fp)
+            email = query.get("email", [""])[0]
+            self._handle_get_state(token, fp, email)
             return
 
         if path == "/api/admin/data":
@@ -640,20 +668,39 @@ class handler(BaseHTTPRequestHandler):
                 devices = list(raw_devs)
 
             known_fps = [d.get("fp") for d in devices if isinstance(d, dict)]
+            known_fp_bases = [_fp_base(f) for f in known_fps if f]
             role = user.get("role") or "free"
             client_ip = self.client_address[0] if self.client_address else "127.0.0.1"
             now_str = datetime.now(timezone.utc).isoformat()
 
+            if role == "blocked":
+                conn.close()
+                return self._send_json({
+                    "ok": False,
+                    "msg": "🛡️ Esta cuenta se encuentra suspendida por el Administrador.",
+                }, 403)
+
             if role != "admin":
-                if device_fp not in known_fps:
+                if device_fp not in known_fps and _fp_base(device_fp) not in known_fp_bases:
                     # Si el usuario tiene plan VIP activo y ya tiene un dispositivo vinculado, bloqueamos el intento y alertamos al Admin
                     if role == "vip" and len(devices) >= 1:
+                        alert_details = "Intento de inicio VIP en segundo dispositivo no autorizado"
                         cur.execute("""
                             INSERT INTO dynasty_security_alerts (user_email, alert_type, detected_ip, device_fp, device_label, details, status, created_at)
                             VALUES (?, 'SHARING_BLOCKED', ?, ?, ?, ?, 'new', ?)
-                        """, (email, client_ip, device_fp, device_label, "Intento de inicio VIP en segundo dispositivo no autorizado", now_str))
+                        """, (email, client_ip, device_fp, device_label, alert_details, now_str))
                         conn.commit()
                         conn.close()
+                        supabase.insert("dynasty_security_alerts", {
+                            "user_email": email,
+                            "alert_type": "SHARING_BLOCKED",
+                            "detected_ip": client_ip,
+                            "device_fp": device_fp,
+                            "device_label": device_label,
+                            "details": alert_details,
+                            "status": "new",
+                            "created_at": now_str,
+                        })
                         return self._send_json({
                             "ok": False,
                             "msg": "🛡️ SEGURIDAD DYNASTY: Tu cuenta VIP está vinculada a tu dispositivo original. No está permitido compartir cuentas. Este intento ha sido reportado al Administrador.",
@@ -804,17 +851,36 @@ class handler(BaseHTTPRequestHandler):
                     devices = list(raw_devs)
 
                 known_fps = [d.get("fp") for d in devices if isinstance(d, dict)]
+                known_fp_bases = [_fp_base(f) for f in known_fps if f]
                 role = user.get("role") or "free"
 
+                if role == "blocked":
+                    conn.close()
+                    return self._send_json({
+                        "ok": False,
+                        "msg": "🛡️ Esta cuenta se encuentra suspendida por el Administrador.",
+                    }, 403)
+
                 if role != "admin":
-                    if device_fp not in known_fps:
+                    if device_fp not in known_fps and _fp_base(device_fp) not in known_fp_bases:
                         if role == "vip" and len(devices) >= 1:
+                            alert_details = "Intento de inicio VIP (Google) en segundo dispositivo no autorizado"
                             cur.execute("""
                                 INSERT INTO dynasty_security_alerts (user_email, alert_type, detected_ip, device_fp, device_label, details, status, created_at)
                                 VALUES (?, 'SHARING_BLOCKED', ?, ?, ?, ?, 'new', ?)
-                            """, (email, client_ip, device_fp, device_label, "Intento de inicio VIP (Google) en segundo dispositivo no autorizado", now_str))
+                            """, (email, client_ip, device_fp, device_label, alert_details, now_str))
                             conn.commit()
                             conn.close()
+                            supabase.insert("dynasty_security_alerts", {
+                                "user_email": email,
+                                "alert_type": "SHARING_BLOCKED",
+                                "detected_ip": client_ip,
+                                "device_fp": device_fp,
+                                "device_label": device_label,
+                                "details": alert_details,
+                                "status": "new",
+                                "created_at": now_str,
+                            })
                             return self._send_json({
                                 "ok": False,
                                 "msg": "🛡️ SEGURIDAD DYNASTY: Tu cuenta VIP está vinculada a tu dispositivo original. No está permitido compartir cuentas. Este intento ha sido reportado al Administrador.",
@@ -866,36 +932,56 @@ class handler(BaseHTTPRequestHandler):
     # ──────────────────────────────────────────────────────────────────────
     # 3. ESTADO EN TIEMPO REAL: SEÑALES (DYNASTY) + RUSH COMPLETO (RESULTADOS)
     # ──────────────────────────────────────────────────────────────────────
-    def _handle_get_state(self, token: str, fp: str):
+    def _handle_get_state(self, token: str, fp: str, email: str = ""):
         user_role = "guest"
         user_email = None
         vip_days_left = 0
+        clean_email = (email or "").strip().lower()
 
         # 3.1 Verificar sesión activa (Supabase + SQLite)
-        if token:
+        if token or clean_email:
             if token == "dynasty_admin_master_session" or token.startswith("dynasty_admin_"):
                 user_email = ADMIN_EMAIL
                 user_role = "admin"
                 vip_days_left = 3650
             else:
                 u = None
-                sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=*")
-                if sb_u is not None and len(sb_u) > 0:
-                    u = sb_u[0]
-                else:
-                    with db_lock:
-                        conn = get_db()
-                        cur = conn.cursor()
-                        cur.execute("SELECT * FROM dynasty_users WHERE active_session_token = ?", (token,))
-                        row = cur.fetchone()
-                        if row:
-                            u = dict(row)
-                        conn.close()
+                if token:
+                    sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=*")
+                    if sb_u is not None and len(sb_u) > 0:
+                        u = sb_u[0]
+                    else:
+                        with db_lock:
+                            conn = get_db()
+                            cur = conn.cursor()
+                            cur.execute("SELECT * FROM dynasty_users WHERE active_session_token = ?", (token,))
+                            row = cur.fetchone()
+                            if row:
+                                u = dict(row)
+                            conn.close()
+
+                # Respaldo por email si el token de sesión se desincronizó entre instancias serverless
+                if not u and clean_email and clean_email != ADMIN_EMAIL:
+                    sb_u_mail = supabase.select("dynasty_users", f"email=ilike.{quote(clean_email)}&select=*")
+                    if sb_u_mail is not None and len(sb_u_mail) > 0:
+                        u = sb_u_mail[0]
+                    else:
+                        with db_lock:
+                            conn = get_db()
+                            cur = conn.cursor()
+                            cur.execute("SELECT * FROM dynasty_users WHERE LOWER(email) = LOWER(?)", (clean_email,))
+                            row = cur.fetchone()
+                            if row:
+                                u = dict(row)
+                            conn.close()
 
                 if u:
                     user_email = u.get("email")
                     user_role = u.get("role") or "free"
-                    if user_email == ADMIN_EMAIL or user_role == "admin":
+                    if user_role == "blocked":
+                        user_role = "free"
+                        vip_days_left = 0
+                    elif user_email == ADMIN_EMAIL or user_role == "admin":
                         user_role = "admin"
                         vip_days_left = 3650
                     elif user_role in ("vip", "trial") and u.get("vip_expires_at"):
@@ -1043,6 +1129,7 @@ class handler(BaseHTTPRequestHandler):
     # ──────────────────────────────────────────────────────────────────────
     def _handle_usdt_payment(self, body: dict):
         token = (body.get("token") or "").strip()
+        fallback_email = (body.get("email") or "").strip().lower()
         plan_name = (body.get("plan_name") or "VIP_30_DIAS").strip()
         amount_usdt = float(body.get("amount_usdt") or 150.0)
         txid = (body.get("txid") or "").strip()
@@ -1051,18 +1138,21 @@ class handler(BaseHTTPRequestHandler):
             return self._send_json({"ok": False, "msg": "Ingresa el código TXID / Hash o referencia de tu transferencia USDT."}, 400)
 
         u_email = None
-        sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=email")
-        if sb_u and len(sb_u) > 0:
-            u_email = sb_u[0].get("email")
+        if token:
+            sb_u = supabase.select("dynasty_users", f"active_session_token=eq.{quote(token)}&select=email")
+            if sb_u and len(sb_u) > 0:
+                u_email = sb_u[0].get("email")
 
         with db_lock:
             conn = get_db()
             cur = conn.cursor()
-            if not u_email:
+            if not u_email and token:
                 cur.execute("SELECT email FROM dynasty_users WHERE active_session_token = ?", (token,))
                 row = cur.fetchone()
                 if row:
                     u_email = row["email"]
+            if not u_email and fallback_email and "@" in fallback_email:
+                u_email = fallback_email
             if not u_email:
                 conn.close()
                 return self._send_json({"ok": False, "msg": "Debes iniciar sesión para reportar un pago."}, 401)
@@ -1188,21 +1278,39 @@ class handler(BaseHTTPRequestHandler):
                 return self._send_json({"ok": False, "msg": "No autorizado."}, 403)
 
             if action == "approve_payment" and payment_id:
+                p_name_str = ""
+                p_amt_val = 0.0
                 sb_pay = supabase.select("dynasty_payments", f"id=eq.{payment_id}&select=*")
                 if sb_pay and len(sb_pay) > 0:
                     target_email = sb_pay[0].get("user_email") or target_email
-                    days = 15 if "15" in str(sb_pay[0].get("plan_name", "")) else 30
+                    p_name_str = str(sb_pay[0].get("plan_name", ""))
+                    p_amt_val = float(sb_pay[0].get("amount_usdt") or 0)
                     supabase.update("dynasty_payments", f"id=eq.{payment_id}", {"status": "approved"})
                 cur.execute("SELECT * FROM dynasty_payments WHERE id = ?", (payment_id,))
                 pay = cur.fetchone()
                 if pay:
                     target_email = pay["user_email"]
-                    days = 15 if "15" in str(pay["plan_name"]) else 30
+                    p_name_str = str(pay["plan_name"] or p_name_str)
+                    p_amt_val = float(pay["amount_usdt"] or p_amt_val)
                     cur.execute("UPDATE dynasty_payments SET status = 'approved' WHERE id = ?", (payment_id,))
+
+                cfg_plans = get_membership_config().get("plans") or []
+                matched_days = None
+                for cp in cfg_plans:
+                    if str(cp.get("name", "")).lower() == p_name_str.lower() or str(cp.get("id", "")).lower() == p_name_str.lower():
+                        matched_days = int(cp.get("days") or 30)
+                        break
+                    if p_amt_val > 0 and float(cp.get("price") or 0) == p_amt_val:
+                        matched_days = int(cp.get("days") or 30)
+                if matched_days:
+                    days = matched_days
+                else:
+                    days = 15 if ("15" in p_name_str or "quincenal" in p_name_str.lower()) else 30
 
             if action in ("approve_payment", "grant_vip") and target_email:
                 exp = (datetime.now(timezone.utc) + timedelta(days=days)).isoformat()
                 cur.execute("UPDATE dynasty_users SET role = 'vip', vip_expires_at = ?, is_verified = 1 WHERE LOWER(email) = LOWER(?)", (exp, target_email))
+                cur.execute("UPDATE dynasty_security_alerts SET status = 'resolved' WHERE LOWER(user_email) = LOWER(?) AND status = 'new'", (target_email,))
                 conn.commit()
                 conn.close()
                 supabase.update("dynasty_users", f"email=ilike.{quote(target_email)}", {"role": "vip", "vip_expires_at": exp, "is_verified": True})
@@ -1232,27 +1340,21 @@ class handler(BaseHTTPRequestHandler):
                 cur.execute("UPDATE dynasty_security_alerts SET status = 'dismissed' WHERE id = ?", (alert_id,))
                 conn.commit()
                 conn.close()
+                supabase.update("dynasty_security_alerts", f"id=eq.{alert_id}", {"status": "dismissed"})
                 return self._send_json({"ok": True, "msg": "Alerta de seguridad descartada."})
 
             if action == "block_user" and target_email:
-                cur.execute("UPDATE dynasty_users SET role = 'blocked', active_session_token = NULL WHERE email = ?", (target_email,))
+                cur.execute("UPDATE dynasty_users SET role = 'blocked', active_session_token = NULL WHERE LOWER(email) = LOWER(?)", (target_email,))
                 conn.commit()
                 conn.close()
-                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "blocked", "active_session_token": None})
+                supabase.update("dynasty_users", f"email=ilike.{quote(target_email)}", {"role": "blocked", "active_session_token": None})
                 return self._send_json({"ok": True, "msg": f"Usuario {target_email} bloqueado por intento de compartir cuenta."})
 
-            if action == "revoke_vip" and target_email:
-                cur.execute("UPDATE dynasty_users SET role = 'free', vip_expires_at = NULL WHERE email = ?", (target_email,))
-                conn.commit()
-                conn.close()
-                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"role": "free", "vip_expires_at": None})
-                return self._send_json({"ok": True, "msg": f"Usuario {target_email} pasado a plan Gratis."})
-
             if action == "reset_devices" and target_email:
-                cur.execute("UPDATE dynasty_users SET registered_devices = '[]', active_session_token = NULL, active_device_fp = NULL WHERE email = ?", (target_email,))
+                cur.execute("UPDATE dynasty_users SET registered_devices = '[]', active_session_token = NULL, active_device_fp = NULL WHERE LOWER(email) = LOWER(?)", (target_email,))
                 conn.commit()
                 conn.close()
-                supabase.update("dynasty_users", f"email=eq.{quote(target_email)}", {"registered_devices": [], "active_session_token": None, "active_device_fp": None})
+                supabase.update("dynasty_users", f"email=ilike.{quote(target_email)}", {"registered_devices": [], "active_session_token": None, "active_device_fp": None})
                 return self._send_json({"ok": True, "msg": f"Dispositivos y sesiones reiniciados para {target_email}."})
 
             if action == "clear_test_data":
