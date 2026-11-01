@@ -1,0 +1,93 @@
+{
+  "reference_resolution": {
+    "width": 1366,
+    "height": 768
+  },
+  "chips": [
+    {"value": 5000.0, "x": 859, "y": 734, "description": "Ficha de $5000 USD"},
+    {"value": 1000.0, "x": 809, "y": 734, "description": "Ficha de $1000 USD"},
+    {"value": 250.0,  "x": 759, "y": 734, "description": "Ficha de $250 USD"},
+    {"value": 100.0,  "x": 709, "y": 734, "description": "Ficha de $100 USD"},
+    {"value": 20.0,   "x": 659, "y": 734, "description": "Ficha de $20 USD"},
+    {"value": 5.0,    "x": 609, "y": 734, "description": "Ficha de $5 USD"},
+    {"value": 1.0,    "x": 559, "y": 734, "description": "Ficha de $1 USD (Segunda a la izquierda)"},
+    {"value": 0.20,   "x": 511, "y": 734, "description": "Ficha de $0.20 USD (Primera a la izquierda)"}
+  ],
+  "chip_base": {
+    "x": 511,
+    "y": 734,
+    "description": "Primera ficha a la izquierda (Minimo de la divisa: 0.20 USD / 4 TRY)"
+  },
+  "chip_20": {
+    "x": 511,
+    "y": 734,
+    "description": "Ficha base"
+  },
+  "tables": {
+    "Baccarat 3": {
+      "slot": 1,
+      "player": {
+        "x": 141,
+        "y": 292,
+        "description": "Slot 1 (Fila 1 Izquierda) - Jugador (Azul)"
+      },
+      "banker": {
+        "x": 330,
+        "y": 292,
+        "description": "Slot 1 (Fila 1 Izquierda) - Banca (Rojo)"
+      }
+    },
+    "Baccarat 5": {
+      "slot": 2,
+      "player": {
+        "x": 590,
+        "y": 292,
+        "description": "Slot 2 (Fila 1 Centro) - Jugador (Azul)"
+      },
+      "banker": {
+        "x": 779,
+        "y": 292,
+        "description": "Slot 2 (Fila 1 Centro) - Banca (Rojo)"
+      }
+    },
+    "Baccarat 2": {
+      "slot": 3,
+      "player": {
+        "x": 1039,
+        "y": 292,
+        "description": "Slot 3 (Fila 1 Derecha) - Jugador (Azul)"
+      },
+      "banker": {
+        "x": 1228,
+        "y": 292,
+        "description": "Slot 3 (Fila 1 Derecha) - Banca (Rojo)"
+      }
+    },
+    "Baccarat 1": {
+      "slot": 4,
+      "player": {
+        "x": 141,
+        "y": 590,
+        "description": "Slot 4 (Fila 2 Izquierda) - Jugador (Azul)"
+      },
+      "banker": {
+        "x": 330,
+        "y": 590,
+        "description": "Slot 4 (Fila 2 Izquierda) - Banca (Rojo)"
+      }
+    },
+    "Baccarat 6": {
+      "slot": 5,
+      "player": {
+        "x": 590,
+        "y": 590,
+        "description": "Slot 5 (Fila 2 Centro) - Jugador (Azul)"
+      },
+      "banker": {
+        "x": 779,
+        "y": 590,
+        "description": "Slot 5 (Fila 2 Centro) - Banca (Rojo)"
+      }
+    }
+  }
+}

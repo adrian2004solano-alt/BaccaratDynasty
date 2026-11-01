@@ -1,0 +1,16 @@
+{
+  "Baccarat 2": {
+    "slot": 1,
+    "x": 15,
+    "y": 95,
+    "width": 440,
+    "height": 288
+  },
+  "Baccarat 5": {
+    "slot": 4,
+    "x": 15,
+    "y": 393,
+    "width": 440,
+    "height": 288
+  }
+}

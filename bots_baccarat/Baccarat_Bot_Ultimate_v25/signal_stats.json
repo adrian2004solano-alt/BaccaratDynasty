@@ -1,0 +1,602 @@
+[
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "loss",
+    "attempt": 6,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 5,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "loss",
+    "attempt": 6,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Speed Baccarat 9",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Speed Baccarat 8",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Speed Baccarat 9",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Speed Baccarat 8",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Speed Baccarat 9",
+    "result": "win",
+    "attempt": 5,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Speed Baccarat 8",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Speed Baccarat 9",
+    "result": "win",
+    "attempt": 6,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "_comment": "Calibración Oficial 4 Mesas en 1 Fila (1366x768): Baccarat 2, Baccarat 1, Baccarat 5, Baccarat 3",
+  "Baccarat 2": {"x": 15,   "y": 84, "width": 329, "height": 218, "slot": 1},
+  "Baccarat 1": {"x": 355,  "y": 84, "width": 329, "height": 218, "slot": 2},
+  "Baccarat 5": {"x": 696,  "y": 84, "width": 329, "height": 218, "slot": 3},
+  "Baccarat 3": {"x": 1036, "y": 84, "width": 329, "height": 218, "slot": 4}
+}

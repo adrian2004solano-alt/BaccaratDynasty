@@ -1,0 +1,31 @@
+{
+  "_comment": "Calibración Exacta B-25 — 1366x768 — 4 Mesas Fila 1 (imagen 1024x639 escalada)",
+  "Baccarat 1": {
+    "x": 14,
+    "y": 74,
+    "width": 317,
+    "height": 164,
+    "slot": 1
+  },
+  "Baccarat 2": {
+    "x": 358,
+    "y": 74,
+    "width": 313,
+    "height": 164,
+    "slot": 2
+  },
+  "Baccarat 5": {
+    "x": 700,
+    "y": 74,
+    "width": 312,
+    "height": 164,
+    "slot": 3
+  },
+  "Baccarat 3": {
+    "x": 1032,
+    "y": 74,
+    "width": 313,
+    "height": 164,
+    "slot": 4
+  }
+}

@@ -1,0 +1,50 @@
+==============================================================
+   🎰 GUÍA DE USO RÁPIDO - BACCARAT AUTO-BETTOR VIP 🎰
+==============================================================
+
+¡Bienvenido al Bot de Apuestas Automáticas para Baccarat!
+Este programa analiza en tiempo real las mesas de Baccarat en
+Stake (Pragmatic Play Multiplay) y ejecuta las apuestas físicas
+directamente con gestión de Martingala inteligente.
+
+--------------------------------------------------------------
+PASO 1: REQUISITO PREVIO (SOLO UNA VEZ)
+--------------------------------------------------------------
+1. Tener instalado Python en tu PC con Windows (versión 3.10 o superior).
+   * Al instalar Python, asegúrate de marcar la casilla:
+     "Add Python to PATH" (Agregar Python al PATH).
+
+--------------------------------------------------------------
+PASO 2: CONFIGURAR TU APUESTA Y LÍMITES
+--------------------------------------------------------------
+1. Haz doble clic en el archivo "CONFIGURAR.bat" (se abrirá en Bloc de Notas).
+2. Modifica los valores según tu gusto:
+   - AUTO_BET_BASE_BET : Tu apuesta inicial (ej: 0.20, 100, 1000, etc.).
+   - AUTO_BET_STOP_LOSS : Pérdida máxima permitida (ej: -25.0).
+   - AUTO_BET_TAKE_PROFIT: Meta de ganancia (ej: 20.0).
+3. Guarda los cambios (Ctrl + G) y cierra el archivo.
+
+--------------------------------------------------------------
+PASO 3: ABRIR EL JUEGO EN TU NAVEGADOR
+--------------------------------------------------------------
+1. Abre tu navegador (Google Chrome recomendado).
+2. Entra a Stake y abre "Baccarat Multiplay" (Pragmatic Play).
+3. Deja la ventana del juego visible en pantalla (no la minimices ni la tapes).
+
+--------------------------------------------------------------
+PASO 4: INICIAR EL BOT
+--------------------------------------------------------------
+1. Haz doble clic en el archivo "INICIAR_BOT.bat".
+2. La primera vez instalará automáticamente las herramientas necesarias.
+3. Tendrás 10 segundos para asegurarte de que el juego esté en pantalla.
+4. ¡Listo! El bot comenzará a analizar mesas, seleccionar la mejor oportunidad
+   y realizar las apuestas con clics directos y seguros.
+
+--------------------------------------------------------------
+SEGURIDAD Y CONTROL
+--------------------------------------------------------------
+- Si deseas detener el bot en cualquier momento:
+  * Mueve el mouse rápidamente a cualquier esquina de la pantalla
+    (detención de emergencia automática) o cierra la ventana negra del bot.
+
+¡Mucho éxito en tus sesiones! 🍀

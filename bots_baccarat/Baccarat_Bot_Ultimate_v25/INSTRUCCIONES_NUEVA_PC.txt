@@ -1,0 +1,34 @@
+================================================================================
+GUÍA RÁPIDA: EJECUTAR BACCARAT BOT ULTIMATE v24 EN OTRA PC
+================================================================================
+
+1. REQUISITO PREVIO: PYTHON
+   - Si la otra PC no tiene Python instalado, descárgalo gratis de:
+     https://www.python.org/downloads/
+   - ¡MUY IMPORTANTE!: Durante la instalación, marca la casilla que dice:
+     [X] 'Add python.exe to PATH' (Agregar Python a las variables de entorno).
+
+2. INSTALACIÓN DE LIBRERÍAS (UN SOLO CLIC)
+   - Haz doble clic en el archivo:
+     INSTALAR_DEPENDENCIAS.bat
+   - Espera a que termine de instalar las librerías necesarias.
+
+3. PREPARAR EL JUEGO EN PANTALLA
+   - Abre el navegador (Chrome, Edge, etc.) e inicia sesión en Stake.
+   - Entra a Baccarat Live (Evolution Gaming) y abre la vista 'Multiplay'
+     (donde se ven las mesas como Baccarat 1, Baccarat 2, Baccarat 3, etc.).
+   - Deja la ventana del juego visible en la pantalla (no la minimices).
+
+4. INICIAR EL BOT
+   - Haz doble clic en:
+     start_bot.bat
+   - El bot te dará una cuenta regresiva de 15 segundos para que dejes la
+     pantalla en el juego.
+   - A partir de ese momento, el bot analizará los zapatos de las mesas en tiempo
+     real y enviará las señales automáticamente a Telegram con las 4 estrategias.
+
+5. CONFIGURACIÓN PERSONALIZADA (OPCIONAL)
+   - Si deseas editar tokens, canales de Telegram o límites, haz doble clic en:
+     CONFIGURAR_BOT.bat
+   - Se abrirá el archivo de configuración .env en el Bloc de Notas.
+================================================================================

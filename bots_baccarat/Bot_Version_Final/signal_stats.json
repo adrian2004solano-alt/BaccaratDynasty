@@ -1,0 +1,584 @@
+[
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_4TEND_DISRUPTIVA"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_DISR_2TEND"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_1_5TEND"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "TENDENCIA_3_1_2"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 6",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_4_1"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_3_1_2"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TRANSICION_2_4"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_4_1"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TERCIAS_BLOQUE_3_3"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TERCIAS_BLOQUE_3_3"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_4_1"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_1_4_1"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DISRUPTIVA_1_4_1"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 6,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 6,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 5,
+    "strategy": "DISRUPTIVA_1_5"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DISRUPTIVA_1_4_1"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "loss",
+    "attempt": 6,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "TENDENCIA_PURA_6"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "ALTERNANCIA_PINGPONG"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 5,
+    "strategy": "DOBLES_PAREJAS"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PATRON_ESPEJO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_4_1"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DISRUPTIVA_1_4_1"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 5,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "QUIEBRE_ESCALONADO_2_1"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "DISRUPTIVA_1_4_1"
+  }
+]

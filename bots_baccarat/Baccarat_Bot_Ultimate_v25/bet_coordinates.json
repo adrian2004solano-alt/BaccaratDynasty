@@ -1,0 +1,118 @@
+{
+  "_comment": "Calibración Exacta B-25 — 1366x768 — 4 Mesas Fila 1 + Fichas Correctas",
+
+  "screen_resolution": {
+    "width": 1366,
+    "height": 768
+  },
+
+  "chip_02": {
+    "x": 510,
+    "y": 741,
+    "description": "Ficha $0.20 USD (roja/rosa — extremo izquierdo del panel de fichas)"
+  },
+  "chip_20": {
+    "x": 510,
+    "y": 741,
+    "description": "Alias de compatibilidad para chip $0.20"
+  },
+
+  "chips": {
+    "0.2": {
+      "x": 510,
+      "y": 741,
+      "description": "Ficha $0.20 USD (roja/rosa)"
+    },
+    "1": {
+      "x": 559,
+      "y": 741,
+      "description": "Ficha $1.00 USD (naranja)"
+    },
+    "5": {
+      "x": 608,
+      "y": 741,
+      "description": "Ficha $5.00 USD (roja oscura)"
+    },
+    "20": {
+      "x": 657,
+      "y": 741,
+      "description": "Ficha $20.00 USD (morada)"
+    },
+    "100": {
+      "x": 706,
+      "y": 741,
+      "description": "Ficha $100.00 USD (negra/gris)"
+    },
+    "250": {
+      "x": 756,
+      "y": 741,
+      "description": "Ficha $250.00 USD (azul)"
+    }
+  },
+
+  "tables": {
+    "Baccarat 1": {
+      "slot": 1,
+      "player": {
+        "x": 109,
+        "y": 204,
+        "description": "Baccarat 1 — Slot 1 — Botón JUGADOR (Azul)"
+      },
+      "banker": {
+        "x": 236,
+        "y": 204,
+        "description": "Baccarat 1 — Slot 1 — Botón BANCA (Rojo)"
+      }
+    },
+    "Baccarat 2": {
+      "slot": 2,
+      "player": {
+        "x": 452,
+        "y": 204,
+        "description": "Baccarat 2 — Slot 2 — Botón JUGADOR (Azul)"
+      },
+      "banker": {
+        "x": 577,
+        "y": 204,
+        "description": "Baccarat 2 — Slot 2 — Botón BANCA (Rojo)"
+      }
+    },
+    "Baccarat 5": {
+      "slot": 3,
+      "player": {
+        "x": 793,
+        "y": 204,
+        "description": "Baccarat 5 — Slot 3 — Botón JUGADOR (Azul)"
+      },
+      "banker": {
+        "x": 917,
+        "y": 204,
+        "description": "Baccarat 5 — Slot 3 — Botón BANCA (Rojo)"
+      }
+    },
+    "Baccarat 3": {
+      "slot": 4,
+      "player": {
+        "x": 1125,
+        "y": 204,
+        "description": "Baccarat 3 — Slot 4 — Botón JUGADOR (Azul)"
+      },
+      "banker": {
+        "x": 1251,
+        "y": 204,
+        "description": "Baccarat 3 — Slot 4 — Botón BANCA (Rojo)"
+      }
+    }
+  },
+
+  "player": {
+    "x": 109,
+    "y": 204,
+    "description": "Jugador predeterminado (Slot 1 — Baccarat 1)"
+  },
+  "banker": {
+    "x": 236,
+    "y": 204,
+    "description": "Banca predeterminada (Slot 1 — Baccarat 1)"
+  }
+}

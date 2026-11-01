@@ -1,0 +1,62 @@
+{
+  "_comment": "Calibración Oficial 4 Mesas en 1 Fila (1366x768): Baccarat 1, Baccarat 2, Baccarat 5, Baccarat 3",
+
+  "screen_resolution": {
+    "width": 1366,
+    "height": 768
+  },
+
+  "chip_02": {
+    "x": 501,
+    "y": 736,
+    "description": "Ficha base 4 TRY (extremo izquierdo)"
+  },
+  "chip_20": {
+    "x": 501,
+    "y": 736,
+    "description": "Alias de compatibilidad"
+  },
+
+  "chips": {
+    "4":    {"x": 501, "y": 736, "description": "Ficha 4 — Menor valor / Extremo izquierdo"},
+    "20":   {"x": 552, "y": 741, "description": "Ficha 20"},
+    "100":  {"x": 605, "y": 741, "description": "Ficha 100"},
+    "400":  {"x": 657, "y": 741, "description": "Ficha 400"},
+    "2000": {"x": 708, "y": 741, "description": "Ficha 2K"},
+    "5000": {"x": 760, "y": 741, "description": "Ficha 5K"}
+  },
+
+  "tables": {
+    "Baccarat 1": {
+      "slot": 1,
+      "player": {"x": 98,   "y": 252, "description": "Baccarat 1 - Jugador"},
+      "banker": {"x": 241,  "y": 252, "description": "Baccarat 1 - Banca"}
+    },
+    "Baccarat 2": {
+      "slot": 2,
+      "player": {"x": 439,  "y": 252, "description": "Baccarat 2 - Jugador"},
+      "banker": {"x": 582,  "y": 252, "description": "Baccarat 2 - Banca"}
+    },
+    "Baccarat 5": {
+      "slot": 3,
+      "player": {"x": 779,  "y": 252, "description": "Baccarat 5 - Jugador"},
+      "banker": {"x": 922,  "y": 252, "description": "Baccarat 5 - Banca"}
+    },
+    "Baccarat 3": {
+      "slot": 4,
+      "player": {"x": 1119, "y": 252, "description": "Baccarat 3 - Jugador"},
+      "banker": {"x": 1262, "y": 252, "description": "Baccarat 3 - Banca"}
+    }
+  },
+
+  "player": {
+    "x": 98,
+    "y": 252,
+    "description": "Jugador predeterminado (Slot 1)"
+  },
+  "banker": {
+    "x": 241,
+    "y": 252,
+    "description": "Banca predeterminada (Slot 1)"
+  }
+}

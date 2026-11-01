@@ -1,0 +1,602 @@
+[
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "PING_PONG_EXACTO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PING_PONG_EXACTO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 5,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "RITMO_1_2_1_2_DOBLE"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PING_PONG_EXACTO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PING_PONG_EXACTO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "COMPLETAR_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "EXPANSION_TERCIA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "CORTE_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PING_PONG_EXACTO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "RITMO_1_2_1_2_DOBLE"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "RITMO_1_2_1_2_DOBLE"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "MURO_DE_UNOS"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "RITMO_1_2_1_2_DOBLE"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "MURO_DE_UNOS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "EXPANSION_TERCIA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "COMPLETAR_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "RITMO_1_2_1_2_DOBLE"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "MURO_DE_UNOS"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "COMPLETAR_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "COMPLETAR_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 5,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PING_PONG_EXACTO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PING_PONG_EXACTO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 6,
+    "strategy": "EXPANSION_TERCIA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "COMPLETAR_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 3,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "COMPLETAR_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "CORTE_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "COMPLETAR_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "CORTE_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "RITMO_1_2_1_2_DOBLE"
+  },
+  {
+    "table": "Baccarat 5",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PING_PONG_EXACTO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 4,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "PING_PONG_EXACTO"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "RITMO_1_2_1_2_DOBLE"
+  },
+  {
+    "table": "Baccarat 2",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "MURO_DE_UNOS"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "PULLBACK_DOMINANCIA"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "CORTE_DOBLE_2X2"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "RITMO_2_1_2_1_CORTE"
+  },
+  {
+    "table": "Baccarat 1",
+    "result": "win",
+    "attempt": 1,
+    "strategy": "DRAGON_EN_CURSO"
+  },
+  {
+    "table": "Baccarat 3",
+    "result": "win",
+    "attempt": 2,
+    "strategy": "DOMINANCIA_SINCRONIZADA"
+  }
+]

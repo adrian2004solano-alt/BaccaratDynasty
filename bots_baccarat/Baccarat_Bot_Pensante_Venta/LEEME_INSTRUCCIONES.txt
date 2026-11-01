@@ -1,0 +1,94 @@
+==============================================================
+   BOT PENSANTE — GUÍA DE INSTALACIÓN Y USO
+==============================================================
+
+DESCRIPCIÓN
+-----------
+Bot inteligente de apuestas automáticas y señales para Baccarat 
+Multiplay en Stake.com con Inteligencia Visual y Detección de Zapato.
+
+CARACTERÍSTICAS PRINCIPALES:
+* Filtro Estricto de Zapato: NUNCA juega en mesas con 65 o más jugadas (#65+).
+* Calibración Automática Universal: Funciona en cualquier monitor (1366x768, 1080p, 2K).
+* Telegram 100% Opcional: Juega en modo local sin requerir credenciales de Telegram.
+* 2 Modos de Juego Seleccionables.
+* Acceso Directo de 1 Clic para tu Escritorio.
+
+==============================================================
+PASOS RÁPIDOS PARA COMENZAR
+==============================================================
+
+PASO 1 (RECOMENDADO) — ACCESO DIRECTO EN EL ESCRITORIO
+  Haz doble clic en:
+    "CREAR_ACCESO_DIRECTO.bat"
+  Aparecerá un archivo en tu Escritorio llamado "Iniciar Bot Pensante"
+  para que puedas abrir el bot cómodamente siempre que quieras.
+
+--------------------------------------------------------------
+
+PASO 2 — CALIBRAR TU PANTALLA (60 SEGUNDOS)
+  Haz doble clic en:
+    "2. CALIBRAR_PANTALLA.bat"
+
+  INSTRUCCIONES:
+  1. Abre tu navegador con Stake.com y entra a "Baccarat Multiplay".
+  2. Pon la ventana en pantalla completa (maximizada) con las 4 mesas visibles.
+  3. El calibrador te dará 60 segundos (1 minuto) de cuenta regresiva
+     con avisos sonoros para que acomodes la ventana tranquilamente.
+  4. Al finalizar la cuenta regresiva, capturará las coordenadas exactas
+     de las mesas, apuestas y fichas, y guardará "calibracion_resultado.png".
+
+--------------------------------------------------------------
+
+PASO 3 — CONFIGURACIÓN Y MODO DE JUEGO (OPCIONAL)
+  Haz doble clic en:
+    "CONFIGURAR_BOT.bat"
+
+  Desde aquí puedes:
+  - Cambiar el Modo de Juego (Modo 1 o Modo 2).
+  - Configurar Telegram si deseas recibir señales en el móvil (opcional).
+  - Recalibrar pantalla o crear el acceso directo en el escritorio.
+
+--------------------------------------------------------------
+
+PASO 4 — INICIAR EL BOT
+  Haz doble clic en:
+    "3. INICIAR_BOT.bat"  (o en el acceso directo de tu Escritorio)
+
+  - Tendrás 60 segundos para dejar Baccarat Multiplay visible.
+  - El bot comenzará a jugar automáticamente.
+  - Para detener el bot: cierra la ventana negra o presiona Ctrl+C.
+
+==============================================================
+ESTRATEGIAS DE JUEGO (CONFIGURABLES)
+==============================================================
+
+[MODO 1] — Predeterminado (Ventana Rotante con Martingala Persistente)
+  * Mesa 1: Apuesta Tiros 1, 2 y 3 ($0.20 -> $0.40 -> $0.80).
+  * Si pierde los 3 tiros: Espera que la mesa termine la ronda.
+  * Mesa 2: Espera Tiro 1 y juega Tiros 2, 3 y 4 ($1.60 -> $3.20 -> $6.40).
+  * Al ganar en cualquier tiro: Reinicia martingala a $0.20 (1 clic) y vuelve a Mesa 1.
+
+[MODO 2] — Modo Seguro (Recuperación Plana tras 6 Tiros Fallados)
+  * Juega igual que el Modo 1 en Mesa 1 (1-2-3) y Mesa 2 (2-3-4).
+  * Si se pierden esos 6 tiros en total (3 en Mesa 1 + 3 en Mesa 2):
+    ¡EL BOT DETIENE LA MARTINGALA! (no dobla apuestas).
+  * Pasa a jugar apuestas fijas de $0.40 (2 clics) por tiro.
+  * Continúa jugando plano a $0.40 hasta RECUPERAR TODO LO PERDIDO.
+  * Cuando recupera lo perdido al 100%:
+    Vuelve automáticamente a 1 clic ($0.20) y martingala rotante normal.
+
+==============================================================
+LÍMITES DE PROTECCIÓN FINANCIERA
+==============================================================
+
+  Stop-Loss: -$15.00 (el bot se detiene para proteger tu capital si pierde $15)
+  Take-Profit: +$20.00 (el bot se detiene victorioso al ganar $20)
+
+==============================================================
+SOPORTE
+==============================================================
+
+Si tienes dudas sobre el funcionamiento, contacta al vendedor.
+¡Éxito en tus sesiones!
+==============================================================

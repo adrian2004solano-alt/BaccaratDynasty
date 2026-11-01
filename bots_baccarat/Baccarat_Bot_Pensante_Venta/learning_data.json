@@ -1,0 +1,12 @@
+[
+  {
+    "ts": "2026-09-20T01:03:11.760127",
+    "table": "Baccarat 2",
+    "shoe_length": 50,
+    "shoe_type": "neutral",
+    "strategy": "BLOQUE_2T_2D_2T",
+    "win_attempt": 1,
+    "is_loss": false,
+    "early_win": true
+  }
+]
